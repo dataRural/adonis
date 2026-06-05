@@ -1,5 +1,6 @@
 import type { InertiaProps } from '#core/ui/types'
 import { Field, FieldError, Form } from '#common/ui/components/form'
+import { useEffect, useState } from 'react'
 import useFlashMessage from '#common/ui/hooks/use_flash_message'
 import { Link } from '@adonisjs/inertia/react'
 
@@ -16,6 +17,14 @@ export default function ListDatasetsPage({ }: PageProps) {
   const { t } = useTranslation()
   const successMessage = useFlashMessage('success')
   const errorMessage = useFlashMessage('error')
+  const [licenses, setLicenses] = useState<{ id: number; name: string; description?: string | null }[]>([])
+
+  useEffect(() => {
+    fetch('/licenses')
+      .then((res) => res.json())
+      .then((data) => setLicenses(data || []))
+      .catch(() => setLicenses([]))
+  }, [])
 
   return (
     <AppLayout breadcrumbs={[{ label: t('dataset.index.page.breadcrumbs.dataset') }]}>
@@ -124,6 +133,19 @@ export default function ListDatasetsPage({ }: PageProps) {
                         placeholder={t('dataset.index.page.form.description.placeholder')}
                         className="rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:border-ring"
                       />
+                    </label>
+                    <FieldError />
+                  </Field>
+
+                  <Field name="licenseId">
+                    <label className="grid gap-2">
+                      <span className="text-sm font-medium">{t('dataset.index.page.form.license.label')}</span>
+                      <select name="licenseId" className="h-10 rounded-lg border border-input bg-background px-3 text-sm outline-none focus:border-ring">
+                        <option value="">Selecione uma licença (opcional)</option>
+                        {licenses.map((l) => (
+                          <option key={l.id} value={l.id}>{l.name}</option>
+                        ))}
+                      </select>
                     </label>
                     <FieldError />
                   </Field>

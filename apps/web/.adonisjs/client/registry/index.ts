@@ -186,6 +186,12 @@ const routes = {
     tokens: [{"old":"/datasets/view","type":0,"val":"datasets","end":""},{"old":"/datasets/view","type":0,"val":"view","end":""}],
     types: placeholder as Registry['datasets.viewer']['types'],
   },
+  'licenses.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/licenses',
+    tokens: [{"old":"/licenses","type":0,"val":"licenses","end":""}],
+    types: placeholder as Registry['licenses.index']['types'],
+  },
   'datasets.privacy': {
     methods: ["POST"],
     pattern: '/datasets/:id/privacy',

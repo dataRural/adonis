@@ -18,11 +18,6 @@ function sanitizePathSegment(value: string) {
     .replace(/\s+/g, ' ')
 }
 
-function sanitizeFileName(value: string) {
-  const normalized = sanitizePathSegment(value)
-  return normalized.length > 0 ? normalized : 'dataset.csv'
-}
-
 function parseCsvLine(line: string) {
   const values: string[] = []
   let current = ''
@@ -97,6 +92,7 @@ export default class DatasetsController {
       .preload('versions', (query) => {
         query.orderBy('id', 'desc')
       })
+      .preload('license')
       .orderBy('id', 'desc')
 
     if (currentUserId) {
@@ -118,8 +114,7 @@ export default class DatasetsController {
 
     const selectedVersion = selectedDataset
       ? versionId
-        ? selectedDataset.versions.find((version) => version.id === versionId) ||
-        selectedDataset.versions[0]
+        ? selectedDataset.versions.find((version) => version.id === versionId) || selectedDataset.versions[0]
         : selectedDataset.versions[0]
       : null
 
@@ -145,9 +140,7 @@ export default class DatasetsController {
       }
 
       try {
-        // First try README next to the dataset folder (used by seeder and older flow)
-        const dataset = selectedDataset
-        const candidate1 = dataset ? join(dataset.path, selectedVersion.name, 'README.md') : null
+        const candidate1 = selectedDataset ? join(selectedDataset.path, selectedVersion.name, 'README.md') : null
 
         if (candidate1) {
           try {
@@ -155,7 +148,6 @@ export default class DatasetsController {
           } catch { }
         }
 
-        // Fallback: try to read README next to the attachment file (if attachment exposes a path)
         if (!readmeContent) {
           try {
             const attachPath = (selectedVersion.path && (selectedVersion.path.path || selectedVersion.path)) as string
@@ -171,6 +163,7 @@ export default class DatasetsController {
         readmeError = 'Unable to read README.md for this version.'
       }
     }
+
     const datasetsPayload = await Promise.all(
       datasets.map(async (dataset) => ({
         id: dataset.id,
@@ -178,29 +171,30 @@ export default class DatasetsController {
         path: dataset.path,
         isPublic: dataset.isPublic,
         userId: dataset.userId,
-        versions: await Promise.all(
-          dataset.versions.map(async (version) => {
-            const url = version.path ? await version.path.getUrl() : null
-            const originalName = version.path && version.path.originalName ? version.path.originalName : null
-            return {
-              id: version.id,
-              name: version.name,
-              path: url,
-              originalName,
+        license: dataset.license
+          ? {
+              id: dataset.license.id,
+              name: dataset.license.name,
+              description: dataset.license.description,
             }
-          })
+          : null,
+        versions: await Promise.all(
+          dataset.versions.map(async (version) => ({
+            id: version.id,
+            name: version.name,
+            path: await version.path.getUrl(),
+            originalName: version.path.originalName ?? null,
+          }))
         ),
       }))
     )
-
-
 
     return inertia.render('dataset/view', {
       datasets: datasetsPayload,
       selectedDatasetId: selectedDataset ? selectedDataset.id : null,
       selectedVersionId: selectedVersion ? selectedVersion.id : null,
       suggestedVersionName,
-      previewPath: selectedVersion ? (await selectedVersion.path.getUrl()) : null,
+      previewPath: selectedVersion ? await selectedVersion.path.getUrl() : null,
       previewHeaders,
       previewRows,
       previewError,
@@ -212,15 +206,14 @@ export default class DatasetsController {
   public async addVersion({ params, request, response, session, auth }: HttpContext) {
     const dataset = await Dataset.query().where('id', params.id).preload('versions').firstOrFail()
 
-    // Authorization: only dataset owner can add versions
     const currentUserId = auth?.user?.id
     if (!currentUserId || Number(currentUserId) !== Number(dataset.userId)) {
       session.flash('error', 'You are not authorized to update this dataset.')
       return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
     }
+
     const payload = await request.validateUsing(addDatasetVersionValidator)
     const datasetFile = request.file('file')
-
 
     if (!datasetFile) {
       session.flash('error', 'Please select a CSV file to upload.')
@@ -240,11 +233,9 @@ export default class DatasetsController {
       return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
     }
 
-    const fileName = sanitizeFileName(datasetFile.clientName)
     try {
       const attachment = await attachmentManager.createFromFile(datasetFile)
 
-      // Ensure a consistent README location under storage/datasets/<dataset>/<version>
       const rootPath = app.makePath('storage/datasets')
       const versionPath = join(dataset.path || rootPath, versionName)
       await mkdir(versionPath, { recursive: true })
@@ -265,7 +256,6 @@ export default class DatasetsController {
       })
 
       session.flash('success', `Version ${versionName} saved successfully.`)
-
       return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}&versionId=${version.id}`)
     } catch (err) {
       console.error('Error saving dataset version (addVersion):', err)
@@ -284,7 +274,6 @@ export default class DatasetsController {
     }
 
     try {
-      // Accept explicit isPublic value or toggle when not provided
       const bodyVal = request.input('isPublic')
       if (typeof bodyVal === 'undefined') {
         dataset.isPublic = !dataset.isPublic
@@ -293,7 +282,7 @@ export default class DatasetsController {
       }
 
       await dataset.save()
-      session.flash('success', `Dataset privacy updated.`)
+      session.flash('success', 'Dataset privacy updated.')
       return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
     } catch (err) {
       session.flash('error', `Unable to update privacy. ${err && err.message ? err.message : ''}`)
@@ -316,13 +305,13 @@ export default class DatasetsController {
 
     try {
       const buffer = await version.path.getBuffer()
-      const originalName = version.path && (version.path.originalName || null)
+      const originalName = version.path.originalName || null
       const filename = originalName || `${dataset.name}.csv`
 
       response.header('Content-Type', 'text/csv')
       response.header('Content-Disposition', `attachment; filename="${filename.replace(/\"/g, '')}"`)
       return response.send(buffer)
-    } catch (err) {
+    } catch {
       session.flash('error', 'Unable to download file.')
       return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
     }
@@ -339,7 +328,7 @@ export default class DatasetsController {
 
     const datasetName = sanitizePathSegment(payload.name)
     const versionName = sanitizePathSegment(payload.version || 'V1')
-    const fileName = sanitizeFileName(datasetFile.clientName)
+    const licenseId = typeof payload.licenseId === 'number' ? payload.licenseId : null
 
     try {
       const attachment = await attachmentManager.createFromFile(datasetFile)
@@ -365,6 +354,7 @@ export default class DatasetsController {
             path: datasetPath,
             isPublic: payload.isPublic ? true : false,
             userId: auth.user!.id,
+            licenseId,
           },
           { client: trx }
         )
@@ -379,8 +369,7 @@ export default class DatasetsController {
         )
       })
 
-      session.flash('success', `Dataset saved successfully`)
-
+      session.flash('success', 'Dataset saved successfully')
       return response.redirect().back()
     } catch (err) {
       console.error('Error saving dataset (store):', err)

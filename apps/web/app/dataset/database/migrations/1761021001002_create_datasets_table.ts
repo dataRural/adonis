@@ -7,13 +7,13 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.string('name', 255).notNullable()
-    //   table
-    //     .integer('license_id')
-    //     .unsigned()
-    //     .references('id')
-    //     .inTable('licenses')
-    //     .onDelete('RESTRICT')
-    //     .notNullable()
+      table
+        .integer('license_id')
+        .unsigned()
+        .nullable()
+        .references('id')
+        .inTable('licenses')
+        .onDelete('SET NULL')
       table.string('path', 1024).notNullable()
       table.boolean('is_public').notNullable().defaultTo(false)
       table

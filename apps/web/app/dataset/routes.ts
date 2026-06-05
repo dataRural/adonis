@@ -10,11 +10,14 @@ import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
 const DatasetsController = () => import('#app/dataset/controllers/datasets_controller')
+const LicensesController = () => import('#app/dataset/controllers/licenses_controller')
 
 router
   .get('/datasets/view', [DatasetsController, 'viewer'])
   .middleware(middleware.auth())
   .as('datasets.viewer')
+
+router.get('/licenses', [LicensesController, 'index']).as('licenses.index')
 
 router
   .post('/datasets/:id/privacy', [DatasetsController, 'togglePrivacy'])

@@ -50,7 +50,7 @@ export class DatasetVersionSchema extends BaseModel {
 }
 
 export class DatasetSchema extends BaseModel {
-  static $columns = ['createdAt', 'id', 'isPublic', 'name', 'path', 'updatedAt', 'userId'] as const
+  static $columns = ['createdAt', 'id', 'isPublic', 'licenseId', 'name', 'path', 'updatedAt', 'userId'] as const
   $columns = DatasetSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -59,6 +59,8 @@ export class DatasetSchema extends BaseModel {
   @column()
   declare isPublic: boolean
   @column()
+  declare licenseId: number | null
+  @column()
   declare name: string
   @column()
   declare path: string
@@ -66,6 +68,21 @@ export class DatasetSchema extends BaseModel {
   declare updatedAt: DateTime | null
   @column()
   declare userId: number
+}
+
+export class LicenseSchema extends BaseModel {
+  static $columns = ['createdAt', 'description', 'id', 'name', 'updatedAt'] as const
+  $columns = LicenseSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare description: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare name: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
 }
 
 export class RateLimitSchema extends BaseModel {

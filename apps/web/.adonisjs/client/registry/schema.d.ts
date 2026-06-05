@@ -367,6 +367,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['viewer']>>>
     }
   }
+  'licenses.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/licenses'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/licenses_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/licenses_controller').default['index']>>>
+    }
+  }
   'datasets.privacy': {
     methods: ["POST"]
     pattern: '/datasets/:id/privacy'

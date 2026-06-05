@@ -6,6 +6,7 @@ export const createDatasetValidator = vine.compile(
     version: vine.string().trim().minLength(1).maxLength(32).optional(),
     description: vine.string().trim().maxLength(2000).optional(),
     isPublic: vine.boolean().optional(),
+    licenseId: vine.number().optional(),
     file: vine
       .file({
         extnames: ['csv'],

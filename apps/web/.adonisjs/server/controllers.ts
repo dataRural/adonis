@@ -17,6 +17,7 @@ export const controllers = {
   },
   dataset: {
     Datasets: () => import('#app/dataset/controllers/datasets_controller'),
+    Licenses: () => import('#app/dataset/controllers/licenses_controller'),
   },
   marketing: {
     Marketing: () => import('#app/marketing/controllers/marketing_controller'),

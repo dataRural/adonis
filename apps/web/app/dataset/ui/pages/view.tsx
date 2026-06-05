@@ -18,6 +18,8 @@ type PageProps = InertiaProps<{
     name: string
     path: string
     isPublic: boolean
+    userId: number
+    license?: { id: number; name: string; description?: string | null } | null
     versions: {
       id: number
       name: string
@@ -140,6 +142,37 @@ export default function ViewDatasetsPage({
               <h3 className="text-lg font-semibold">
                 {t('dataset.view.page.preview_title')}
               </h3>
+
+              {selectedDataset && selectedDataset.license ? (
+                <div className="text-sm text-muted-foreground">
+                  Licença:{' '}
+                  {(() => {
+                    const map: Record<string, string> = {
+                      MIT: 'https://opensource.org/licenses/MIT',
+                      'CC0-1.0': 'https://creativecommons.org/publicdomain/zero/1.0/',
+                      'CC-BY-4.0': 'https://creativecommons.org/licenses/by/4.0/',
+                      'CC-BY-SA-4.0': 'https://creativecommons.org/licenses/by-sa/4.0/',
+                    }
+
+                    const url = map[selectedDataset.license!.name]
+
+                    if (url) {
+                      return (
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                        >
+                          {selectedDataset.license!.name}
+                        </a>
+                      )
+                    }
+
+                    return <span>{selectedDataset.license!.name}</span>
+                  })()}
+                </div>
+              ) : null}
 
 
               {selectedDataset && user && Number(selectedDataset.userId) === Number((user as any).id) ? (

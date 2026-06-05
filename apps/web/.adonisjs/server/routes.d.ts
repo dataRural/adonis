@@ -34,6 +34,7 @@ export type ScannedRoutes = {
     'password.show': { paramsTuple?: []; params?: {} }
     'appearance.show': { paramsTuple?: []; params?: {} }
     'datasets.viewer': { paramsTuple?: []; params?: {} }
+    'licenses.index': { paramsTuple?: []; params?: {} }
     'datasets.privacy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'datasets.version.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'datasets.version.download': { paramsTuple: [ParamValue,ParamValue]; params: {'datasetId': ParamValue,'versionId': ParamValue} }
@@ -57,6 +58,7 @@ export type ScannedRoutes = {
     'password.show': { paramsTuple?: []; params?: {} }
     'appearance.show': { paramsTuple?: []; params?: {} }
     'datasets.viewer': { paramsTuple?: []; params?: {} }
+    'licenses.index': { paramsTuple?: []; params?: {} }
     'datasets.version.download': { paramsTuple: [ParamValue,ParamValue]; params: {'datasetId': ParamValue,'versionId': ParamValue} }
     'datasets.index': { paramsTuple?: []; params?: {} }
     'dashboard.show': { paramsTuple?: []; params?: {} }
@@ -77,6 +79,7 @@ export type ScannedRoutes = {
     'password.show': { paramsTuple?: []; params?: {} }
     'appearance.show': { paramsTuple?: []; params?: {} }
     'datasets.viewer': { paramsTuple?: []; params?: {} }
+    'licenses.index': { paramsTuple?: []; params?: {} }
     'datasets.version.download': { paramsTuple: [ParamValue,ParamValue]; params: {'datasetId': ParamValue,'versionId': ParamValue} }
     'datasets.index': { paramsTuple?: []; params?: {} }
     'dashboard.show': { paramsTuple?: []; params?: {} }

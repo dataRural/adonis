@@ -79,6 +79,9 @@ export interface ApiDefinition {
     index: typeof routes['datasets.index']
     store: typeof routes['datasets.store']
   }
+  licenses: {
+    index: typeof routes['licenses.index']
+  }
   dashboard: {
     show: typeof routes['dashboard.show']
   }
