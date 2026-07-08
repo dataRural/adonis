@@ -152,8 +152,8 @@ export default function PublishWizard({}: PageProps) {
       <PanelNav
         theme={theme}
         onToggleTheme={handleToggleTheme}
-        onPublish={() => goto(0)}
         active=""
+        hidePublishButton={true}
       />
       <SimplePageHead onExit={handleExit} />
       <div className="dr-container">

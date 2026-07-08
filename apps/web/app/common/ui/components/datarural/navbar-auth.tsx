@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, router } from '@inertiajs/react'
+import useUser from '#auth/ui/hooks/use_user'
 import { BrandMark } from './brand'
 import * as Ic from './icons'
 
@@ -13,9 +14,10 @@ interface UserProps {
 interface PanelNavProps {
   theme: string
   onToggleTheme: () => void
-  onPublish: () => void
+  onPublish?: () => void
   active?: string
   user?: UserProps | null
+  hidePublishButton?: boolean
 }
 
 const DEFAULT_ME = {
@@ -25,13 +27,22 @@ const DEFAULT_ME = {
   unit: 'Instituto de Ciências Exatas',
 }
 
-function NavUser({ user }: { user?: UserProps | null }) {
+export function NavUser({ user }: { user?: UserProps | null }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
-  const me = user || DEFAULT_ME
-  const shortName = me.short || me.name.split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase()
-  const displayFirstName = me.name.split(' ').slice(0, 2).join(' ')
+  const loggedInUser = useUser()
+  const me = loggedInUser
+    ? {
+        name: loggedInUser.fullName || 'Usuário UFRRJ',
+        email: loggedInUser.email,
+        short: (loggedInUser.fullName || 'U').split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase(),
+        unit: 'Instituto de Ciências Exatas',
+      }
+    : (user || DEFAULT_ME)
+
+  const shortName = me.short || (me.name || 'U').split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase()
+  const displayFirstName = (me.name || 'Usuário').split(' ').slice(0, 2).join(' ')
 
   useEffect(() => {
     if (!open) return
@@ -112,7 +123,7 @@ function NavUser({ user }: { user?: UserProps | null }) {
   )
 }
 
-export default function PanelNav({ theme, onToggleTheme, onPublish, active, user }: PanelNavProps) {
+export default function PanelNav({ theme, onToggleTheme, onPublish, active, user, hidePublishButton }: PanelNavProps) {
   return (
     <header className="dr-nav">
       <div className="dr-container dr-nav-inner">
@@ -151,9 +162,11 @@ export default function PanelNav({ theme, onToggleTheme, onPublish, active, user
           >
             {theme === 'dark' ? <Ic.Sun size={18} /> : <Ic.Moon size={18} />}
           </button>
-          <button className="dr-btn dr-btn-primary" onClick={onPublish}>
-            <Ic.Plus size={17} /> Publicar dataset
-          </button>
+          {!hidePublishButton && onPublish && (
+            <button className="dr-btn dr-btn-primary" onClick={onPublish}>
+              <Ic.Plus size={17} /> Publicar dataset
+            </button>
+          )}
           <NavUser user={user} />
         </div>
       </div>

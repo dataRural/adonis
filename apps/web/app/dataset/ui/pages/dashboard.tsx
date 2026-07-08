@@ -12,7 +12,7 @@ import type { InertiaProps } from '#core/ui/types'
 
 type PageProps = InertiaProps<{}>
 
-export default function Dashboard({}: PageProps) {
+export default function Dashboard({ }: PageProps) {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -67,6 +67,7 @@ export default function Dashboard({}: PageProps) {
         onToggleTheme={handleToggleTheme}
         onPublish={handlePublish}
         active="dashboard"
+        hidePublishButton={true}
       />
 
       <div className="dr-page-head">

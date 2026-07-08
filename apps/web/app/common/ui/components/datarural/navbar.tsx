@@ -1,6 +1,8 @@
 import { Link } from '@adonisjs/inertia/react'
 import { BrandMark } from './brand'
 import * as Ic from './icons'
+import useUser from '#auth/ui/hooks/use_user'
+import { NavUser } from './navbar-auth'
 
 interface NavbarProps {
   theme: string
@@ -34,12 +36,14 @@ export default function Navbar({ theme, onToggleTheme, activePage }: NavbarProps
           >
             Áreas
           </Link>
-          <Link
-            className={`dr-nav-link ${activePage === 'publish' ? 'active' : ''}`}
-            href="/dashboard/publish"
-          >
-            Publicar
-          </Link>
+          {useUser() && (
+            <Link
+              className={`dr-nav-link ${activePage === 'dashboard' ? 'active' : ''}`}
+              href="/dashboard"
+            >
+              Meus datasets
+            </Link>
+          )}
           <a className="dr-nav-link" href="#">
             Documentação
           </a>
@@ -53,12 +57,23 @@ export default function Navbar({ theme, onToggleTheme, activePage }: NavbarProps
           >
             {theme === 'dark' ? <Ic.Sun size={18} /> : <Ic.Moon size={18} />}
           </button>
-          <Link className="dr-btn dr-btn-ghost" href="/login">
-            Entrar
-          </Link>
-          <Link className="dr-btn dr-btn-primary" style={{ color: "white" }} href="/sign-up">
-            Criar conta
-          </Link>
+          {useUser() ? (
+            <>
+              <Link className="dr-btn dr-btn-primary" style={{ color: 'white', display: 'inline-flex', alignItems: 'center', gap: '6px' }} href="/dashboard/publish">
+                <Ic.Plus size={17} /> Publicar dataset
+              </Link>
+              <NavUser user={null} />
+            </>
+          ) : (
+            <>
+              <Link className="dr-btn dr-btn-ghost" href="/login">
+                Entrar
+              </Link>
+              <Link className="dr-btn dr-btn-primary" style={{ color: "white" }} href="/sign-up">
+                Criar conta
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
