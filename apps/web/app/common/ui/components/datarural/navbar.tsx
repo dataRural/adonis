@@ -56,7 +56,7 @@ export default function Navbar({ theme, onToggleTheme, activePage }: NavbarProps
           <Link className="dr-btn dr-btn-ghost" href="/login">
             Entrar
           </Link>
-          <Link className="dr-btn dr-btn-primary" href="/register">
+          <Link className="dr-btn dr-btn-primary" style={{ color: "white" }} href="/sign-up">
             Criar conta
           </Link>
         </div>
