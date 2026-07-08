@@ -5,14 +5,16 @@ import PanelFooter from '#common/ui/components/datarural/footer-simple'
 import DashboardStats from '../components/dashboard/dashboard-stats'
 import Toolbar from '../components/dashboard/toolbar'
 import DatasetTable from '../components/dashboard/dataset-table'
-import { MY_DATASETS, UserDatasetItem } from '../components/dashboard/panel-data'
+import { UserDatasetItem } from '../components/dashboard/panel-data'
 import * as Ic from '#common/ui/components/datarural/icons'
 
 import type { InertiaProps } from '#core/ui/types'
 
-type PageProps = InertiaProps<{}>
+type PageProps = InertiaProps<{
+  datasets?: UserDatasetItem[]
+}>
 
-export default function Dashboard({ }: PageProps) {
+export default function Dashboard({ datasets = [] }: PageProps) {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -29,15 +31,15 @@ export default function Dashboard({ }: PageProps) {
   }, [theme])
 
   const counts = useMemo(() => ({
-    all: MY_DATASETS.length,
-    published: MY_DATASETS.filter((d) => d.status === 'published').length,
-    review: MY_DATASETS.filter((d) => d.status === 'review').length,
-    draft: MY_DATASETS.filter((d) => d.status === 'draft').length,
-    unpublished: MY_DATASETS.filter((d) => d.status === 'unpublished').length,
-  }), [])
+    all: datasets.length,
+    published: datasets.filter((d) => d.status === 'published').length,
+    review: datasets.filter((d) => d.status === 'review').length,
+    draft: datasets.filter((d) => d.status === 'draft').length,
+    unpublished: datasets.filter((d) => d.status === 'unpublished').length,
+  }), [datasets])
 
   const list = useMemo(() => {
-    let arr = MY_DATASETS.slice()
+    let arr = datasets.slice()
     if (filter !== 'all') {
       arr = arr.filter((d) => d.status === filter)
     }
@@ -46,7 +48,7 @@ export default function Dashboard({ }: PageProps) {
       arr = arr.filter((d) => d.title.toLowerCase().includes(q))
     }
     return arr
-  }, [filter, query])
+  }, [datasets, filter, query])
 
   const handleToggleTheme = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))
@@ -99,7 +101,7 @@ export default function Dashboard({ }: PageProps) {
       </div>
 
       <div className="dr-container">
-        <DashboardStats />
+        <DashboardStats stats={{ publishedCount: counts.published, reviewCount: counts.review }} />
         <Toolbar
           filter={filter}
           onFilterChange={setFilter}

@@ -441,8 +441,45 @@ export default class DatasetsController {
     return inertia.render('dataset/show', { dataset: datasetPayload })
   }
 
-  public async dashboard({ inertia }: HttpContext) {
-    return inertia.render('dataset/dashboard', {})
+  public async dashboard({ auth, inertia }: HttpContext) {
+    const user = auth.user!
+
+    const userDatasets = await Dataset.query()
+      .where('userId', user.id)
+      .preload('versions')
+      .preload('license')
+      .orderBy('updatedAt', 'desc')
+
+    const datasetsPayload = userDatasets.map((d) => {
+      const latestVersion = d.versions[d.versions.length - 1]
+      const versionName = latestVersion ? latestVersion.name : 'V1'
+
+      let format = 'CSV'
+      if (latestVersion && latestVersion.path) {
+        const fileExt = latestVersion.path.name?.split('.').pop()?.toUpperCase()
+        if (fileExt) format = fileExt
+      }
+
+      const status: 'published' | 'unpublished' = d.isPublic ? 'published' : 'unpublished'
+      const usability = '8.5'
+
+      return {
+        id: d.id,
+        title: d.name,
+        unit: 'Instituto de Ciências Exatas',
+        format,
+        tint: 'var(--brand-sky)',
+        status,
+        version: versionName,
+        updated: d.updatedAt ? d.updatedAt.toRelative() || 'recentemente' : 'recentemente',
+        downloads: '0',
+        views: '0',
+        usability,
+        rows: '---',
+      }
+    })
+
+    return inertia.render('dataset/dashboard', { datasets: datasetsPayload })
   }
 
   public async publish({ inertia }: HttpContext) {

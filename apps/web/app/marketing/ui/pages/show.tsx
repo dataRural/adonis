@@ -6,9 +6,14 @@ import Categories from '#common/ui/components/datarural/categories'
 import DatasetsSection from '#common/ui/components/datarural/datasets-section'
 import PublishCTA from '#common/ui/components/datarural/publish-cta'
 import Footer from '#common/ui/components/datarural/footer'
-import { MOCK_DATASETS } from '#common/ui/utils/mock-data'
+import { DatasetItem } from '#common/ui/utils/mock-data'
+import type { InertiaProps } from '#core/ui/types'
 
-export default function Page() {
+type PageProps = InertiaProps<{
+  datasets?: DatasetItem[]
+}>
+
+export default function Page({ datasets = [] }: PageProps) {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -27,14 +32,14 @@ export default function Page() {
   }, [theme])
 
   const list = useMemo(() => {
-    let arr = MOCK_DATASETS.slice()
+    let arr = datasets.slice()
     if (activeCat) {
       arr = arr.filter((d) => d.cat === activeCat)
     }
     const q = query.trim().toLowerCase()
     if (q) {
       arr = arr.filter((d) =>
-        (d.title + ' ' + d.unit + ' ' + d.desc + ' ' + d.tags.join(' ')).toLowerCase().includes(q)
+        (d.title + ' ' + (d.unit || '') + ' ' + (d.desc || '') + ' ' + (d.tags?.join(' ') || '')).toLowerCase().includes(q)
       )
     }
     if (tab === 'downloads') {
@@ -50,7 +55,7 @@ export default function Page() {
       })
     }
     return arr
-  }, [query, activeCat, tab])
+  }, [datasets, query, activeCat, tab])
 
   const handleChip = (t: string) => {
     setQuery(t)

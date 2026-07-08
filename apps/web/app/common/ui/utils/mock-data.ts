@@ -1,4 +1,4 @@
-export interface DatasetItem {
+export type DatasetItem = {
   id: number
   title: string
   name?: string

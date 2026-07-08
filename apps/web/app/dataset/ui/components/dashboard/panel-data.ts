@@ -15,7 +15,7 @@ export interface PanelStatItem {
   trend: string
 }
 
-export interface UserDatasetItem {
+export type UserDatasetItem = {
   id: number
   title: string
   unit: string
@@ -194,7 +194,7 @@ export const STATUS_META: Record<string, { label: string; color: string }> = {
   published: { label: 'Publicado', color: 'var(--brand-green)' },
   review: { label: 'Em revisão', color: 'var(--brand-orange)' },
   draft: { label: 'Rascunho', color: 'var(--muted-foreground)' },
-  unpublished: { label: 'Despublicado', color: 'var(--destructive)' },
+  unpublished: { label: 'Privado', color: 'var(--destructive)' },
 }
 
 export const CSV_COLUMNS: CsvColumnItem[] = [
