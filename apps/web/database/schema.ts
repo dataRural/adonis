@@ -50,7 +50,7 @@ export class DatasetVersionSchema extends BaseModel {
 }
 
 export class DatasetSchema extends BaseModel {
-  static $columns = ['createdAt', 'id', 'isPublic', 'licenseId', 'name', 'path', 'updatedAt', 'userId'] as const
+  static $columns = ['createdAt', 'id', 'isPublic', 'name', 'path', 'updatedAt', 'userId'] as const
   $columns = DatasetSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -58,8 +58,6 @@ export class DatasetSchema extends BaseModel {
   declare id: number
   @column()
   declare isPublic: boolean
-  @column()
-  declare licenseId: number | null
   @column()
   declare name: string
   @column()

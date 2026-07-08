@@ -38,6 +38,24 @@ export interface ApiDefinition {
   locale: {
     switch: typeof routes['locale.switch']
   }
+  datasets: {
+    viewer: typeof routes['datasets.viewer']
+    privacy: typeof routes['datasets.privacy']
+    version: {
+      store: typeof routes['datasets.version.store']
+      download: typeof routes['datasets.version.download']
+    }
+    index: typeof routes['datasets.index']
+    store: typeof routes['datasets.store']
+    show: typeof routes['datasets.show']
+  }
+  licenses: {
+    index: typeof routes['licenses.index']
+  }
+  dashboard: {
+    show: typeof routes['dashboard.show']
+    publish: typeof routes['dashboard.publish']
+  }
   users: {
     index: typeof routes['users.index']
     store: typeof routes['users.store']
@@ -68,21 +86,5 @@ export interface ApiDefinition {
   }
   appearance: {
     show: typeof routes['appearance.show']
-  }
-  datasets: {
-    viewer: typeof routes['datasets.viewer']
-    privacy: typeof routes['datasets.privacy']
-    version: {
-      store: typeof routes['datasets.version.store']
-      download: typeof routes['datasets.version.download']
-    }
-    index: typeof routes['datasets.index']
-    store: typeof routes['datasets.store']
-  }
-  licenses: {
-    index: typeof routes['licenses.index']
-  }
-  dashboard: {
-    show: typeof routes['dashboard.show']
   }
 }

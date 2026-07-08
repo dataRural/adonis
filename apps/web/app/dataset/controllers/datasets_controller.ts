@@ -259,7 +259,7 @@ export default class DatasetsController {
       return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}&versionId=${version.id}`)
     } catch (err) {
       console.error('Error saving dataset version (addVersion):', err)
-      session.flash('error', `Unable to save the dataset version. ${err && err.message ? err.message : ''}`)
+      session.flash('error', `Unable to save the dataset version. ${err && (err as any).message ? (err as any).message : ''}`)
       return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
     }
   }
@@ -285,7 +285,7 @@ export default class DatasetsController {
       session.flash('success', 'Dataset privacy updated.')
       return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
     } catch (err) {
-      session.flash('error', `Unable to update privacy. ${err && err.message ? err.message : ''}`)
+      session.flash('error', `Unable to update privacy. ${err && (err as any).message ? (err as any).message : ''}`)
       return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
     }
   }
@@ -373,8 +373,79 @@ export default class DatasetsController {
       return response.redirect().back()
     } catch (err) {
       console.error('Error saving dataset (store):', err)
-      session.flash('error', `Unable to save the dataset. ${err && err.message ? err.message : ''}`)
+      session.flash('error', `Unable to save the dataset. ${err && (err as any).message ? (err as any).message : ''}`)
       return response.redirect().back()
     }
+  }
+
+  public async show({ params, inertia, auth, response, session }: HttpContext) {
+    const datasetId = Number(params.id)
+    if (Number.isNaN(datasetId)) {
+      return inertia.render('dataset/show', {})
+    }
+
+    const dataset = await Dataset.query()
+      .where('id', datasetId)
+      .preload('versions', (query) => {
+        query.orderBy('id', 'desc')
+      })
+      .preload('license')
+      .first()
+
+    if (!dataset) {
+      return inertia.render('dataset/show', {})
+    }
+
+    const currentUserId = auth?.user?.id ?? null
+    if (!dataset.isPublic && Number(currentUserId) !== Number(dataset.userId)) {
+      session.flash('error', 'You are not authorized to view this dataset.')
+      return response.redirect().back()
+    }
+
+    const latestVersion = dataset.versions[0]
+    const datasetPayload = {
+      id: dataset.id,
+      title: dataset.name,
+      slug: `dataset/${dataset.id}`,
+      unit: 'Instituto de Ciências Exatas',
+      unitShort: 'ICE',
+      cat: 'clima',
+      catName: 'Clima & Meteorologia',
+      tint: 'var(--brand-sky)',
+      format: 'CSV',
+      license: dataset.license?.name || 'CC BY 4.0',
+      licenseUrl: '#',
+      usability: '8.5',
+      doi: '10.5281/datarural.local',
+      version: latestVersion?.name || 'V1',
+      updated: 'Recém atualizado',
+      published: 'Recentemente',
+      size: '12.4 MB',
+      rows: '84.216',
+      cols: 8,
+      files: dataset.versions.length,
+      downloads: '0',
+      views: '0',
+      votes: 0,
+      watchers: 0,
+      freq: 'Mensal',
+      coverageTime: '2026',
+      coverageGeo: 'Campus Seropédica',
+      collection: 'Leituras coletadas pelo sistema local.',
+      tags: ['geral'],
+      authors: [
+        { name: 'Pesquisador UFRRJ', role: 'Mantenedor', inst: 'UFRRJ', color: 'var(--brand-sky)', initials: 'PR' }
+      ]
+    }
+
+    return inertia.render('dataset/show', { dataset: datasetPayload })
+  }
+
+  public async dashboard({ inertia }: HttpContext) {
+    return inertia.render('dataset/dashboard', {})
+  }
+
+  public async publish({ inertia }: HttpContext) {
+    return inertia.render('dataset/publish', {})
   }
 }
