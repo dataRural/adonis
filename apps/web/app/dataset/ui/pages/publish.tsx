@@ -14,9 +14,25 @@ import { UNITS, CSV_COLUMNS } from '../components/dashboard/panel-data'
 
 import type { InertiaProps } from '#core/ui/types'
 
-type PageProps = InertiaProps<{}>
+type PageProps = InertiaProps<{
+  editDataset?: {
+    id: number
+    title: string
+    desc: string
+    unit: string
+    area: string
+    period: string
+    region: string
+    tags: string[]
+    license: string
+    visibility: string
+    usabilityScore: number
+    fileName: string
+    fileSize: string
+  } | null
+}>
 
-export default function PublishWizard({}: PageProps) {
+export default function PublishWizard({ editDataset }: PageProps) {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -24,26 +40,30 @@ export default function PublishWizard({}: PageProps) {
     return 'light'
   })
   const [step, setStep] = useState(0)
-  const [maxReached, setMaxReached] = useState(0)
+  const [maxReached, setMaxReached] = useState(editDataset ? 4 : 0) // allow jumping to review step if editing!
   const [published, setPublished] = useState(false)
   const [data, setData] = useState({
     file: null as File | null,
-    uploaded: false,
+    uploaded: editDataset ? true : false,
     uploading: false,
     progress: 0,
-    fileName: '',
-    fileSize: '',
-    title: '',
-    desc: '',
-    unit: UNITS[0],
-    area: 'clima',
-    period: '',
-    region: '',
-    tags: ['clima', 'séries temporais'],
+    fileName: editDataset ? editDataset.fileName : '',
+    fileSize: editDataset ? editDataset.fileSize : '',
+    title: editDataset ? editDataset.title : '',
+    desc: editDataset ? editDataset.desc : '',
+    unit: editDataset ? editDataset.unit : UNITS[0],
+    area: editDataset ? editDataset.area : 'clima',
+    period: editDataset ? editDataset.period : '',
+    region: editDataset ? editDataset.region : '',
+    tags: editDataset ? editDataset.tags : ['clima', 'séries temporais'],
     schema: CSV_COLUMNS.map((c) => ({ ...c })),
-    license: 'ccby',
-    visibility: 'public',
+    license: editDataset ? editDataset.license : 'ccby',
+    visibility: editDataset ? editDataset.visibility : 'public',
     confirm: false,
+    rowCount: 0,
+    colCount: 0,
+    qaChecks: [] as any[],
+    usabilityScore: editDataset ? Number(editDataset.usabilityScore) : 0,
   })
 
   useEffect(() => {
@@ -96,7 +116,61 @@ export default function PublishWizard({}: PageProps) {
   }
 
   const handleExit = () => {
-    router.visit('/dashboard')
+    const isEditing = !!editDataset
+    const hasActiveFile = data.file || (isEditing && data.uploaded)
+
+    if (data.uploaded && hasActiveFile && data.title.trim().length >= 3) {
+      let licenseId: number | null = 1
+      if (data.license === 'ccbysa') licenseId = 2
+      else if (data.license === 'ccbync') licenseId = 3
+      else if (data.license === 'odbl') licenseId = 4
+      else if (data.license === 'cc0') licenseId = 5
+      else if (data.license === 'custom') licenseId = null
+
+      const formData = new FormData()
+      if (isEditing) {
+        formData.append('id', String(editDataset.id))
+      }
+      formData.append('name', data.title)
+      formData.append('version', 'V1')
+      formData.append('description', data.desc || '')
+      formData.append('isPublic', 'false')
+      formData.append('status', 'draft')
+      if (licenseId !== null) {
+        formData.append('licenseId', String(licenseId))
+      }
+      formData.append('unit', data.unit)
+      formData.append('area', data.area)
+      if (data.period) {
+        formData.append('period', data.period)
+      }
+      if (data.region) {
+        formData.append('region', data.region)
+      }
+      if (data.tags && data.tags.length > 0) {
+        data.tags.forEach((tag) => {
+          formData.append('tags[]', tag)
+        })
+      }
+      if (data.usabilityScore !== undefined && data.usabilityScore !== null) {
+        formData.append('usabilityScore', String(data.usabilityScore))
+      }
+      if (data.file) {
+        formData.append('file', data.file)
+      }
+
+      router.post('/datasets', formData, {
+        onSuccess: () => {
+          router.visit('/dashboard')
+        },
+        onError: (errs) => {
+          console.error('Draft save errors:', errs)
+          router.visit('/dashboard')
+        }
+      })
+    } else {
+      router.visit('/dashboard')
+    }
   }
 
   const handlePublishSubmit = () => {
@@ -108,12 +182,31 @@ export default function PublishWizard({}: PageProps) {
     else if (data.license === 'custom') licenseId = null
 
     const formData = new FormData()
+    if (editDataset) {
+      formData.append('id', String(editDataset.id))
+    }
     formData.append('name', data.title)
     formData.append('version', 'V1')
     formData.append('description', data.desc)
     formData.append('isPublic', data.visibility === 'public' ? 'true' : 'false')
     if (licenseId !== null) {
       formData.append('licenseId', String(licenseId))
+    }
+    formData.append('unit', data.unit)
+    formData.append('area', data.area)
+    if (data.period) {
+      formData.append('period', data.period)
+    }
+    if (data.region) {
+      formData.append('region', data.region)
+    }
+    if (data.tags && data.tags.length > 0) {
+      data.tags.forEach((tag) => {
+        formData.append('tags[]', tag)
+      })
+    }
+    if (data.usabilityScore !== undefined && data.usabilityScore !== null) {
+      formData.append('usabilityScore', String(data.usabilityScore))
     }
     if (data.file) {
       formData.append('file', data.file)

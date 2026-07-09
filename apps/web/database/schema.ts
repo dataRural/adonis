@@ -50,8 +50,10 @@ export class DatasetVersionSchema extends BaseModel {
 }
 
 export class DatasetSchema extends BaseModel {
-  static $columns = ['createdAt', 'id', 'isPublic', 'licenseId', 'name', 'path', 'updatedAt', 'userId'] as const
+  static $columns = ['area', 'createdAt', 'id', 'isPublic', 'licenseId', 'name', 'path', 'period', 'region', 'status', 'tags', 'unit', 'updatedAt', 'usabilityScore', 'userId'] as const
   $columns = DatasetSchema.$columns
+  @column()
+  declare area: string
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column({ isPrimary: true })
@@ -64,8 +66,20 @@ export class DatasetSchema extends BaseModel {
   declare name: string
   @column()
   declare path: string
+  @column()
+  declare period: string | null
+  @column()
+  declare region: string | null
+  @column()
+  declare status: string
+  @column()
+  declare tags: any | null
+  @column()
+  declare unit: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare usabilityScore: string | null
   @column()
   declare userId: number
 }

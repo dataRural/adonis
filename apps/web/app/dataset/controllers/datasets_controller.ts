@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path'
 
 import Dataset from '../models/dataset.js'
 import DatasetVersion from '../models/dataset_version.js'
-import { addDatasetVersionValidator, createDatasetValidator } from '#app/dataset/validators'
+import { addDatasetVersionValidator, createDatasetValidator, updateDatasetValidator } from '#app/dataset/validators'
 import { attachmentManager } from '@jrmc/adonis-attachment'
 import { marked } from 'marked'
 
@@ -280,6 +280,11 @@ export default class DatasetsController {
         path: dataset.path,
         isPublic: dataset.isPublic,
         userId: dataset.userId,
+        unit: dataset.unit,
+        area: dataset.area,
+        period: dataset.period,
+        region: dataset.region,
+        tags: dataset.tags,
         license: dataset.license
           ? {
               id: dataset.license.id,
@@ -427,6 +432,99 @@ export default class DatasetsController {
   }
 
   public async store({ auth, request, response, session }: HttpContext) {
+    const datasetId = request.input('id')
+
+    if (datasetId) {
+      const dataset = await Dataset.query()
+        .where('id', datasetId)
+        .where('userId', auth.user!.id)
+        .preload('versions')
+        .firstOrFail()
+
+      const payload = await request.validateUsing(updateDatasetValidator, {
+        meta: { datasetId: dataset.id },
+      })
+
+      const datasetFile = request.file('file')
+      const datasetName = sanitizePathSegment(payload.name)
+      const licenseId = typeof payload.licenseId === 'number' ? payload.licenseId : null
+
+      try {
+        await Database.transaction(async (trx) => {
+          dataset.merge({
+            name: payload.name,
+            isPublic: payload.isPublic ? true : false,
+            licenseId,
+            unit: payload.unit,
+            area: payload.area,
+            period: payload.period || null,
+            region: payload.region || null,
+            tags: payload.tags || [],
+            usabilityScore: payload.usabilityScore !== undefined ? payload.usabilityScore : dataset.usabilityScore,
+            status: payload.status || (payload.isPublic ? 'published' : 'unpublished'),
+          })
+          await dataset.useTransaction(trx).save()
+
+          if (datasetFile) {
+            const attachment = await attachmentManager.createFromFile(datasetFile)
+            const rootPath = app.makePath('storage/datasets')
+            const datasetPath = join(rootPath, datasetName)
+            const latestVersion = dataset.versions[dataset.versions.length - 1]
+            const versionName = latestVersion ? latestVersion.name : 'V1'
+            const versionPath = join(datasetPath, versionName)
+            await mkdir(versionPath, { recursive: true })
+
+            const readmePath = join(versionPath, 'README.md')
+            const readmeLines = [
+              `# ${payload.name}`,
+              '',
+              payload.description ? payload.description : 'No description provided.',
+            ]
+            await writeFile(readmePath, `${readmeLines.join('\n')}\n`, 'utf8')
+
+            if (latestVersion) {
+              latestVersion.merge({
+                path: attachment,
+              })
+              await latestVersion.useTransaction(trx).save()
+            } else {
+              await DatasetVersion.create(
+                {
+                  datasetId: dataset.id,
+                  name: versionName,
+                  path: attachment,
+                },
+                { client: trx }
+              )
+            }
+          } else {
+            const latestVersion = dataset.versions[dataset.versions.length - 1]
+            if (latestVersion) {
+              const rootPath = app.makePath('storage/datasets')
+              const datasetPath = dataset.path || join(rootPath, datasetName)
+              const versionPath = join(datasetPath, latestVersion.name)
+              await mkdir(versionPath, { recursive: true })
+
+              const readmePath = join(versionPath, 'README.md')
+              const readmeLines = [
+                `# ${payload.name}`,
+                '',
+                payload.description ? payload.description : 'No description provided.',
+              ]
+              await writeFile(readmePath, `${readmeLines.join('\n')}\n`, 'utf8')
+            }
+          }
+        })
+
+        session.flash('success', 'Dataset updated successfully')
+        return response.redirect().toPath('/dashboard')
+      } catch (err) {
+        console.error('Error updating dataset (store):', err)
+        session.flash('error', `Unable to update the dataset. ${err && (err as any).message ? (err as any).message : ''}`)
+        return response.redirect().back()
+      }
+    }
+
     const payload = await request.validateUsing(createDatasetValidator)
     const datasetFile = request.file('file')
 
@@ -464,6 +562,13 @@ export default class DatasetsController {
             isPublic: payload.isPublic ? true : false,
             userId: auth.user!.id,
             licenseId,
+            unit: payload.unit,
+            area: payload.area,
+            period: payload.period || null,
+            region: payload.region || null,
+            tags: payload.tags || [],
+            usabilityScore: payload.usabilityScore !== undefined ? payload.usabilityScore : 8.5,
+            status: payload.status || (payload.isPublic ? 'published' : 'unpublished'),
           },
           { client: trx }
         )
@@ -571,19 +676,32 @@ export default class DatasetsController {
       }
     })
 
+    const areaNames: Record<string, string> = {
+      clima: 'Clima & Meteorologia',
+      agro: 'Agronomia',
+      vet: 'Veterinária',
+      bio: 'Ciências Biológicas',
+      flor: 'Florestas',
+      exatas: 'Ciências Exatas',
+      quim: 'Química',
+      zoo: 'Zootecnia',
+      soc: 'Ciências Sociais',
+      econ: 'Economia & Gestão',
+    }
+
     const datasetPayload = {
       id: dataset.id,
       title: dataset.name,
       slug: `dataset/${dataset.id}`,
-      unit: 'Instituto de Ciências Exatas',
-      unitShort: 'ICE',
-      cat: 'clima',
-      catName: 'Clima & Meteorologia',
+      unit: dataset.unit,
+      unitShort: dataset.unit ? dataset.unit.split(/\s+/).filter(w => w.length > 2).map(w => w[0].toUpperCase()).join('').slice(0, 4) : 'UFRRJ',
+      cat: dataset.area,
+      catName: areaNames[dataset.area] || dataset.area,
       tint: 'var(--brand-sky)',
       format,
       license: dataset.license?.name || 'CC BY 4.0',
       licenseUrl: '#',
-      usability: '8.5',
+      usability: dataset.usabilityScore !== null && dataset.usabilityScore !== undefined ? String(dataset.usabilityScore) : '8.5',
       doi: '10.5281/datarural.local',
       version: latestVersion?.name || 'V1',
       updated: dataset.updatedAt ? dataset.updatedAt.toRelative() || 'Recém atualizado' : 'Recém atualizado',
@@ -597,10 +715,10 @@ export default class DatasetsController {
       votes: 0,
       watchers: 0,
       freq: 'Mensal',
-      coverageTime: '2026',
-      coverageGeo: 'Campus Seropédica',
+      coverageTime: dataset.period || '—',
+      coverageGeo: dataset.region || '—',
       collection: 'Leituras coletadas pelo sistema local.',
-      tags: ['geral'],
+      tags: dataset.tags || [],
       authors: [
         { name: 'Pesquisador UFRRJ', role: 'Mantenedor', inst: 'UFRRJ', color: 'var(--brand-sky)', initials: 'PR' }
       ],
@@ -655,13 +773,13 @@ export default class DatasetsController {
         if (fileExt) format = fileExt
       }
 
-      const status: 'published' | 'unpublished' = d.isPublic ? 'published' : 'unpublished'
-      const usability = '8.5'
+      const status = (d.status || (d.isPublic ? 'published' : 'unpublished')) as 'published' | 'unpublished' | 'review' | 'draft'
+      const usability = d.usabilityScore !== null && d.usabilityScore !== undefined ? String(d.usabilityScore) : '8.5'
 
       return {
         id: d.id,
         title: d.name,
-        unit: 'Instituto de Ciências Exatas',
+        unit: d.unit,
         format,
         tint: 'var(--brand-sky)',
         status,
@@ -677,7 +795,67 @@ export default class DatasetsController {
     return inertia.render('dataset/dashboard', { datasets: datasetsPayload })
   }
 
-  public async publish({ inertia }: HttpContext) {
-    return inertia.render('dataset/publish', {})
+  public async publish({ inertia, request, auth }: HttpContext) {
+    const datasetId = request.input('id')
+    let editDataset: any = null
+
+    if (datasetId) {
+      const dataset = await Dataset.query()
+        .where('id', datasetId)
+        .where('userId', auth.user!.id)
+        .preload('versions', (query) => {
+          query.orderBy('id', 'desc')
+        })
+        .preload('license')
+        .first()
+
+      if (dataset) {
+        let description = ''
+        const latestVersion = dataset.versions[0]
+        if (latestVersion && dataset.path) {
+          try {
+            const readmePath = join(dataset.path, latestVersion.name, 'README.md')
+            const readmeContent = await readFile(readmePath, 'utf8')
+            const lines = readmeContent.split('\n').map(l => l.trim()).filter(l => l.length > 0)
+            if (lines.length > 1) {
+              description = lines.slice(1).join('\n')
+            } else if (lines.length === 1 && !lines[0].startsWith('#')) {
+              description = lines[0]
+            }
+          } catch {}
+        }
+
+        let licenseKey = 'custom'
+        if (dataset.licenseId === 1) licenseKey = 'cc0'
+        else if (dataset.licenseId === 2) licenseKey = 'ccby'
+        else if (dataset.licenseId === 3) licenseKey = 'ccbysa'
+
+        let fileName = ''
+        let fileSize = '0 MB'
+        if (latestVersion && latestVersion.path) {
+          fileName = latestVersion.path.originalName || latestVersion.path.name || ''
+          const sizeBytes = latestVersion.path.size || 0
+          fileSize = `${(sizeBytes / (1024 * 1024)).toFixed(2)} MB`
+        }
+
+        editDataset = {
+          id: dataset.id,
+          title: dataset.name,
+          desc: description,
+          unit: dataset.unit,
+          area: dataset.area,
+          period: dataset.period || '',
+          region: dataset.region || '',
+          tags: dataset.tags || [],
+          license: licenseKey,
+          visibility: dataset.isPublic ? 'public' : 'private',
+          usabilityScore: dataset.usabilityScore ? Number(dataset.usabilityScore) : 0,
+          fileName,
+          fileSize,
+        }
+      }
+    }
+
+    return inertia.render('dataset/publish', { editDataset })
   }
 }

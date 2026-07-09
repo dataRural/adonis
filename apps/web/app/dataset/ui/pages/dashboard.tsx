@@ -59,7 +59,7 @@ export default function Dashboard({ datasets = [] }: PageProps) {
   }
 
   const handleEdit = (d: UserDatasetItem) => {
-    alert(`Editar dataset: ${d.title}`)
+    router.visit(`/dashboard/publish?id=${d.id}`)
   }
 
   return (

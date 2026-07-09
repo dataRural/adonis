@@ -23,6 +23,40 @@ export default class Dataset extends BaseModel {
   declare userId: number
 
   @column()
+  declare unit: string
+
+  @column()
+  declare area: string
+
+  @column()
+  declare period: string | null
+
+  @column()
+  declare region: string | null
+
+  @column({
+    prepare: (value: any) => value ? JSON.stringify(value) : null,
+    consume: (value: any) => {
+      if (!value) return []
+      if (typeof value === 'string') {
+        try {
+          return JSON.parse(value)
+        } catch {
+          return []
+        }
+      }
+      return value
+    },
+  })
+  declare tags: string[]
+
+  @column()
+  declare usabilityScore: number
+
+  @column()
+  declare status: string
+
+  @column()
   licenseId: number | null = null
 
   @belongsTo(() => User)

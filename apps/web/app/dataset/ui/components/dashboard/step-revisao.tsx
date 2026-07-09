@@ -20,7 +20,7 @@ export default function StepRevisao({ data, set, onJump }: Step5Props) {
       rows: [
         ['Nome do arquivo', data.fileName || '—'],
         ['Tamanho', data.fileSize || '—'],
-        ['Conteúdo', '84.234 linhas · 6 colunas'],
+        ['Conteúdo', `${data.rowCount.toLocaleString('pt-BR')} linhas · ${data.colCount} colunas`],
       ],
     },
     {

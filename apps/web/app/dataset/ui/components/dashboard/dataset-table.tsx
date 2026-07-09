@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
+import { Link } from '@adonisjs/inertia/react'
+import { router } from '@inertiajs/react'
 import * as Ic from '#common/ui/components/datarural/icons'
 import { UserDatasetItem, STATUS_META } from './panel-data'
 
@@ -12,14 +14,20 @@ function RowMenu({
   d,
   onEdit,
   onClose,
+  openUpwards,
 }: {
   d: UserDatasetItem
   onEdit: (d: UserDatasetItem) => void
   onClose: () => void
+  openUpwards?: boolean
 }) {
   const isPub = d.status === 'published'
   return (
-    <div className="dr-row-menu" role="menu">
+    <div
+      className="dr-row-menu"
+      role="menu"
+      style={openUpwards ? { top: 'auto', bottom: 'calc(100% + 6px)' } : undefined}
+    >
       <button
         onClick={() => {
           onEdit(d)
@@ -36,7 +44,12 @@ function RowMenu({
       >
         <Ic.Branch size={16} /> Enviar nova versão
       </button>
-      <button onClick={onClose}>
+      <button
+        onClick={() => {
+          router.visit(`/datasets/${d.id}`)
+          onClose()
+        }}
+      >
         <Ic.Eye size={16} /> Ver página pública
       </button>
       <button onClick={onClose}>
@@ -80,6 +93,15 @@ function DatasetRow({
 }) {
   const sm = STATUS_META[d.status] || { label: d.status, color: 'var(--muted-foreground)' }
   const ref = useRef<HTMLDivElement>(null)
+  const [openUpwards, setOpenUpwards] = useState(false)
+
+  useEffect(() => {
+    if (open && ref.current) {
+      const rect = ref.current.getBoundingClientRect()
+      const spaceBelow = window.innerHeight - rect.bottom
+      setOpenUpwards(spaceBelow < 280)
+    }
+  }, [open])
 
   useEffect(() => {
     if (!open) return
@@ -93,16 +115,16 @@ function DatasetRow({
   }, [open, onCloseMenu])
 
   return (
-    <div className="dr-mds-row">
+    <div className="dr-mds-row" style={open ? { zIndex: 50 } : undefined}>
       <div className="dr-mds-name">
         <span className="dr-mds-thumb" style={{ background: d.tint }}>
           <Ic.Table size={20} />
           <span className="fmt">{d.format}</span>
         </span>
         <span className="nm">
-          <span className="t" title={d.title}>
+          <Link className="t" href={`/datasets/${d.id}`} title={d.title}>
             {d.title}
-          </span>
+          </Link>
           <span className="sub">
             <span className="v">
               <Ic.History size={12} /> {d.version}
@@ -157,7 +179,7 @@ function DatasetRow({
         >
           <Ic.More size={18} />
         </button>
-        {open && <RowMenu d={d} onEdit={onEdit} onClose={onCloseMenu} />}
+        {open && <RowMenu d={d} onEdit={onEdit} onClose={onCloseMenu} openUpwards={openUpwards} />}
       </div>
     </div>
   )

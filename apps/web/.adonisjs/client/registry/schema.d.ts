@@ -431,10 +431,10 @@ export interface Registry {
     methods: ["POST"]
     pattern: '/datasets'
     types: {
-      body: ExtractBody<InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
+      body: ExtractBody<InferInput<(typeof import('#app/dataset/validators').updateDatasetValidator)>|InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
       paramsTuple: []
       params: {}
-      query: ExtractQuery<InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
+      query: ExtractQuery<InferInput<(typeof import('#app/dataset/validators').updateDatasetValidator)>|InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['store']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }

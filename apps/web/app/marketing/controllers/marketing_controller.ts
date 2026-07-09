@@ -47,15 +47,15 @@ export default class MarketingController {
           } catch {}
         }
 
-        const usability = '8.5'
+        const usability = d.usabilityScore !== null && d.usabilityScore !== undefined ? String(d.usabilityScore) : '8.5'
 
         return {
           id: d.id,
           title: d.name,
-          unit: 'Instituto de Ciências Exatas',
+          unit: d.unit,
           desc,
-          tags: ['clima', 'séries temporais'],
-          cat: 'clima',
+          tags: d.tags || [],
+          cat: d.area,
           format,
           tint: 'var(--brand-sky)',
           size,
