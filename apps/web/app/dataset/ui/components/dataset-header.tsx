@@ -4,16 +4,21 @@ import { DatasetDetail } from './detail-data'
 
 interface DatasetHeaderProps {
   ds: DatasetDetail
+  latestVersionId?: number
 }
 
-export default function DatasetHeader({ ds }: DatasetHeaderProps) {
+export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProps) {
   const [voted, setVoted] = useState(false)
   const [saved, setSaved] = useState(false)
   const votes = ds.votes + (voted ? 1 : 0)
 
   const handleDownload = (e: React.MouseEvent) => {
     e.preventDefault()
-    alert(`Iniciando download do dataset (${ds.size})`)
+    if (latestVersionId) {
+      window.location.href = `/datasets/${ds.id}/version/${latestVersionId}/download`
+    } else {
+      alert(`Iniciando download do dataset (${ds.size})`)
+    }
   }
 
   return (

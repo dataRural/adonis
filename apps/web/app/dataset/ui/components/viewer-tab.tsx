@@ -18,28 +18,28 @@ interface DataTableProps {
   onHot: (key: string | null) => void
 }
 
-function DataTable({ hot, onHot }: DataTableProps) {
+function DataTable({ hot, onHot, columns, rows }: DataTableProps & { columns: any[]; rows: any[][] }) {
   const PAGE = 6
   const [page, setPage] = useState(0)
-  const [sortCol, setSortCol] = useState<number | null>(null) // index of the column
+  const [sortCol, setSortCol] = useState<number | null>(null)
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
 
   const sorted = useMemo(() => {
-    const arr = ROWS.map((r, i) => ({ r, i }))
+    const arr = rows.map((r, i) => ({ r, i }))
     if (sortCol !== null) {
       arr.sort((a, b) => {
-        let x = a.r[sortCol]
-        let y = b.r[sortCol]
-        if (sortCol === 0) {
-          x = String(x)
-          y = String(y)
-          return sortDir === 'asc' ? x.localeCompare(y) : y.localeCompare(x)
+        const x = a.r[sortCol] || ''
+        const y = b.r[sortCol] || ''
+        const nx = Number(x)
+        const ny = Number(y)
+        if (!isNaN(nx) && !isNaN(ny)) {
+          return sortDir === 'asc' ? nx - ny : ny - nx
         }
-        return sortDir === 'asc' ? (x as number) - (y as number) : (y as number) - (x as number)
+        return sortDir === 'asc' ? String(x).localeCompare(String(y)) : String(y).localeCompare(String(x))
       })
     }
     return arr
-  }, [sortCol, sortDir])
+  }, [rows, sortCol, sortDir])
 
   const pages = Math.ceil(sorted.length / PAGE)
   const slice = sorted.slice(page * PAGE, page * PAGE + PAGE)
@@ -69,7 +69,7 @@ function DataTable({ hot, onHot }: DataTableProps) {
                   </div>
                 </div>
               </th>
-              {COLUMNS.map((c, idx) => (
+              {columns.map((c, idx) => (
                 <th key={c.key} className={hot === c.key ? 'col-hot' : ''}>
                   <div
                     className={'dr-colhead' + (sortCol === idx ? ' sorted' : '')}
@@ -99,7 +99,7 @@ function DataTable({ hot, onHot }: DataTableProps) {
                         ? 'data/hora'
                         : 'categoria'}
                     </div>
-                    <MiniHist hist={c.hist} />
+                    <MiniHist hist={c.hist || [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]} />
                   </div>
                 </th>
               ))}
@@ -113,14 +113,10 @@ function DataTable({ hot, onHot }: DataTableProps) {
                   <td
                     key={ci}
                     className={
-                      (ci === 0 ? 'dt' : 'num') + (hot === COLUMNS[ci].key ? ' col-hot' : '')
+                      (ci === 0 ? 'dt' : 'num') + (hot === columns[ci]?.key ? ' col-hot' : '')
                     }
                   >
-                    {ci === 0
-                      ? String(val)
-                      : Number.isInteger(val)
-                      ? String(val)
-                      : (val as number).toFixed(1)}
+                    {String(val)}
                   </td>
                 ))}
               </tr>
@@ -134,7 +130,7 @@ function DataTable({ hot, onHot }: DataTableProps) {
           <b style={{ color: 'var(--foreground)' }}>
             {page * PAGE + 1}–{Math.min((page + 1) * PAGE, sorted.length)}
           </b>{' '}
-          de <b style={{ color: 'var(--foreground)' }}>84.216</b> linhas{' '}
+          de <b style={{ color: 'var(--foreground)' }}>{sorted.length}</b> linhas{' '}
           <span style={{ opacity: 0.7 }}>· amostra</span>
         </span>
         <span className="spacer"></span>
@@ -168,21 +164,38 @@ function DataTable({ hot, onHot }: DataTableProps) {
   )
 }
 
-export default function ViewerTab() {
+export default function ViewerTab({
+  columns,
+  rows,
+  filename,
+  sizeStr,
+}: {
+  columns?: any[]
+  rows?: any[][]
+  filename?: string
+  sizeStr?: string
+}) {
   const [mode, setMode] = useState<'table' | 'columns'>('table')
   const [hot, setHot] = useState<string | null>(null)
+
+  const finalColumns = columns && columns.length > 0 ? columns : COLUMNS
+  const finalRows = rows && rows.length > 0 ? rows : ROWS
+  const finalFilename = filename || 'seropedica_horario_2010_2026.csv'
+  const finalSize = sizeStr || '11,2 MB'
 
   return (
     <div className="dr-viewer">
       <div className="dr-viewer-toolbar">
         <button className="dr-file-select" onClick={(e) => e.preventDefault()}>
           <Ic.File size={15} className="ic" style={{ marginRight: 6 }} />
-          seropedica_horario_2010_2026.csv
-          <span className="sz" style={{ marginLeft: 6 }}>· 11,2 MB</span>
+          {finalFilename}
+          <span className="sz" style={{ marginLeft: 6 }}>
+            · {finalSize}
+          </span>
           <Ic.Chevd size={14} style={{ color: 'var(--muted-foreground)', marginLeft: 6 }} />
         </button>
         <span className="vt-info">
-          <b>84.216</b> linhas · <b>8</b> colunas
+          <b>{finalRows.length}</b> linhas · <b>{finalColumns.length}</b> colunas
         </span>
         <span className="spacer"></span>
         <div className="dr-viewer-toggle">
@@ -195,7 +208,7 @@ export default function ViewerTab() {
         </div>
       </div>
       {mode === 'table' ? (
-        <DataTable hot={hot} onHot={setHot} />
+        <DataTable hot={hot} onHot={setHot} columns={finalColumns} rows={finalRows} />
       ) : (
         <ColumnStats hot={hot} onHot={setHot} />
       )}

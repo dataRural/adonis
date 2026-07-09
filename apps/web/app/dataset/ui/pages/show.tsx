@@ -16,9 +16,12 @@ import type { InertiaProps } from '#core/ui/types'
 
 type PageProps = InertiaProps<{
   dataset?: DatasetDetail
+  previewColumns?: any[]
+  previewRows?: any[][]
+  versions?: any[]
 }>
 
-export default function DatasetShowPage({ dataset }: PageProps) {
+export default function DatasetShowPage({ dataset, previewColumns, previewRows, versions }: PageProps) {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -51,16 +54,23 @@ export default function DatasetShowPage({ dataset }: PageProps) {
   return (
     <div className="dr-app">
       <Navbar theme={theme} onToggleTheme={handleToggleTheme} activePage="datasets" />
-      <DatasetHeader ds={ds} />
+      <DatasetHeader ds={ds} latestVersionId={versions && versions[0]?.id} />
       <TabBar tab={tab} onTab={setTab} />
 
       <main className="dr-ds-page">
         <div className="dr-container">
           <div className="dr-ds-layout">
             <div className="dr-ds-main">
-              {tab === 'overview' && <OverviewTab />}
-              {tab === 'viewer' && <ViewerTab />}
-              {tab === 'files' && <FilesTab />}
+              {tab === 'overview' && <OverviewTab ds={ds} columns={previewColumns} />}
+              {tab === 'viewer' && (
+                <ViewerTab
+                  columns={previewColumns}
+                  rows={previewRows}
+                  filename={ds.title + '.' + (ds.format || 'csv').toLowerCase()}
+                  sizeStr={ds.size}
+                />
+              )}
+              {tab === 'files' && <FilesTab ds={ds} versions={versions} />}
               {tab === 'notebooks' && <NotebooksTab />}
               {tab === 'discussion' && <DiscussionTab />}
             </div>

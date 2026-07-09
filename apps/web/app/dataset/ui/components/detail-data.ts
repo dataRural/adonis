@@ -37,6 +37,7 @@ export type DatasetDetail = {
   collection: string
   tags: string[]
   authors: AuthorItem[]
+  description?: string
 }
 
 export interface QualityItem {

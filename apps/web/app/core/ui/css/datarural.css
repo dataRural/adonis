@@ -678,13 +678,34 @@ html { scroll-behavior: smooth; }
 .dr-prose { font-size: 15px; line-height: 1.68; color: var(--foreground); }
 .dr-prose p { margin: 0 0 14px; color: color-mix(in srgb, var(--foreground) 86%, var(--muted-foreground)); text-wrap: pretty; }
 .dr-prose p:last-child { margin-bottom: 0; }
+.dr-prose h1 {
+  font-size: 24px; font-weight: 800; margin: 28px 0 14px; color: var(--foreground);
+  letter-spacing: var(--tracking-snug);
+}
+.dr-prose h2 {
+  font-size: 20px; font-weight: 750; margin: 26px 0 12px; color: var(--foreground);
+  letter-spacing: var(--tracking-snug);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+.dr-prose h3 {
+  font-size: 17px; font-weight: 700; margin: 24px 0 10px; color: var(--foreground);
+  letter-spacing: var(--tracking-snug);
+}
 .dr-prose h4 {
-  font-size: 15px; font-weight: 900; margin: 22px 0 9px; color: var(--foreground);
+  font-size: 15px; font-weight: 700; margin: 22px 0 9px; color: var(--foreground);
+  letter-spacing: var(--tracking-snug);
+}
+.dr-prose h5, .dr-prose h6 {
+  font-size: 14px; font-weight: 700; margin: 20px 0 8px; color: var(--foreground);
   letter-spacing: var(--tracking-snug);
 }
 .dr-prose ul { margin: 0 0 14px; padding-left: 4px; list-style: none; display: flex; flex-direction: column; gap: 8px; }
-.dr-prose li { position: relative; padding-left: 22px; color: color-mix(in srgb, var(--foreground) 86%, var(--muted-foreground)); }
-.dr-prose li::before {
+.dr-prose ol { margin: 0 0 14px; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; list-style-type: decimal; }
+.dr-prose li { position: relative; color: color-mix(in srgb, var(--foreground) 86%, var(--muted-foreground)); }
+.dr-prose ul li { padding-left: 22px; }
+.dr-prose ol li { padding-left: 4px; }
+.dr-prose ul li::before {
   content: ""; position: absolute; left: 4px; top: 9px; width: 7px; height: 7px;
   border-radius: 2px; background: var(--brand-sky);
 }

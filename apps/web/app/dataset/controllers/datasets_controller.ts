@@ -9,6 +9,7 @@ import Dataset from '../models/dataset.js'
 import DatasetVersion from '../models/dataset_version.js'
 import { addDatasetVersionValidator, createDatasetValidator } from '#app/dataset/validators'
 import { attachmentManager } from '@jrmc/adonis-attachment'
+import { marked } from 'marked'
 
 function sanitizePathSegment(value: string) {
   return value
@@ -64,6 +65,114 @@ function parseCsvPreview(content: string, maxRows = 30) {
   const rows = lines.slice(1, maxRows + 1).map((line) => parseCsvLine(line))
 
   return { headers, rows }
+}
+
+function calculateColumnHistogram(rows: string[][], colIndex: number, binsCount = 8): number[] {
+  const values: number[] = []
+
+  for (const row of rows) {
+    const val = row[colIndex]
+    if (val !== undefined && val !== null) {
+      const num = Number(val.trim())
+      if (!Number.isNaN(num)) {
+        values.push(num)
+      }
+    }
+  }
+
+  if (values.length === 0) {
+    const freqs: Record<string, number> = {}
+    for (const row of rows) {
+      const val = row[colIndex] || ''
+      freqs[val] = (freqs[val] || 0) + 1
+    }
+    const counts = Object.values(freqs).sort((a, b) => b - a).slice(0, binsCount)
+    const maxCount = Math.max(...counts, 1)
+    const result = counts.map((c) => c / maxCount)
+    while (result.length < binsCount) {
+      result.push(0)
+    }
+    return result
+  }
+
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const range = max - min
+
+  const bins = new Array(binsCount).fill(0)
+  if (range === 0) {
+    bins[0] = values.length
+  } else {
+    for (const val of values) {
+      let binIdx = Math.floor(((val - min) / range) * binsCount)
+      if (binIdx >= binsCount) {
+        binIdx = binsCount - 1
+      }
+      bins[binIdx]++
+    }
+  }
+
+  const maxBinCount = Math.max(...bins, 1)
+  return bins.map((count) => count / maxBinCount)
+}
+
+function calculateColumnStats(rows: string[][], colIndex: number) {
+  const values: number[] = []
+  let nullsCount = 0
+
+  for (const row of rows) {
+    const val = row[colIndex]
+    if (val === undefined || val === null || val.trim() === '') {
+      nullsCount++
+    } else {
+      const num = Number(val.trim())
+      if (!Number.isNaN(num)) {
+        values.push(num)
+      }
+    }
+  }
+
+  const uniqueValues = new Set(rows.map((row) => row[colIndex]?.trim()).filter(Boolean))
+  const distinct = uniqueValues.size
+
+  const totalCount = rows.length || 1
+  const valid = Math.round(((totalCount - nullsCount) / totalCount) * 100)
+
+  if (values.length === 0) {
+    return {
+      kind: 'category' as const,
+      icon: 'fileText',
+      desc: `Coluna de texto com ${distinct} valores únicos.`,
+      min: '---',
+      mean: '---',
+      max: '---',
+      std: '---',
+      range: '---',
+      valid,
+      distinct,
+    }
+  }
+
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const sum = values.reduce((acc, val) => acc + val, 0)
+  const mean = sum / values.length
+
+  const variance = values.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / values.length
+  const std = Math.sqrt(variance)
+
+  return {
+    kind: 'number' as const,
+    icon: 'sigma',
+    desc: `Variável numérica contínua.`,
+    min: min.toFixed(1),
+    mean: mean.toFixed(1),
+    max: max.toFixed(1),
+    std: std.toFixed(1),
+    range: `${min.toFixed(1)} a ${max.toFixed(1)}`,
+    valid,
+    distinct,
+  }
 }
 
 function getNextVersionName(versionNames: string[]) {
@@ -403,6 +512,65 @@ export default class DatasetsController {
     }
 
     const latestVersion = dataset.versions[0]
+
+    let description = '<p>Nenhuma descrição fornecida.</p>'
+    if (latestVersion && dataset.path) {
+      try {
+        const readmePath = join(dataset.path, latestVersion.name, 'README.md')
+        const readmeContent = await readFile(readmePath, 'utf8')
+        const lines = readmeContent.split('\n').map(l => l.trim()).filter(l => l.length > 0)
+        let markdownText = ''
+        if (lines.length > 1) {
+          markdownText = lines.slice(1).join('\n')
+        } else if (lines.length === 1 && !lines[0].startsWith('#')) {
+          markdownText = lines[0]
+        }
+        if (markdownText) {
+          description = await marked.parse(markdownText)
+        }
+      } catch {}
+    }
+
+    let previewHeaders: string[] = []
+    let previewRows: string[][] = []
+    let format = 'CSV'
+    let sizeStr = '0 B'
+
+    if (latestVersion && latestVersion.path) {
+      try {
+        const buffer = await latestVersion.path.getBuffer()
+        const csvContent = buffer.toString('utf8')
+        const preview = parseCsvPreview(csvContent, 100)
+        previewHeaders = preview.headers
+        previewRows = preview.rows
+
+        const fileBytes = latestVersion.path.size
+        if (fileBytes) {
+          if (fileBytes > 1024 * 1024) {
+            sizeStr = `${(fileBytes / (1024 * 1024)).toFixed(1)} MB`
+          } else {
+            sizeStr = `${(fileBytes / 1024).toFixed(1)} KB`
+          }
+        }
+
+        const fileExt = latestVersion.path.name?.split('.').pop()?.toUpperCase()
+        if (fileExt) format = fileExt
+      } catch (err) {
+        console.error('Error reading csv preview in show action:', err)
+      }
+    }
+
+    const previewColumns = previewHeaders.map((header, idx) => {
+      const stats = calculateColumnStats(previewRows, idx)
+      const hist = calculateColumnHistogram(previewRows, idx, 8)
+      return {
+        key: header,
+        label: header,
+        ...stats,
+        hist,
+      }
+    })
+
     const datasetPayload = {
       id: dataset.id,
       title: dataset.name,
@@ -412,17 +580,17 @@ export default class DatasetsController {
       cat: 'clima',
       catName: 'Clima & Meteorologia',
       tint: 'var(--brand-sky)',
-      format: 'CSV',
+      format,
       license: dataset.license?.name || 'CC BY 4.0',
       licenseUrl: '#',
       usability: '8.5',
       doi: '10.5281/datarural.local',
       version: latestVersion?.name || 'V1',
-      updated: 'Recém atualizado',
-      published: 'Recentemente',
-      size: '12.4 MB',
-      rows: '84.216',
-      cols: 8,
+      updated: dataset.updatedAt ? dataset.updatedAt.toRelative() || 'Recém atualizado' : 'Recém atualizado',
+      published: dataset.createdAt ? dataset.createdAt.toRelative() || 'Recentemente' : 'Recentemente',
+      size: sizeStr,
+      rows: String(previewRows.length),
+      cols: previewHeaders.length,
       files: dataset.versions.length,
       downloads: '0',
       views: '0',
@@ -435,10 +603,37 @@ export default class DatasetsController {
       tags: ['geral'],
       authors: [
         { name: 'Pesquisador UFRRJ', role: 'Mantenedor', inst: 'UFRRJ', color: 'var(--brand-sky)', initials: 'PR' }
-      ]
+      ],
+      description,
     }
 
-    return inertia.render('dataset/show', { dataset: datasetPayload })
+    const versionsPayload = dataset.versions.map((v, index) => {
+      let sizeStr = '0 B'
+      const fileBytes = v.path?.size
+      if (fileBytes) {
+        if (fileBytes > 1024 * 1024) {
+          sizeStr = `${(fileBytes / (1024 * 1024)).toFixed(1)} MB`
+        } else {
+          sizeStr = `${(fileBytes / 1024).toFixed(1)} KB`
+        }
+      }
+
+      return {
+        id: v.id,
+        name: v.name,
+        filename: v.path?.originalName || v.path?.name || `${dataset.name}.csv`,
+        size: sizeStr,
+        createdAt: v.createdAt ? v.createdAt.toRelative() || 'recentemente' : 'recentemente',
+        isLatest: index === 0,
+      }
+    })
+
+    return inertia.render('dataset/show', {
+      dataset: datasetPayload,
+      previewColumns,
+      previewRows,
+      versions: versionsPayload,
+    })
   }
 
   public async dashboard({ auth, inertia }: HttpContext) {
