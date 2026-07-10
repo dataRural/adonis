@@ -421,10 +421,22 @@ export default class DatasetsController {
     const dataset = await Dataset.query().where('id', datasetId).firstOrFail()
     const version = await DatasetVersion.query().where('id', versionId).where('dataset_id', datasetId).firstOrFail()
 
-    const currentUserId = auth?.user?.id ?? null
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
     if (!dataset.isPublic && Number(currentUserId) !== Number(dataset.userId)) {
-      session.flash('error', 'You are not authorized to download this dataset.')
-      return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
+      // Check if user is a member of the dataset's group
+      let hasGroupAccess = false
+      if (currentUserId && dataset.groupId) {
+        const membership = await GroupMember.query()
+          .where('groupId', dataset.groupId)
+          .where('userId', currentUserId)
+          .first()
+        hasGroupAccess = !!membership
+      }
+      if (!hasGroupAccess) {
+        session.flash('error', 'You are not authorized to download this dataset.')
+        return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
+      }
     }
 
     try {
@@ -622,7 +634,8 @@ export default class DatasetsController {
       return inertia.render('dataset/show', {})
     }
 
-    const currentUserId = auth?.user?.id ?? null
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
     if (!dataset.isPublic && Number(currentUserId) !== Number(dataset.userId)) {
       // Check if user is a member of the dataset's group
       let hasGroupAccess = false
