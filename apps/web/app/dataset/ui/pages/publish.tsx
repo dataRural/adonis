@@ -29,10 +29,12 @@ type PageProps = InertiaProps<{
     usabilityScore: number
     fileName: string
     fileSize: string
+    groupId?: number | null
   } | null
+  userGroups?: { id: number; name: string }[]
 }>
 
-export default function PublishWizard({ editDataset }: PageProps) {
+export default function PublishWizard({ editDataset, userGroups = [] }: PageProps) {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -64,6 +66,8 @@ export default function PublishWizard({ editDataset }: PageProps) {
     colCount: 0,
     qaChecks: [] as any[],
     usabilityScore: editDataset ? Number(editDataset.usabilityScore) : 0,
+    groupId: editDataset?.groupId || null as number | null,
+    userGroups: userGroups,
   })
 
   useEffect(() => {
@@ -158,6 +162,9 @@ export default function PublishWizard({ editDataset }: PageProps) {
       if (data.file) {
         formData.append('file', data.file)
       }
+      if (data.groupId) {
+        formData.append('groupId', String(data.groupId))
+      }
 
       router.post('/datasets', formData, {
         onSuccess: () => {
@@ -210,6 +217,9 @@ export default function PublishWizard({ editDataset }: PageProps) {
     }
     if (data.file) {
       formData.append('file', data.file)
+    }
+    if (data.groupId) {
+      formData.append('groupId', String(data.groupId))
     }
 
     router.post('/datasets', formData, {

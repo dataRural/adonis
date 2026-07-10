@@ -3,6 +3,7 @@ import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 
 import BaseModel from '#common/models/base_model'
 import User from '#users/models/user'
+import Group from '#app/groups/models/group'
 import DatasetVersion from './dataset_version.js'
 import License from './license.js'
 
@@ -59,8 +60,14 @@ export default class Dataset extends BaseModel {
   @column()
   licenseId: number | null = null
 
+  @column()
+  declare groupId: number | null
+
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
+
+  @belongsTo(() => Group)
+  declare group: BelongsTo<typeof Group>
 
   @hasMany(() => DatasetVersion)
   declare versions: HasMany<typeof DatasetVersion>

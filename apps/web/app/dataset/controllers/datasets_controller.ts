@@ -10,6 +10,7 @@ import DatasetVersion from '../models/dataset_version.js'
 import { addDatasetVersionValidator, createDatasetValidator, updateDatasetValidator } from '#app/dataset/validators'
 import { attachmentManager } from '@jrmc/adonis-attachment'
 import { marked } from 'marked'
+import GroupMember from '#app/groups/models/group_member'
 
 function sanitizePathSegment(value: string) {
   return value
@@ -205,8 +206,17 @@ export default class DatasetsController {
       .orderBy('id', 'desc')
 
     if (currentUserId) {
+      const userGroupIds = (await GroupMember.query()
+        .where('userId', currentUserId)
+        .select('groupId')
+      ).map((m) => m.groupId)
+
       datasetsQuery = datasetsQuery.where((q) => {
-        q.where('is_public', true).orWhere('user_id', currentUserId)
+        q.where('is_public', true)
+          .orWhere('user_id', currentUserId)
+        if (userGroupIds.length > 0) {
+          q.orWhereIn('group_id', userGroupIds)
+        }
       })
     } else {
       datasetsQuery = datasetsQuery.where('is_public', true)
@@ -462,6 +472,7 @@ export default class DatasetsController {
             tags: payload.tags || [],
             usabilityScore: payload.usabilityScore !== undefined ? payload.usabilityScore : dataset.usabilityScore,
             status: payload.status || (payload.isPublic ? 'published' : 'unpublished'),
+            groupId: payload.groupId || null,
           })
           await dataset.useTransaction(trx).save()
 
@@ -569,6 +580,7 @@ export default class DatasetsController {
             tags: payload.tags || [],
             usabilityScore: payload.usabilityScore !== undefined ? payload.usabilityScore : 8.5,
             status: payload.status || (payload.isPublic ? 'published' : 'unpublished'),
+            groupId: payload.groupId || null,
           },
           { client: trx }
         )
@@ -612,8 +624,19 @@ export default class DatasetsController {
 
     const currentUserId = auth?.user?.id ?? null
     if (!dataset.isPublic && Number(currentUserId) !== Number(dataset.userId)) {
-      session.flash('error', 'You are not authorized to view this dataset.')
-      return response.redirect().back()
+      // Check if user is a member of the dataset's group
+      let hasGroupAccess = false
+      if (currentUserId && dataset.groupId) {
+        const membership = await GroupMember.query()
+          .where('groupId', dataset.groupId)
+          .where('userId', currentUserId)
+          .first()
+        hasGroupAccess = !!membership
+      }
+      if (!hasGroupAccess) {
+        session.flash('error', 'You are not authorized to view this dataset.')
+        return response.redirect().back()
+      }
     }
 
     const latestVersion = dataset.versions[0]
@@ -789,10 +812,17 @@ export default class DatasetsController {
         views: '0',
         usability,
         rows: '---',
+        groupId: d.groupId,
       }
     })
 
-    return inertia.render('dataset/dashboard', { datasets: datasetsPayload })
+    const memberships = await auth.user!.related('groupMemberships').query().preload('group')
+    const userGroups = memberships.map((m) => ({
+      id: m.group.id,
+      name: m.group.name,
+    }))
+
+    return inertia.render('dataset/dashboard', { datasets: datasetsPayload, userGroups })
   }
 
   public async publish({ inertia, request, auth }: HttpContext) {
@@ -852,10 +882,17 @@ export default class DatasetsController {
           usabilityScore: dataset.usabilityScore ? Number(dataset.usabilityScore) : 0,
           fileName,
           fileSize,
+          groupId: dataset.groupId,
         }
       }
     }
 
-    return inertia.render('dataset/publish', { editDataset })
+    const memberships = await auth.user!.related('groupMemberships').query().preload('group')
+    const userGroups = memberships.map((m) => ({
+      id: m.group.id,
+      name: m.group.name,
+    }))
+
+    return inertia.render('dataset/publish', { editDataset, userGroups })
   }
 }

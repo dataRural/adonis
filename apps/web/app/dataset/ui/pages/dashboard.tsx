@@ -12,9 +12,10 @@ import type { InertiaProps } from '#core/ui/types'
 
 type PageProps = InertiaProps<{
   datasets?: UserDatasetItem[]
+  userGroups?: { id: number; name: string }[]
 }>
 
-export default function Dashboard({ datasets = [] }: PageProps) {
+export default function Dashboard({ datasets = [], userGroups = [] }: PageProps) {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -23,6 +24,7 @@ export default function Dashboard({ datasets = [] }: PageProps) {
   })
   const [filter, setFilter] = useState('all')
   const [query, setQuery] = useState('')
+  const [selectedGroup, setSelectedGroup] = useState('all')
 
   useEffect(() => {
     const root = document.documentElement
@@ -30,16 +32,22 @@ export default function Dashboard({ datasets = [] }: PageProps) {
     localStorage.setItem('dr-theme', theme)
   }, [theme])
 
+  const filteredDatasets = useMemo(() => {
+    if (selectedGroup === 'all') return datasets
+    if (selectedGroup === 'none') return datasets.filter((d) => !d.groupId)
+    return datasets.filter((d) => d.groupId === Number(selectedGroup))
+  }, [datasets, selectedGroup])
+
   const counts = useMemo(() => ({
-    all: datasets.length,
-    published: datasets.filter((d) => d.status === 'published').length,
-    review: datasets.filter((d) => d.status === 'review').length,
-    draft: datasets.filter((d) => d.status === 'draft').length,
-    unpublished: datasets.filter((d) => d.status === 'unpublished').length,
-  }), [datasets])
+    all: filteredDatasets.length,
+    published: filteredDatasets.filter((d) => d.status === 'published').length,
+    review: filteredDatasets.filter((d) => d.status === 'review').length,
+    draft: filteredDatasets.filter((d) => d.status === 'draft').length,
+    unpublished: filteredDatasets.filter((d) => d.status === 'unpublished').length,
+  }), [filteredDatasets])
 
   const list = useMemo(() => {
-    let arr = datasets.slice()
+    let arr = filteredDatasets.slice()
     if (filter !== 'all') {
       arr = arr.filter((d) => d.status === filter)
     }
@@ -48,7 +56,7 @@ export default function Dashboard({ datasets = [] }: PageProps) {
       arr = arr.filter((d) => d.title.toLowerCase().includes(q))
     }
     return arr
-  }, [datasets, filter, query])
+  }, [filteredDatasets, filter, query])
 
   const handleToggleTheme = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))
@@ -89,6 +97,33 @@ export default function Dashboard({ datasets = [] }: PageProps) {
               </p>
             </div>
             <div className="dr-page-head-actions">
+              {userGroups.length > 0 && (
+                <select
+                  className="dr-select"
+                  value={selectedGroup}
+                  onChange={(e) => setSelectedGroup(e.target.value)}
+                  style={{
+                    height: '40px',
+                    padding: '0 12px',
+                    borderRadius: 'var(--radius)',
+                    border: '1px solid var(--input)',
+                    background: 'var(--background)',
+                    color: 'var(--foreground)',
+                    fontSize: '13.5px',
+                    fontWeight: 600,
+                    outline: 'none',
+                    marginRight: '8px',
+                  }}
+                >
+                  <option value="all">Todos os grupos / Pessoal</option>
+                  <option value="none">Somente Pessoal (Sem grupo)</option>
+                  {userGroups.map((g) => (
+                    <option key={g.id} value={g.id}>
+                      Grupo: {g.name}
+                    </option>
+                  ))}
+                </select>
+              )}
               <button className="dr-btn dr-btn-outline dr-btn-lg" onClick={() => alert('Gerar Relatório')}>
                 <Ic.Chart size={18} /> Relatório
               </button>

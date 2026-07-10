@@ -35,6 +35,10 @@ export function getNavMain(t: SimpleTFunction): NavMainItem[] {
       url: '/datasets',
     },
     {
+      title: 'Grupos',
+      url: '/groups',
+    },
+    {
       title: t('common.layout.navMain.administration'),
       items: [
         {

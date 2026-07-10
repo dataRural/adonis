@@ -149,6 +149,12 @@ export default function PanelNav({ theme, onToggleTheme, onPublish, active, user
           >
             Meus datasets
           </Link>
+          <Link
+            className={'dr-nav-link' + (active === 'groups' ? ' active' : '')}
+            href="/groups"
+          >
+            Grupos
+          </Link>
           <a className="dr-nav-link" href="#">
             Documentação
           </a>

@@ -14,6 +14,7 @@ export const createDatasetValidator = vine.compile(
     tags: vine.array(vine.string().trim()).optional(),
     usabilityScore: vine.number().min(0).max(10).optional(),
     status: vine.string().trim().optional(),
+    groupId: vine.number().optional(),
     file: vine
       .file({
         extnames: ['csv'],
@@ -60,6 +61,7 @@ export const updateDatasetValidator = vine.withMetaData<{ datasetId: number }>()
     tags: vine.array(vine.string().trim()).optional(),
     usabilityScore: vine.number().min(0).max(10).optional(),
     status: vine.string().trim().optional(),
+    groupId: vine.number().optional(),
     file: vine
       .file({
         extnames: ['csv'],
