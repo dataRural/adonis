@@ -40,7 +40,9 @@ export type ScannedRoutes = {
     'datasets.version.download': { paramsTuple: [ParamValue,ParamValue]; params: {'datasetId': ParamValue,'versionId': ParamValue} }
     'datasets.index': { paramsTuple?: []; params?: {} }
     'datasets.store': { paramsTuple?: []; params?: {} }
+    'datasets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.show': { paramsTuple?: []; params?: {} }
+    'dashboard.publish': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
@@ -61,7 +63,9 @@ export type ScannedRoutes = {
     'licenses.index': { paramsTuple?: []; params?: {} }
     'datasets.version.download': { paramsTuple: [ParamValue,ParamValue]; params: {'datasetId': ParamValue,'versionId': ParamValue} }
     'datasets.index': { paramsTuple?: []; params?: {} }
+    'datasets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.show': { paramsTuple?: []; params?: {} }
+    'dashboard.publish': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
@@ -82,7 +86,9 @@ export type ScannedRoutes = {
     'licenses.index': { paramsTuple?: []; params?: {} }
     'datasets.version.download': { paramsTuple: [ParamValue,ParamValue]; params: {'datasetId': ParamValue,'versionId': ParamValue} }
     'datasets.index': { paramsTuple?: []; params?: {} }
+    'datasets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.show': { paramsTuple?: []; params?: {} }
+    'dashboard.publish': { paramsTuple?: []; params?: {} }
   }
   POST: {
     'auth.sign_in.handle': { paramsTuple?: []; params?: {} }

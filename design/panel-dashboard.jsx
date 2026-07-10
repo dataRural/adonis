@@ -196,7 +196,7 @@ function Dashboard({ onPublish, onEdit }) {
     { id: "published", label: "Publicados", n: counts.published },
     { id: "review", label: "Em revisão", n: counts.review },
     { id: "draft", label: "Rascunhos", n: counts.draft },
-    { id: "unpublished", label: "Despublicados", n: counts.unpublished },
+    { id: "unpublished", label: "Privados", n: counts.unpublished },
   ];
 
   return (

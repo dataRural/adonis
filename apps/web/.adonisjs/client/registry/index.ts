@@ -222,11 +222,23 @@ const routes = {
     tokens: [{"old":"/datasets","type":0,"val":"datasets","end":""}],
     types: placeholder as Registry['datasets.store']['types'],
   },
+  'datasets.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/datasets/:id',
+    tokens: [{"old":"/datasets/:id","type":0,"val":"datasets","end":""},{"old":"/datasets/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['datasets.show']['types'],
+  },
   'dashboard.show': {
     methods: ["GET","HEAD"],
     pattern: '/dashboard',
     tokens: [{"old":"/dashboard","type":0,"val":"dashboard","end":""}],
     types: placeholder as Registry['dashboard.show']['types'],
+  },
+  'dashboard.publish': {
+    methods: ["GET","HEAD"],
+    pattern: '/dashboard/publish',
+    tokens: [{"old":"/dashboard/publish","type":0,"val":"dashboard","end":""},{"old":"/dashboard/publish","type":0,"val":"publish","end":""}],
+    types: placeholder as Registry['dashboard.publish']['types'],
   },
 } as const satisfies Record<string, AdonisEndpoint>
 

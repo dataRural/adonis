@@ -431,12 +431,24 @@ export interface Registry {
     methods: ["POST"]
     pattern: '/datasets'
     types: {
-      body: ExtractBody<InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
+      body: ExtractBody<InferInput<(typeof import('#app/dataset/validators').updateDatasetValidator)>|InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
       paramsTuple: []
       params: {}
-      query: ExtractQuery<InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
+      query: ExtractQuery<InferInput<(typeof import('#app/dataset/validators').updateDatasetValidator)>|InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['store']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'datasets.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/datasets/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['show']>>>
     }
   }
   'dashboard.show': {
@@ -447,8 +459,20 @@ export interface Registry {
       paramsTuple: []
       params: {}
       query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#analytics/controllers/dashboard_controller').default['handle']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#analytics/controllers/dashboard_controller').default['handle']>>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['dashboard']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['dashboard']>>>
+    }
+  }
+  'dashboard.publish': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/publish'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['publish']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['publish']>>>
     }
   }
 }

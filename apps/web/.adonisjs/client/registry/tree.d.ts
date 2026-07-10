@@ -78,11 +78,13 @@ export interface ApiDefinition {
     }
     index: typeof routes['datasets.index']
     store: typeof routes['datasets.store']
+    show: typeof routes['datasets.show']
   }
   licenses: {
     index: typeof routes['licenses.index']
   }
   dashboard: {
     show: typeof routes['dashboard.show']
+    publish: typeof routes['dashboard.publish']
   }
 }

@@ -1,6 +1,6 @@
 import type { SimpleTFunction } from '#common/ui/hooks/use_translation'
 
-import { LogOut, Settings, Users, FileText } from 'lucide-react'
+import { LogOut, Settings, Users } from 'lucide-react'
 
 import type { NavMainItem, NavUserOptionsGroup } from '#common/ui/types/navigation'
 

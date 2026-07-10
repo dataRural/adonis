@@ -70,37 +70,37 @@ const MY_DATASETS = [
 ];
 
 const STATUS_META = {
-  published:   { label: "Publicado",   color: "var(--brand-green)" },
-  review:      { label: "Em revisão",  color: "var(--brand-orange)" },
-  draft:       { label: "Rascunho",    color: "var(--muted-foreground)" },
-  unpublished: { label: "Despublicado",color: "var(--destructive)" },
+  published: { label: "Publicado", color: "var(--brand-green)" },
+  review: { label: "Em revisão", color: "var(--brand-orange)" },
+  draft: { label: "Rascunho", color: "var(--muted-foreground)" },
+  unpublished: { label: "Privado", color: "var(--destructive)" },
 };
 
 /* preview de CSV detectado no upload (passo 1) */
 const CSV_COLUMNS = [
-  { name: "data_hora",    type: "date", sample: ["2024-01-01 00:00", "2024-01-01 01:00", "2024-01-01 02:00"], desc: "Carimbo de data/hora da leitura", unit: "ISO 8601" },
-  { name: "temp_c",       type: "num",  sample: ["22,4", "21,8", "21,1"], desc: "Temperatura do ar", unit: "°C" },
-  { name: "umidade_pct",  type: "num",  sample: ["78", "81", "84"], desc: "Umidade relativa do ar", unit: "%" },
-  { name: "precip_mm",    type: "num",  sample: ["0,0", "0,0", "1,2"], desc: "Precipitação acumulada", unit: "mm" },
-  { name: "rad_wm2",      type: "num",  sample: ["0", "0", "0"], desc: "Radiação solar global", unit: "W/m²" },
-  { name: "estacao",      type: "text", sample: ["Seropédica", "Seropédica", "Seropédica"], desc: "Identificação da estação", unit: "—" },
+  { name: "data_hora", type: "date", sample: ["2024-01-01 00:00", "2024-01-01 01:00", "2024-01-01 02:00"], desc: "Carimbo de data/hora da leitura", unit: "ISO 8601" },
+  { name: "temp_c", type: "num", sample: ["22,4", "21,8", "21,1"], desc: "Temperatura do ar", unit: "°C" },
+  { name: "umidade_pct", type: "num", sample: ["78", "81", "84"], desc: "Umidade relativa do ar", unit: "%" },
+  { name: "precip_mm", type: "num", sample: ["0,0", "0,0", "1,2"], desc: "Precipitação acumulada", unit: "mm" },
+  { name: "rad_wm2", type: "num", sample: ["0", "0", "0"], desc: "Radiação solar global", unit: "W/m²" },
+  { name: "estacao", type: "text", sample: ["Seropédica", "Seropédica", "Seropédica"], desc: "Identificação da estação", unit: "—" },
 ];
 
 const TYPE_LABEL = { num: "Número", text: "Texto", date: "Data", geo: "Geo" };
 
 const QA_CHECKS = [
-  { id: "enc", state: "ok",   title: "Codificação UTF-8", desc: "Arquivo lido sem caracteres inválidos." },
-  { id: "head", state: "ok",  title: "Cabeçalho detectado", desc: "6 colunas nomeadas na primeira linha." },
+  { id: "enc", state: "ok", title: "Codificação UTF-8", desc: "Arquivo lido sem caracteres inválidos." },
+  { id: "head", state: "ok", title: "Cabeçalho detectado", desc: "6 colunas nomeadas na primeira linha." },
   { id: "empty", state: "warn", title: "3 linhas vazias", desc: "Serão ignoradas na publicação. Revise se necessário." },
   { id: "types", state: "ok", title: "Tipos consistentes", desc: "Nenhum valor fora do tipo detectado por coluna." },
 ];
 
 const LICENSES = [
-  { id: "ccby",   name: "CC BY 4.0",    tag: "Recomendada", rec: true,  desc: "Reuso livre com atribuição ao autor. Padrão para dados abertos acadêmicos.", commercial: true, derivatives: true },
-  { id: "ccbysa", name: "CC BY-SA 4.0", tag: "Aberta",      rec: false, desc: "Atribuição + compartilhamento sob a mesma licença.", commercial: true, derivatives: true },
-  { id: "ccbync", name: "CC BY-NC 4.0", tag: "Restrita",    rec: false, desc: "Atribuição, somente para uso não comercial.", commercial: false, derivatives: true },
-  { id: "odbl",   name: "ODbL 1.0",     tag: "Base de dados", rec: false, desc: "Específica para bases de dados, com share-alike.", commercial: true, derivatives: true },
-  { id: "cc0",    name: "CC0 1.0",      tag: "Domínio público", rec: false, desc: "Renúncia de direitos — uso totalmente livre, sem atribuição.", commercial: true, derivatives: true },
+  { id: "ccby", name: "CC BY 4.0", tag: "Recomendada", rec: true, desc: "Reuso livre com atribuição ao autor. Padrão para dados abertos acadêmicos.", commercial: true, derivatives: true },
+  { id: "ccbysa", name: "CC BY-SA 4.0", tag: "Aberta", rec: false, desc: "Atribuição + compartilhamento sob a mesma licença.", commercial: true, derivatives: true },
+  { id: "ccbync", name: "CC BY-NC 4.0", tag: "Restrita", rec: false, desc: "Atribuição, somente para uso não comercial.", commercial: false, derivatives: true },
+  { id: "odbl", name: "ODbL 1.0", tag: "Base de dados", rec: false, desc: "Específica para bases de dados, com share-alike.", commercial: true, derivatives: true },
+  { id: "cc0", name: "CC0 1.0", tag: "Domínio público", rec: false, desc: "Renúncia de direitos — uso totalmente livre, sem atribuição.", commercial: true, derivatives: true },
   { id: "custom", name: "Outra licença", tag: "Personalizada", rec: false, desc: "Especifique termos próprios da unidade ou projeto.", commercial: true, derivatives: true },
 ];
 
