@@ -104,6 +104,9 @@ export function NavUser({ user }: { user?: UserProps | null }) {
           <Link role="menuitem" href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 11, width: '100%', padding: '9px 10px', fontSize: '13.5px', fontWeight: 700 }}>
             <Ic.Database size={16} /> Meus datasets
           </Link>
+          <Link role="menuitem" href="/groups" style={{ display: 'flex', alignItems: 'center', gap: 11, width: '100%', padding: '9px 10px', fontSize: '13.5px', fontWeight: 700 }}>
+            <Ic.Users size={16} /> Meus grupos
+          </Link>
           <button role="menuitem">
             <Ic.Bookmark size={16} /> Salvos
           </button>
@@ -155,9 +158,6 @@ export default function PanelNav({ theme, onToggleTheme, onPublish, active, user
           >
             Grupos
           </Link>
-          <a className="dr-nav-link" href="#">
-            Documentação
-          </a>
         </nav>
         <div className="dr-nav-right">
           <button

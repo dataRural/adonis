@@ -11,6 +11,7 @@ import { addDatasetVersionValidator, createDatasetValidator, updateDatasetValida
 import { attachmentManager } from '@jrmc/adonis-attachment'
 import { marked } from 'marked'
 import GroupMember from '#app/groups/models/group_member'
+import GroupMemberRole from '#app/groups/enums/group_member_role'
 
 function sanitizePathSegment(value: string) {
   return value
@@ -330,8 +331,20 @@ export default class DatasetsController {
   public async addVersion({ params, request, response, session, auth }: HttpContext) {
     const dataset = await Dataset.query().where('id', params.id).preload('versions').firstOrFail()
 
-    const currentUserId = auth?.user?.id
-    if (!currentUserId || Number(currentUserId) !== Number(dataset.userId)) {
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
+    let canAddVersion = currentUserId ? Number(currentUserId) === Number(dataset.userId) : false
+
+    if (!canAddVersion && currentUserId && dataset.groupId) {
+      const membership = await GroupMember.query()
+        .where('groupId', dataset.groupId)
+        .where('userId', currentUserId)
+        .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN, GroupMemberRole.EDITOR])
+        .first()
+      canAddVersion = !!membership
+    }
+
+    if (!canAddVersion) {
       session.flash('error', 'You are not authorized to update this dataset.')
       return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
     }
@@ -391,8 +404,20 @@ export default class DatasetsController {
   public async togglePrivacy({ params, request, response, session, auth }: HttpContext) {
     const dataset = await Dataset.findOrFail(params.id)
 
-    const currentUserId = auth?.user?.id
-    if (!currentUserId || Number(currentUserId) !== Number(dataset.userId)) {
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
+    let canToggle = currentUserId ? Number(currentUserId) === Number(dataset.userId) : false
+
+    if (!canToggle && currentUserId && dataset.groupId) {
+      const membership = await GroupMember.query()
+        .where('groupId', dataset.groupId)
+        .where('userId', currentUserId)
+        .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN])
+        .first()
+      canToggle = !!membership
+    }
+
+    if (!canToggle) {
       session.flash('error', 'You are not authorized to change dataset privacy.')
       return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
     }
@@ -459,13 +484,40 @@ export default class DatasetsController {
     if (datasetId) {
       const dataset = await Dataset.query()
         .where('id', datasetId)
-        .where('userId', auth.user!.id)
         .preload('versions')
         .firstOrFail()
+
+      let canEdit = dataset.userId === auth.user!.id
+      if (!canEdit && dataset.groupId) {
+        const membership = await GroupMember.query()
+          .where('groupId', dataset.groupId)
+          .where('userId', auth.user!.id)
+          .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN, GroupMemberRole.EDITOR])
+          .first()
+        canEdit = !!membership
+      }
+
+      if (!canEdit) {
+        session.flash('error', 'You are not authorized to edit this dataset.')
+        return response.redirect().toPath('/dashboard')
+      }
 
       const payload = await request.validateUsing(updateDatasetValidator, {
         meta: { datasetId: dataset.id },
       })
+
+      if (payload.groupId) {
+        const groupMembership = await GroupMember.query()
+          .where('groupId', payload.groupId)
+          .where('userId', auth.user!.id)
+          .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN, GroupMemberRole.EDITOR])
+          .first()
+
+        if (!groupMembership) {
+          session.flash('error', 'You are not authorized to assign datasets to this group.')
+          return response.redirect().back()
+        }
+      }
 
       const datasetFile = request.file('file')
       const datasetName = sanitizePathSegment(payload.name)
@@ -550,6 +602,19 @@ export default class DatasetsController {
 
     const payload = await request.validateUsing(createDatasetValidator)
     const datasetFile = request.file('file')
+
+    if (payload.groupId) {
+      const groupMembership = await GroupMember.query()
+        .where('groupId', payload.groupId)
+        .where('userId', auth.user!.id)
+        .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN, GroupMemberRole.EDITOR])
+        .first()
+
+      if (!groupMembership) {
+        session.flash('error', 'You are not authorized to assign datasets to this group.')
+        return response.redirect().back()
+      }
+    }
 
     if (!datasetFile) {
       session.flash('error', 'Please select a CSV file to upload.')
@@ -793,8 +858,17 @@ export default class DatasetsController {
   public async dashboard({ auth, inertia }: HttpContext) {
     const user = auth.user!
 
+    const userGroupIds = (
+      await GroupMember.query().where('userId', user.id).select('groupId')
+    ).map((m) => m.groupId)
+
     const userDatasets = await Dataset.query()
-      .where('userId', user.id)
+      .where((q) => {
+        q.where('user_id', user.id)
+        if (userGroupIds.length > 0) {
+          q.orWhereIn('group_id', userGroupIds)
+        }
+      })
       .preload('versions')
       .preload('license')
       .orderBy('updatedAt', 'desc')
@@ -845,7 +919,6 @@ export default class DatasetsController {
     if (datasetId) {
       const dataset = await Dataset.query()
         .where('id', datasetId)
-        .where('userId', auth.user!.id)
         .preload('versions', (query) => {
           query.orderBy('id', 'desc')
         })
@@ -853,6 +926,20 @@ export default class DatasetsController {
         .first()
 
       if (dataset) {
+        let canEdit = dataset.userId === auth.user!.id
+        if (!canEdit && dataset.groupId) {
+          const membership = await GroupMember.query()
+            .where('groupId', dataset.groupId)
+            .where('userId', auth.user!.id)
+            .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN, GroupMemberRole.EDITOR])
+            .first()
+          canEdit = !!membership
+        }
+
+        if (!canEdit) {
+          session.flash('error', 'You are not authorized to edit this dataset.')
+          return response.redirect().toPath('/dashboard')
+        }
         let description = ''
         const latestVersion = dataset.versions[0]
         if (latestVersion && dataset.path) {

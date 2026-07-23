@@ -3,14 +3,31 @@ import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import Dataset from '#app/dataset/models/dataset'
 
+import GroupMember from '#app/groups/models/group_member'
+
 export default class MarketingController {
-  public async handle({ inertia }: HttpContext) {
-    // Fetch public datasets ordered by updated date descending
-    const publicDatasets = await Dataset.query()
-      .where('isPublic', true)
-      .preload('versions')
-      .preload('license')
-      .orderBy('updatedAt', 'desc')
+  public async handle({ inertia, auth }: HttpContext) {
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
+
+    let query = Dataset.query().preload('versions').preload('license').orderBy('updatedAt', 'desc')
+
+    if (currentUserId) {
+      const userGroupIds = (
+        await GroupMember.query().where('userId', currentUserId).select('groupId')
+      ).map((m) => m.groupId)
+
+      query = query.where((q) => {
+        q.where('is_public', true).orWhere('user_id', currentUserId)
+        if (userGroupIds.length > 0) {
+          q.orWhereIn('group_id', userGroupIds)
+        }
+      })
+    } else {
+      query = query.where('is_public', true)
+    }
+
+    const publicDatasets = await query
 
     const datasetsPayload = await Promise.all(
       publicDatasets.map(async (d, index) => {
