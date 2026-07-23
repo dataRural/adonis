@@ -79,6 +79,35 @@ export default function StepLicenca({ data, set }: Step4Props) {
         </div>
       </div>
 
+      {data.visibility === 'restricted' && data.userGroups && data.userGroups.length > 0 && (
+        <>
+          <div className="dr-subhead">
+            <span className="ic">
+              <Ic.Users size={16} />
+            </span>{' '}
+            Grupo (opcional)
+          </div>
+          <div style={{ maxWidth: 420 }}>
+            <select
+              className="dr-select"
+              value={data.groupId || ''}
+              onChange={(e) => set({ groupId: e.target.value ? Number(e.target.value) : null })}
+            >
+              <option value="">Nenhum grupo — somente você</option>
+              {data.userGroups.map((g: { id: number; name: string }) => (
+                <option key={g.id} value={g.id}>
+                  {g.name}
+                </option>
+              ))}
+            </select>
+            <span className="dr-field-hint" style={{ display: 'block', marginTop: 6 }}>
+              <Ic.Info size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />
+              Membros do grupo selecionado poderão ver este dataset.
+            </span>
+          </div>
+        </>
+      )}
+
       <div className="dr-wiz-cite-box">
         <div className="ch">
           <Ic.Quote size={14} style={{ display: 'inline', marginRight: 4 }} /> Como será citado

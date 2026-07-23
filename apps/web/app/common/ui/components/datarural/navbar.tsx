@@ -37,16 +37,21 @@ export default function Navbar({ theme, onToggleTheme, activePage }: NavbarProps
             Áreas
           </Link>
           {useUser() && (
-            <Link
-              className={`dr-nav-link ${activePage === 'dashboard' ? 'active' : ''}`}
-              href="/dashboard"
-            >
-              Meus datasets
-            </Link>
+            <>
+              <Link
+                className={`dr-nav-link ${activePage === 'dashboard' ? 'active' : ''}`}
+                href="/dashboard"
+              >
+                Meus datasets
+              </Link>
+              <Link
+                className={`dr-nav-link ${activePage === 'groups' ? 'active' : ''}`}
+                href="/groups"
+              >
+                Grupos
+              </Link>
+            </>
           )}
-          <a className="dr-nav-link" href="#">
-            Documentação
-          </a>
         </nav>
         <div className="dr-nav-right">
           <button

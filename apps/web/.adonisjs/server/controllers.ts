@@ -19,6 +19,11 @@ export const controllers = {
     Datasets: () => import('#app/dataset/controllers/datasets_controller'),
     Licenses: () => import('#app/dataset/controllers/licenses_controller'),
   },
+  groups: {
+    GroupDatasets: () => import('#app/groups/controllers/group_datasets_controller'),
+    GroupMembers: () => import('#app/groups/controllers/group_members_controller'),
+    Groups: () => import('#app/groups/controllers/groups_controller'),
+  },
   marketing: {
     Marketing: () => import('#app/marketing/controllers/marketing_controller'),
   },

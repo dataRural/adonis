@@ -50,12 +50,14 @@ export class DatasetVersionSchema extends BaseModel {
 }
 
 export class DatasetSchema extends BaseModel {
-  static $columns = ['area', 'createdAt', 'id', 'isPublic', 'licenseId', 'name', 'path', 'period', 'region', 'status', 'tags', 'unit', 'updatedAt', 'usabilityScore', 'userId'] as const
+  static $columns = ['area', 'createdAt', 'groupId', 'id', 'isPublic', 'licenseId', 'name', 'path', 'period', 'region', 'status', 'tags', 'unit', 'updatedAt', 'usabilityScore', 'userId'] as const
   $columns = DatasetSchema.$columns
   @column()
   declare area: string
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
+  @column()
+  declare groupId: number | null
   @column({ isPrimary: true })
   declare id: number
   @column()
@@ -82,6 +84,40 @@ export class DatasetSchema extends BaseModel {
   declare usabilityScore: string | null
   @column()
   declare userId: number
+}
+
+export class GroupMemberSchema extends BaseModel {
+  static $columns = ['createdAt', 'groupId', 'id', 'role', 'updatedAt', 'userId'] as const
+  $columns = GroupMemberSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare groupId: number
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare role: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
+export class GroupSchema extends BaseModel {
+  static $columns = ['createdAt', 'description', 'id', 'name', 'ownerId', 'updatedAt'] as const
+  $columns = GroupSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare description: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare name: string
+  @column()
+  declare ownerId: number
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
 }
 
 export class LicenseSchema extends BaseModel {

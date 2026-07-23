@@ -97,6 +97,9 @@ export default defineConfig({
     () => import('#app/dataset/start/view'),
     () => import('#app/dataset/routes'),
 
+    //groups
+    () => import('#app/groups/routes'),
+
     //analytics
     () => import('#analytics/routes'),
   ],

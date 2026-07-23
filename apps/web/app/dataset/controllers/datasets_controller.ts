@@ -10,6 +10,8 @@ import DatasetVersion from '../models/dataset_version.js'
 import { addDatasetVersionValidator, createDatasetValidator, updateDatasetValidator } from '#app/dataset/validators'
 import { attachmentManager } from '@jrmc/adonis-attachment'
 import { marked } from 'marked'
+import GroupMember from '#app/groups/models/group_member'
+import GroupMemberRole from '#app/groups/enums/group_member_role'
 
 function sanitizePathSegment(value: string) {
   return value
@@ -205,8 +207,17 @@ export default class DatasetsController {
       .orderBy('id', 'desc')
 
     if (currentUserId) {
+      const userGroupIds = (await GroupMember.query()
+        .where('userId', currentUserId)
+        .select('groupId')
+      ).map((m) => m.groupId)
+
       datasetsQuery = datasetsQuery.where((q) => {
-        q.where('is_public', true).orWhere('user_id', currentUserId)
+        q.where('is_public', true)
+          .orWhere('user_id', currentUserId)
+        if (userGroupIds.length > 0) {
+          q.orWhereIn('group_id', userGroupIds)
+        }
       })
     } else {
       datasetsQuery = datasetsQuery.where('is_public', true)
@@ -320,8 +331,20 @@ export default class DatasetsController {
   public async addVersion({ params, request, response, session, auth }: HttpContext) {
     const dataset = await Dataset.query().where('id', params.id).preload('versions').firstOrFail()
 
-    const currentUserId = auth?.user?.id
-    if (!currentUserId || Number(currentUserId) !== Number(dataset.userId)) {
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
+    let canAddVersion = currentUserId ? Number(currentUserId) === Number(dataset.userId) : false
+
+    if (!canAddVersion && currentUserId && dataset.groupId) {
+      const membership = await GroupMember.query()
+        .where('groupId', dataset.groupId)
+        .where('userId', currentUserId)
+        .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN, GroupMemberRole.EDITOR])
+        .first()
+      canAddVersion = !!membership
+    }
+
+    if (!canAddVersion) {
       session.flash('error', 'You are not authorized to update this dataset.')
       return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
     }
@@ -381,8 +404,20 @@ export default class DatasetsController {
   public async togglePrivacy({ params, request, response, session, auth }: HttpContext) {
     const dataset = await Dataset.findOrFail(params.id)
 
-    const currentUserId = auth?.user?.id
-    if (!currentUserId || Number(currentUserId) !== Number(dataset.userId)) {
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
+    let canToggle = currentUserId ? Number(currentUserId) === Number(dataset.userId) : false
+
+    if (!canToggle && currentUserId && dataset.groupId) {
+      const membership = await GroupMember.query()
+        .where('groupId', dataset.groupId)
+        .where('userId', currentUserId)
+        .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN])
+        .first()
+      canToggle = !!membership
+    }
+
+    if (!canToggle) {
       session.flash('error', 'You are not authorized to change dataset privacy.')
       return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
     }
@@ -411,10 +446,22 @@ export default class DatasetsController {
     const dataset = await Dataset.query().where('id', datasetId).firstOrFail()
     const version = await DatasetVersion.query().where('id', versionId).where('dataset_id', datasetId).firstOrFail()
 
-    const currentUserId = auth?.user?.id ?? null
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
     if (!dataset.isPublic && Number(currentUserId) !== Number(dataset.userId)) {
-      session.flash('error', 'You are not authorized to download this dataset.')
-      return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
+      // Check if user is a member of the dataset's group
+      let hasGroupAccess = false
+      if (currentUserId && dataset.groupId) {
+        const membership = await GroupMember.query()
+          .where('groupId', dataset.groupId)
+          .where('userId', currentUserId)
+          .first()
+        hasGroupAccess = !!membership
+      }
+      if (!hasGroupAccess) {
+        session.flash('error', 'You are not authorized to download this dataset.')
+        return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
+      }
     }
 
     try {
@@ -437,13 +484,40 @@ export default class DatasetsController {
     if (datasetId) {
       const dataset = await Dataset.query()
         .where('id', datasetId)
-        .where('userId', auth.user!.id)
         .preload('versions')
         .firstOrFail()
+
+      let canEdit = dataset.userId === auth.user!.id
+      if (!canEdit && dataset.groupId) {
+        const membership = await GroupMember.query()
+          .where('groupId', dataset.groupId)
+          .where('userId', auth.user!.id)
+          .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN, GroupMemberRole.EDITOR])
+          .first()
+        canEdit = !!membership
+      }
+
+      if (!canEdit) {
+        session.flash('error', 'You are not authorized to edit this dataset.')
+        return response.redirect().toPath('/dashboard')
+      }
 
       const payload = await request.validateUsing(updateDatasetValidator, {
         meta: { datasetId: dataset.id },
       })
+
+      if (payload.groupId) {
+        const groupMembership = await GroupMember.query()
+          .where('groupId', payload.groupId)
+          .where('userId', auth.user!.id)
+          .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN, GroupMemberRole.EDITOR])
+          .first()
+
+        if (!groupMembership) {
+          session.flash('error', 'You are not authorized to assign datasets to this group.')
+          return response.redirect().back()
+        }
+      }
 
       const datasetFile = request.file('file')
       const datasetName = sanitizePathSegment(payload.name)
@@ -462,6 +536,7 @@ export default class DatasetsController {
             tags: payload.tags || [],
             usabilityScore: payload.usabilityScore !== undefined ? payload.usabilityScore : dataset.usabilityScore,
             status: payload.status || (payload.isPublic ? 'published' : 'unpublished'),
+            groupId: payload.groupId || null,
           })
           await dataset.useTransaction(trx).save()
 
@@ -528,6 +603,19 @@ export default class DatasetsController {
     const payload = await request.validateUsing(createDatasetValidator)
     const datasetFile = request.file('file')
 
+    if (payload.groupId) {
+      const groupMembership = await GroupMember.query()
+        .where('groupId', payload.groupId)
+        .where('userId', auth.user!.id)
+        .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN, GroupMemberRole.EDITOR])
+        .first()
+
+      if (!groupMembership) {
+        session.flash('error', 'You are not authorized to assign datasets to this group.')
+        return response.redirect().back()
+      }
+    }
+
     if (!datasetFile) {
       session.flash('error', 'Please select a CSV file to upload.')
       return response.redirect().back()
@@ -569,6 +657,7 @@ export default class DatasetsController {
             tags: payload.tags || [],
             usabilityScore: payload.usabilityScore !== undefined ? payload.usabilityScore : 8.5,
             status: payload.status || (payload.isPublic ? 'published' : 'unpublished'),
+            groupId: payload.groupId || null,
           },
           { client: trx }
         )
@@ -610,10 +699,22 @@ export default class DatasetsController {
       return inertia.render('dataset/show', {})
     }
 
-    const currentUserId = auth?.user?.id ?? null
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
     if (!dataset.isPublic && Number(currentUserId) !== Number(dataset.userId)) {
-      session.flash('error', 'You are not authorized to view this dataset.')
-      return response.redirect().back()
+      // Check if user is a member of the dataset's group
+      let hasGroupAccess = false
+      if (currentUserId && dataset.groupId) {
+        const membership = await GroupMember.query()
+          .where('groupId', dataset.groupId)
+          .where('userId', currentUserId)
+          .first()
+        hasGroupAccess = !!membership
+      }
+      if (!hasGroupAccess) {
+        session.flash('error', 'You are not authorized to view this dataset.')
+        return response.redirect().back()
+      }
     }
 
     const latestVersion = dataset.versions[0]
@@ -757,8 +858,17 @@ export default class DatasetsController {
   public async dashboard({ auth, inertia }: HttpContext) {
     const user = auth.user!
 
+    const userGroupIds = (
+      await GroupMember.query().where('userId', user.id).select('groupId')
+    ).map((m) => m.groupId)
+
     const userDatasets = await Dataset.query()
-      .where('userId', user.id)
+      .where((q) => {
+        q.where('user_id', user.id)
+        if (userGroupIds.length > 0) {
+          q.orWhereIn('group_id', userGroupIds)
+        }
+      })
       .preload('versions')
       .preload('license')
       .orderBy('updatedAt', 'desc')
@@ -789,10 +899,17 @@ export default class DatasetsController {
         views: '0',
         usability,
         rows: '---',
+        groupId: d.groupId,
       }
     })
 
-    return inertia.render('dataset/dashboard', { datasets: datasetsPayload })
+    const memberships = await auth.user!.related('groupMemberships').query().preload('group')
+    const userGroups = memberships.map((m) => ({
+      id: m.group.id,
+      name: m.group.name,
+    }))
+
+    return inertia.render('dataset/dashboard', { datasets: datasetsPayload, userGroups })
   }
 
   public async publish({ inertia, request, auth }: HttpContext) {
@@ -802,7 +919,6 @@ export default class DatasetsController {
     if (datasetId) {
       const dataset = await Dataset.query()
         .where('id', datasetId)
-        .where('userId', auth.user!.id)
         .preload('versions', (query) => {
           query.orderBy('id', 'desc')
         })
@@ -810,6 +926,20 @@ export default class DatasetsController {
         .first()
 
       if (dataset) {
+        let canEdit = dataset.userId === auth.user!.id
+        if (!canEdit && dataset.groupId) {
+          const membership = await GroupMember.query()
+            .where('groupId', dataset.groupId)
+            .where('userId', auth.user!.id)
+            .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN, GroupMemberRole.EDITOR])
+            .first()
+          canEdit = !!membership
+        }
+
+        if (!canEdit) {
+          session.flash('error', 'You are not authorized to edit this dataset.')
+          return response.redirect().toPath('/dashboard')
+        }
         let description = ''
         const latestVersion = dataset.versions[0]
         if (latestVersion && dataset.path) {
@@ -852,10 +982,17 @@ export default class DatasetsController {
           usabilityScore: dataset.usabilityScore ? Number(dataset.usabilityScore) : 0,
           fileName,
           fileSize,
+          groupId: dataset.groupId,
         }
       }
     }
 
-    return inertia.render('dataset/publish', { editDataset })
+    const memberships = await auth.user!.related('groupMemberships').query().preload('group')
+    const userGroups = memberships.map((m) => ({
+      id: m.group.id,
+      name: m.group.name,
+    }))
+
+    return inertia.render('dataset/publish', { editDataset, userGroups })
   }
 }
