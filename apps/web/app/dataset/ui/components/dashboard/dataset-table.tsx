@@ -21,7 +21,6 @@ function RowMenu({
   onClose: () => void
   openUpwards?: boolean
 }) {
-  const isPub = d.status === 'published'
   return (
     <div
       className="dr-row-menu"
@@ -56,15 +55,6 @@ function RowMenu({
         <Ic.Chart size={16} /> Estatísticas de uso
       </button>
       <div className="sep"></div>
-      {isPub ? (
-        <button onClick={onClose}>
-          <Ic.Eyeoff size={16} /> Despublicar
-        </button>
-      ) : (
-        <button onClick={onClose}>
-          <Ic.Send size={16} /> Publicar agora
-        </button>
-      )}
       <button
         className="danger"
         onClick={() => {
@@ -142,20 +132,23 @@ function DatasetRow({
       </div>
 
       <div className="col-status">
-        <span className={'dr-status-badge ' + d.status}>
+        <span
+          className={'dr-status-badge ' + d.status}
+          onClick={(e) => {
+            e.stopPropagation()
+            router.post(`/datasets/${d.id}/privacy`, {}, { preserveScroll: true })
+          }}
+          title={d.status === 'published' ? 'Clique para tornar Privado' : 'Clique para tornar Público'}
+          style={{ cursor: 'pointer' }}
+        >
           <span className="d" style={{ background: sm.color }}></span>
           {sm.label}
         </span>
       </div>
 
       <div className="col-dl dr-mds-metric">
-        <span className="num">{d.downloads}</span>
-        <span className="lbl">downloads</span>
-      </div>
-
-      <div className="col-views dr-mds-metric">
-        <span className="num">{d.views}</span>
-        <span className="lbl">visualizações</span>
+        <span className="num">{d.likes ?? d.downloads ?? '0'}</span>
+        <span className="lbl">curtidas</span>
       </div>
 
       <div className="col-usab">
@@ -193,8 +186,7 @@ export default function DatasetTable({ list, onEdit, onPublish }: DatasetTablePr
       <div className="dr-mds-head">
         <span>Dataset</span>
         <span>Status</span>
-        <span>Downloads</span>
-        <span>Visualizações</span>
+        <span>Curtidas</span>
         <span>Usabilidade</span>
         <span></span>
       </div>

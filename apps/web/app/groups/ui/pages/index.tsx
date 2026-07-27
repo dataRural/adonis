@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Head } from '@inertiajs/react'
 import PanelNav from '#common/ui/components/datarural/navbar-auth'
 import PanelFooter from '#common/ui/components/datarural/footer-simple'
 import GroupCard from '../components/group-card'
@@ -34,6 +35,7 @@ export default function GroupsIndex({ groups = [] }: PageProps) {
 
   return (
     <div className="dr-app dr-panel-wrap">
+      <Head title="Meus Grupos" />
       <PanelNav
         theme={theme}
         onToggleTheme={() => setTheme((p) => (p === 'dark' ? 'light' : 'dark'))}

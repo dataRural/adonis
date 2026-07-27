@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react'
 import * as Ic from '#common/ui/components/datarural/icons'
 import ColumnStats from './column-stats'
-import { COLUMNS, ROWS } from './detail-data'
 
 function MiniHist({ hist }: { hist: number[] }) {
   return (
@@ -178,10 +177,10 @@ export default function ViewerTab({
   const [mode, setMode] = useState<'table' | 'columns'>('table')
   const [hot, setHot] = useState<string | null>(null)
 
-  const finalColumns = columns && columns.length > 0 ? columns : COLUMNS
-  const finalRows = rows && rows.length > 0 ? rows : ROWS
-  const finalFilename = filename || 'seropedica_horario_2010_2026.csv'
-  const finalSize = sizeStr || '11,2 MB'
+  const finalColumns = columns && columns.length > 0 ? columns : []
+  const finalRows = rows && rows.length > 0 ? rows : []
+  const finalFilename = filename || 'dados.csv'
+  const finalSize = sizeStr || '—'
 
   return (
     <div className="dr-viewer">

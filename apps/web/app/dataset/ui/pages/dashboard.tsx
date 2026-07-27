@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import { router } from '@inertiajs/react'
+import { router, Head } from '@inertiajs/react'
 import PanelNav from '#common/ui/components/datarural/navbar-auth'
 import PanelFooter from '#common/ui/components/datarural/footer-simple'
 import DashboardStats from '../components/dashboard/dashboard-stats'
@@ -13,9 +13,10 @@ import type { InertiaProps } from '#core/ui/types'
 type PageProps = InertiaProps<{
   datasets?: UserDatasetItem[]
   userGroups?: { id: number; name: string }[]
+  totalLikesCount?: number
 }>
 
-export default function Dashboard({ datasets = [], userGroups = [] }: PageProps) {
+export default function Dashboard({ datasets = [], userGroups = [], totalLikesCount }: PageProps) {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -72,6 +73,7 @@ export default function Dashboard({ datasets = [], userGroups = [] }: PageProps)
 
   return (
     <div className="dr-app dr-panel-wrap">
+      <Head title="Meus Datasets" />
       <PanelNav
         theme={theme}
         onToggleTheme={handleToggleTheme}
@@ -136,7 +138,15 @@ export default function Dashboard({ datasets = [], userGroups = [] }: PageProps)
       </div>
 
       <div className="dr-container">
-        <DashboardStats stats={{ publishedCount: counts.published, reviewCount: counts.review }} />
+        <DashboardStats
+          stats={{
+            publishedCount: counts.published,
+            reviewCount: counts.review,
+            likesCount: totalLikesCount !== undefined
+              ? totalLikesCount
+              : datasets.reduce((acc, d) => acc + Number(d.likes || d.downloads || 0), 0),
+          }}
+        />
         <Toolbar
           filter={filter}
           onFilterChange={setFilter}

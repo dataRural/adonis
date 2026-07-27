@@ -2,15 +2,14 @@ import * as Ic from '#common/ui/components/datarural/icons'
 
 export interface DashboardStatsProps {
   publishedCount: number
-  reviewCount: number
+  reviewCount?: number
+  likesCount?: number
 }
 
 export default function DashboardStats({ stats }: { stats?: DashboardStatsProps }) {
   const finalStats = [
     { id: 'pub', val: String(stats?.publishedCount ?? 0), label: 'Datasets publicados', icon: 'Database', color: 'var(--brand-blue)', trend: 'Total' },
-    { id: 'dl', val: '0', label: 'Downloads totais', icon: 'Download', color: 'var(--brand-green)', trend: '0%' },
-    { id: 'views', val: '0', label: 'Visualizações', icon: 'Eye', color: 'var(--brand-sky)', trend: '0%' },
-    { id: 'rev', val: String(stats?.reviewCount ?? 0), label: 'Em revisão', icon: 'History', color: 'var(--brand-orange)', trend: 'Curadoria' },
+    { id: 'likes', val: String(stats?.likesCount ?? 0), label: 'Curtidas totais', icon: 'Heart', color: 'var(--brand-green)', trend: 'Total' },
   ]
 
   return (

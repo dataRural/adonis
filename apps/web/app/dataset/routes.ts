@@ -25,6 +25,11 @@ router
   .as('datasets.privacy');
 
 router
+  .post('/datasets/:id/like', [DatasetsController, 'toggleLike'])
+  .middleware(middleware.auth())
+  .as('datasets.like.toggle');
+
+router
   .post('/datasets/:id/version', [DatasetsController, 'addVersion'])
   .middleware(middleware.auth())
   .as('datasets.version.store');

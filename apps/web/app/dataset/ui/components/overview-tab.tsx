@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import * as Ic from '#common/ui/components/datarural/icons'
 import ColumnStats from './column-stats'
-import { DS, QUALITY, COLUMNS, DatasetDetail } from './detail-data'
+import { QUALITY, DatasetDetail } from './detail-data'
 
-export default function OverviewTab({ ds, columns }: { ds?: DatasetDetail; columns?: any[] }) {
+export default function OverviewTab({ ds, columns }: { ds: DatasetDetail; columns?: any[] }) {
   const [hot, setHot] = useState<string | null>(null)
-  const finalDs = ds || DS
+  const finalDs = ds
 
   return (
     <div>
@@ -21,37 +21,7 @@ export default function OverviewTab({ ds, columns }: { ds?: DatasetDetail; colum
             {finalDs.description ? (
               <div dangerouslySetInnerHTML={{ __html: finalDs.description }} />
             ) : (
-              <>
-                <p>
-                  Série histórica <b>horária</b> de variáveis meteorológicas registradas pela estação
-                  automática do <b>Campus Seropédica</b> da UFRRJ, mantida pelo Laboratório de
-                  Agrometeorologia. O conjunto cobre o período de <code>jan/2010</code> a{' '}
-                  <code>abr/2026</code> e é atualizado mensalmente.
-                </p>
-                <p>
-                  Cada linha corresponde a uma hora cheia, com agregação das leituras coletadas a cada
-                  10 minutos. Os dados passam por controle de qualidade automático (limites físicos,
-                  persistência e consistência entre variáveis) e revisão manual trimestral.
-                </p>
-                <h4>Usos comuns</h4>
-                <ul>
-                  <li>
-                    Climatologia local e cálculo de normais climatológicas para Seropédica e a Baixada
-                    Fluminense.
-                  </li>
-                  <li>
-                    Balanço hídrico e evapotranspiração de referência para planejamento de irrigação.
-                  </li>
-                  <li>Calibração e validação de modelos agrometeorológicos e de previsão.</li>
-                  <li>Detecção de eventos extremos — ondas de calor, estiagem e chuvas intensas.</li>
-                </ul>
-                <h4>Atenção</h4>
-                <p>
-                  Há pequenas lacunas em <code>radiacao_solar</code> entre 2013 e 2014 por manutenção do
-                  sensor; valores ausentes são deixados em branco (não imputados). Consulte a aba{' '}
-                  <b>Discussão</b> para detalhes.
-                </p>
-              </>
+              <p style={{ color: 'var(--muted-foreground)' }}>Nenhuma descrição disponível para este conjunto de dados.</p>
             )}
           </div>
         </div>
@@ -111,7 +81,7 @@ export default function OverviewTab({ ds, columns }: { ds?: DatasetDetail; colum
             <Ic.Columns size={17} className="ic" style={{ marginRight: 6 }} /> Dicionário de colunas
           </h3>
           <div className="right">
-            <span className="dr-ds-license">{(columns || COLUMNS).length} colunas</span>
+            <span className="dr-ds-license">{(columns || []).length} colunas</span>
           </div>
         </div>
         <ColumnStats hot={hot} onHot={setHot} columns={columns} />

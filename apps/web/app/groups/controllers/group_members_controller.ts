@@ -41,7 +41,7 @@ export default class GroupMembersController {
     }
 
     // Cannot assign owner role through this endpoint
-    if (payload.role === 'owner') {
+    if ((payload.role as string) === 'owner') {
       return response.forbidden('Não é possível atribuir o papel de dono.')
     }
 

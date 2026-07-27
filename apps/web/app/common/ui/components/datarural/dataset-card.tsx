@@ -1,4 +1,5 @@
 import { Link } from '@adonisjs/inertia/react'
+import { router } from '@inertiajs/react'
 import { CardArt } from './brand'
 import * as Ic from './icons'
 
@@ -11,6 +12,8 @@ export interface DatasetItem {
   unit?: string
   tags?: string[]
   dl?: string | number
+  likesCount?: number
+  isLiked?: boolean
   updated?: string
   usability?: string | number | null
   rows?: string | number
@@ -30,11 +33,17 @@ export default function DatasetCard({ d }: DatasetCardProps) {
   const desc = d.desc || d.description || 'Nenhuma descrição fornecida para este conjunto de dados.'
   const unit = d.unit || 'Instituto de Ciências Exatas'
   const tags = d.tags && d.tags.length > 0 ? d.tags : ['Geral']
-  const dl = d.dl !== undefined ? d.dl : 0
+  const dl = d.likesCount !== undefined ? d.likesCount : (d.dl !== undefined ? d.dl : 0)
+  const isLiked = !!d.isLiked
   const updated = d.updated || 'Recentemente'
   const usability = d.usability !== null && d.usability !== undefined ? d.usability : '8.0'
-  const rows = d.rows || '—'
   const size = d.size || '—'
+
+  const handleLike = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    router.post(`/datasets/${id}/like`, {}, { preserveScroll: true })
+  }
   
   let licenseName = 'Proprietária'
   if (d.license) {
@@ -58,7 +67,7 @@ export default function DatasetCard({ d }: DatasetCardProps) {
         </span>
       </div>
       <div className="dr-ds-body">
-        <span className="dr-ds-unit">
+        <span className="dr-ds-unit" style={{ color: tint }}>
           <Ic.Building size={13} /> {unit}
         </span>
         <h3 className="dr-ds-title">{title}</h3>
@@ -71,9 +80,14 @@ export default function DatasetCard({ d }: DatasetCardProps) {
           ))}
         </div>
         <div className="dr-ds-meta">
-          <span className="m">
-            <Ic.Download size={14} /> {dl}
-          </span>
+          <button
+            type="button"
+            className={`dr-card-like-btn ${isLiked ? 'liked' : ''}`}
+            onClick={handleLike}
+            title="Curtir dataset"
+          >
+            <Ic.Heart size={14} style={{ color: isLiked ? '#e11d48' : undefined, fill: isLiked ? '#e11d48' : 'none' }} /> {dl}
+          </button>
           <span className="m">
             <Ic.Clock size={14} /> {updated}
           </span>
@@ -83,9 +97,6 @@ export default function DatasetCard({ d }: DatasetCardProps) {
           </span>
         </div>
         <div className="dr-ds-meta" style={{ borderTop: 'none', paddingTop: '10px' }}>
-          <span className="m">
-            <Ic.Rows size={14} /> {rows}
-          </span>
           <span className="m">
             <Ic.File size={14} /> {size}
           </span>

@@ -1,27 +1,19 @@
 import { useState } from 'react'
 import * as Ic from '#common/ui/components/datarural/icons'
-import { DatasetDetail, CITATION } from './detail-data'
+import { DatasetDetail } from './detail-data'
+import LicenseModal from './license-modal'
 
 interface RailProps {
   ds: DatasetDetail
 }
 
 export default function Rail({ ds }: RailProps) {
-  const [copied, setCopied] = useState(false)
-
-  const copyCite = () => {
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(CITATION)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1600)
-    }
-  }
+  const [licenseModalOpen, setLicenseModalOpen] = useState(false)
 
   const meta = [
     { k: 'Formato', v: ds.format, icon: 'File' },
     { k: 'Tamanho', v: ds.size, icon: 'Database' },
     { k: 'Linhas × Colunas', v: `${ds.rows} × ${ds.cols}`, icon: 'Table' },
-    { k: 'Atualização', v: ds.freq, icon: 'History' },
   ]
 
   return (
@@ -34,18 +26,23 @@ export default function Rail({ ds }: RailProps) {
           </h4>
         </div>
         <div className="dr-rail-card-body">
-          <a className="dr-license-pill" href={ds.licenseUrl}>
+          <button
+            type="button"
+            className="dr-license-pill"
+            onClick={() => setLicenseModalOpen(true)}
+            style={{ width: '100%', textAlign: 'left', cursor: 'pointer' }}
+          >
             <span className="lic-ic">
               <Ic.Scale size={16} />
             </span>
             <span style={{ minWidth: 0 }}>
               <span className="lt">{ds.license}</span>
-              <span className="ld">Atribuição · uso livre com crédito</span>
+              <span className="ld">Clique para ler os termos completos</span>
             </span>
             <span className="ext">
-              <Ic.External size={15} />
+              <Ic.Info size={15} />
             </span>
-          </a>
+          </button>
         </div>
       </div>
 
@@ -72,17 +69,6 @@ export default function Rail({ ds }: RailProps) {
                 </div>
               )
             })}
-            <div className="dr-meta-item">
-              <span className="mic">
-                <Ic.Hash size={15} />
-              </span>
-              <span style={{ minWidth: 0 }}>
-                <span className="mk">DOI</span>
-                <span className="mv" style={{ fontSize: 12.5 }}>
-                  {ds.doi}
-                </span>
-              </span>
-            </div>
           </div>
         </div>
       </div>
@@ -113,52 +99,6 @@ export default function Rail({ ds }: RailProps) {
                 <span className="pk">Cobertura geográfica</span>
                 <span className="pv">{ds.coverageGeo}</span>
               </span>
-            </div>
-            <div className="dr-prov-item">
-              <span className="pic">
-                <Ic.Thermometer size={16} />
-              </span>
-              <span>
-                <span className="pk">Coleta</span>
-                <span className="pv">{ds.collection}</span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* engajamento */}
-      <div className="dr-rail-card">
-        <div className="dr-rail-card-head">
-          <h4>
-            <Ic.Spark size={13} style={{ marginRight: 6 }} /> Atividade
-          </h4>
-        </div>
-        <div className="dr-rail-card-body">
-          <div className="dr-engage">
-            <div className="e">
-              <span className="ev">
-                <Ic.Download size={17} className="ic" /> {ds.downloads}
-              </span>
-              <span className="el">Downloads</span>
-            </div>
-            <div className="e">
-              <span className="ev">
-                <Ic.Eye size={17} className="ic" /> {ds.views}
-              </span>
-              <span className="el">Visualizações</span>
-            </div>
-            <div className="e">
-              <span className="ev">
-                <Ic.Heart size={17} className="ic" /> {ds.votes}
-              </span>
-              <span className="el">Votos</span>
-            </div>
-            <div className="e">
-              <span className="ev">
-                <Ic.Bookmark size={17} className="ic" /> {ds.watchers}
-              </span>
-              <span className="el">Salvos</span>
             </div>
           </div>
         </div>
@@ -205,29 +145,11 @@ export default function Rail({ ds }: RailProps) {
           </div>
         </div>
       </div>
-
-      {/* citação */}
-      <div className="dr-rail-card">
-        <div className="dr-rail-card-head">
-          <h4>
-            <Ic.Quote size={13} style={{ marginRight: 6 }} /> Como citar
-          </h4>
-        </div>
-        <div className="dr-rail-card-body">
-          <div className="dr-cite-box">{CITATION}</div>
-          <button className="dr-btn dr-btn-outline dr-btn-sm" onClick={copyCite} style={{ width: '100%' }}>
-            {copied ? (
-              <>
-                <Ic.Check size={15} /> Copiado
-              </>
-            ) : (
-              <>
-                <Ic.Copy size={15} /> Copiar citação
-              </>
-            )}
-          </button>
-        </div>
-      </div>
+      <LicenseModal
+        isOpen={licenseModalOpen}
+        onClose={() => setLicenseModalOpen(false)}
+        licenseName={ds.license}
+      />
     </aside>
   )
 }

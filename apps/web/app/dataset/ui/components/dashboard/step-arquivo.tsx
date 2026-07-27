@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import * as Ic from '#common/ui/components/datarural/icons'
-import { CSV_COLUMNS, QA_CHECKS, TYPE_LABEL } from './panel-data'
+import { CSV_COLUMNS, TYPE_LABEL } from './panel-data'
 
 interface Step1Props {
   data: any
@@ -32,7 +32,7 @@ export default function StepArquivo({ data, set }: Step1Props) {
 
     reader.onload = (event) => {
       const text = event.target?.result as string
-      
+
       const lines: string[] = []
       let currentLine = ''
       let inQuotes = false
@@ -100,7 +100,7 @@ export default function StepArquivo({ data, set }: Step1Props) {
       const parsedRows = lines.map((l) => parseCsvLine(l))
       const headers = parsedRows[0] || []
       const dataRows = parsedRows.slice(1).filter((r) => r.length > 0 && r.some((val) => val.trim() !== ''))
-      
+
       const totalRowsCount = dataRows.length
       const colCount = headers.length
 
@@ -199,7 +199,7 @@ export default function StepArquivo({ data, set }: Step1Props) {
           state: emptyRowsCount > 0 ? 'warn' : 'ok',
           title: emptyRowsCount > 0 ? `${emptyRowsCount} linhas vazias` : 'Nenhuma linha vazia',
           desc: emptyRowsCount > 0
-            ? 'Serão ignoradas na publicação. Revise se necessário.'
+            ? 'Revise se necessário.'
             : 'Todas as linhas possuem dados estruturados.',
         },
         {
@@ -364,7 +364,7 @@ export default function StepArquivo({ data, set }: Step1Props) {
                           className={`col-type col-type-${c.type} dr-type-${c.type}`}
                           style={{ marginTop: 6, display: 'inline-block' }}
                         >
-                          {TYPE_LABEL[c.type]}
+                          {(TYPE_LABEL as any)[c.type]}
                         </span>
                       </th>
                     ))}

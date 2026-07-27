@@ -8,7 +8,7 @@ interface ToolbarProps {
   counts: {
     all: number
     published: number
-    review: number
+    review?: number
     draft: number
     unpublished: number
   }
@@ -24,7 +24,6 @@ export default function Toolbar({
   const filters = [
     { id: 'all', label: 'Todos', n: counts.all },
     { id: 'published', label: 'Publicados', n: counts.published },
-    { id: 'review', label: 'Em revisão', n: counts.review },
     { id: 'draft', label: 'Rascunhos', n: counts.draft },
     { id: 'unpublished', label: 'Privados', n: counts.unpublished },
   ]

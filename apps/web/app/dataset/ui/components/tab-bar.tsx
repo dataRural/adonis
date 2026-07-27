@@ -4,23 +4,17 @@ interface TabBarProps {
   tab: string
   onTab: (tab: string) => void
   filesCount?: number
-  notebooksCount?: number
-  discussionCount?: number
 }
 
 export default function TabBar({
   tab,
   onTab,
   filesCount = 3,
-  notebooksCount = 3,
-  discussionCount = 4,
 }: TabBarProps) {
   const tabs = [
     { id: 'overview', label: 'Visão geral', icon: 'Book' },
     { id: 'viewer', label: 'Visualizador', icon: 'Table' },
     { id: 'files', label: 'Arquivos', icon: 'Folder', badge: filesCount },
-    { id: 'notebooks', label: 'Notebooks', icon: 'Code', badge: notebooksCount },
-    { id: 'discussion', label: 'Discussão', icon: 'Message', badge: discussionCount },
   ]
 
   return (

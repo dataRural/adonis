@@ -1,5 +1,4 @@
 import * as Ic from '#common/ui/components/datarural/icons'
-import { COLUMNS } from './detail-data'
 
 interface ColumnStatsProps {
   hot: string | null
@@ -8,7 +7,7 @@ interface ColumnStatsProps {
 }
 
 export default function ColumnStats({ hot, onHot, columns }: ColumnStatsProps) {
-  const finalColumns = columns && columns.length > 0 ? columns : COLUMNS
+  const finalColumns = columns && columns.length > 0 ? columns : []
 
   return (
     <div className="dr-coldict">
