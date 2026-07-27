@@ -39,6 +39,9 @@
   --brand-lightgreen: #52ae32;
   --brand-purple: #604696;
   --brand-teal: #009a8b;
+  --brand-amber: #d97706;
+  --brand-rose: #e11d48;
+  --brand-indigo: #4f46e5;
 
   --hero-bg: #f6f8fc;
   --surface-2: #f9fafd;
@@ -178,8 +181,8 @@ html, body {
   transition: color 0.15s, background-color 0.15s;
 }
 .dr-nav-link:hover { color: var(--foreground); background: var(--accent); }
-.dr-nav-link.active { color: var(--primary); }
-.dark .dr-nav-link.active { color: var(--brand-sky); }
+.dr-nav-link.active { color: var(--primary); font-weight: 800; background: var(--accent); }
+.dark .dr-nav-link.active { color: var(--brand-sky); background: var(--surface-2); }
 .dr-nav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
 
 /* ====================== BUTTONS ============================= */
@@ -1059,14 +1062,16 @@ table.dr-tbl thead th.col-hot .dr-colhead { background: color-mix(in srgb, var(-
 .dr-user-menu-head .umh-mail { font-size: 12px; font-weight: 600; color: var(--muted-foreground); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dr-user-menu-head .umh-unit { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; color: var(--brand-sky); margin-top: 2px; }
 .dr-user-menu .sep { height: 1px; background: var(--border); margin: 6px 4px; }
-.dr-user-menu button {
+.dr-user-menu button, .dr-user-menu a {
   display: flex; align-items: center; gap: 11px; width: 100%;
   border: none; background: transparent; cursor: pointer; text-align: left;
   font-size: 13.5px; font-weight: 700; color: var(--foreground);
-  padding: 9px 10px; border-radius: 8px; transition: background-color 0.12s;
+  padding: 9px 10px; border-radius: 8px; transition: background-color 0.12s, color 0.12s;
+  text-decoration: none; box-sizing: border-box;
 }
-.dr-user-menu button:hover { background: var(--accent); }
-.dr-user-menu button svg { color: var(--muted-foreground); flex-shrink: 0; }
+.dr-user-menu button:hover, .dr-user-menu a:hover { background: var(--accent); color: var(--foreground); }
+.dr-user-menu button svg, .dr-user-menu a svg { color: var(--muted-foreground); flex-shrink: 0; }
+.dr-user-menu button:hover svg, .dr-user-menu a:hover svg { color: var(--foreground); }
 .dr-user-menu button.danger { color: var(--destructive); }
 .dr-user-menu button.danger svg { color: var(--destructive); }
 .dr-user-menu button.danger:hover { background: color-mix(in srgb, var(--destructive) 10%, transparent); }
@@ -1174,7 +1179,7 @@ table.dr-tbl thead th.col-hot .dr-colhead { background: color-mix(in srgb, var(-
 }
 .dr-mds-head, .dr-mds-row {
   display: grid;
-  grid-template-columns: minmax(0,2.6fr) 130px 110px 110px 120px 44px;
+  grid-template-columns: minmax(0,2.6fr) 130px 110px 120px 44px;
   align-items: center; gap: 16px;
   padding: 0 20px;
 }

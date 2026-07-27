@@ -8,13 +8,17 @@ import DatasetsSection from '#common/ui/components/datarural/datasets-section'
 import PublishCTA from '#common/ui/components/datarural/publish-cta'
 import Footer from '#common/ui/components/datarural/footer'
 import { DatasetItem } from '#common/ui/utils/mock-data'
+import { StatItem } from '#common/ui/components/datarural/stats-strip'
+import { CategoryItem } from '#common/ui/components/datarural/categories'
 import type { InertiaProps } from '#core/ui/types'
 
 type PageProps = InertiaProps<{
   datasets?: DatasetItem[]
+  stats?: StatItem[]
+  categories?: CategoryItem[]
 }>
 
-export default function Page({ datasets = [] }: PageProps) {
+export default function Page({ datasets = [], stats, categories }: PageProps) {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -23,7 +27,7 @@ export default function Page({ datasets = [] }: PageProps) {
   })
   const [query, setQuery] = useState('')
   const [activeCat, setActiveCat] = useState<string | null>(null)
-  const [tab, setTab] = useState('featured')
+  const [tab, setTab] = useState('recent')
   const [view, setView] = useState<'grid' | 'list'>('grid')
 
   useEffect(() => {
@@ -35,26 +39,34 @@ export default function Page({ datasets = [] }: PageProps) {
   const list = useMemo(() => {
     let arr = datasets.slice()
     if (activeCat) {
-      arr = arr.filter((d) => d.cat === activeCat)
+      const catLower = activeCat.toLowerCase().trim()
+      arr = arr.filter((d) => d.cat && d.cat.toLowerCase().trim() === catLower)
     }
+
     const q = query.trim().toLowerCase()
     if (q) {
-      arr = arr.filter((d) =>
-        (d.title + ' ' + (d.unit || '') + ' ' + (d.desc || '') + ' ' + (d.tags?.join(' ') || '')).toLowerCase().includes(q)
-      )
-    }
-    if (tab === 'downloads') {
-      arr.sort((a, b) => b.downloads - a.downloads)
-    } else if (tab === 'recent') {
-      arr = arr.filter((d) => d.recent).concat(arr.filter((d) => !d.recent))
-    } else {
-      arr.sort((a, b) => {
-        if (b.featured === a.featured) {
-          return a.order - b.order
-        }
-        return b.featured ? 1 : -1
+      arr = arr.filter((d) => {
+        const titleText = (d.title || d.name || '').toLowerCase()
+        const unitText = (d.unit || '').toLowerCase()
+        const descText = (d.desc || d.description || '').toLowerCase()
+        const tagText = d.tags ? d.tags.join(' ').toLowerCase() : ''
+        return titleText.includes(q) || unitText.includes(q) || descText.includes(q) || tagText.includes(q)
       })
     }
+
+    if (tab === 'recent') {
+      arr.sort((a, b) => b.id - a.id)
+    } else if (tab === 'featured') {
+      arr.sort((a, b) => {
+        const scoreA = Number(a.usability) || 0
+        const scoreB = Number(b.usability) || 0
+        if (scoreA !== scoreB) {
+          return scoreB - scoreA
+        }
+        return b.id - a.id
+      })
+    }
+
     return arr
   }, [datasets, query, activeCat, tab])
 
@@ -79,8 +91,8 @@ export default function Page({ datasets = [] }: PageProps) {
         onQuery={setQuery}
         onChip={handleChip}
       />
-      <StatsStrip />
-      <Categories active={activeCat} onPick={setActiveCat} />
+      <StatsStrip stats={stats} />
+      <Categories active={activeCat} onPick={setActiveCat} categories={categories} />
       <DatasetsSection
         list={list}
         tab={tab}

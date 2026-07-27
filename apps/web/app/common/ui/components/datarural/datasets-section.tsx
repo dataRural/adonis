@@ -19,9 +19,8 @@ export default function DatasetsSection({
   activeCat,
 }: DatasetsSectionProps) {
   const tabs = [
-    { id: 'featured', label: 'Em destaque' },
-    { id: 'downloads', label: 'Mais baixados' },
     { id: 'recent', label: 'Recentes' },
+    { id: 'featured', label: 'Em destaque' },
   ]
 
   return (

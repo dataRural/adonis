@@ -24,10 +24,12 @@ export type UserDatasetItem = {
   status: 'published' | 'review' | 'draft' | 'unpublished'
   version: string
   updated: string
-  downloads: string
-  views: string
+  likes?: string
+  downloads?: string
+  views?: string
   usability: string | null
   rows: string
+  groupId?: number | null
 }
 
 export interface CsvColumnItem {

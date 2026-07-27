@@ -58,7 +58,7 @@ export default function DatasetCard({ d }: DatasetCardProps) {
         </span>
       </div>
       <div className="dr-ds-body">
-        <span className="dr-ds-unit">
+        <span className="dr-ds-unit" style={{ color: tint }}>
           <Ic.Building size={13} /> {unit}
         </span>
         <h3 className="dr-ds-title">{title}</h3>
@@ -72,7 +72,7 @@ export default function DatasetCard({ d }: DatasetCardProps) {
         </div>
         <div className="dr-ds-meta">
           <span className="m">
-            <Ic.Download size={14} /> {dl}
+            <Ic.Heart size={14} /> {dl}
           </span>
           <span className="m">
             <Ic.Clock size={14} /> {updated}
@@ -83,9 +83,6 @@ export default function DatasetCard({ d }: DatasetCardProps) {
           </span>
         </div>
         <div className="dr-ds-meta" style={{ borderTop: 'none', paddingTop: '10px' }}>
-          <span className="m">
-            <Ic.Rows size={14} /> {rows}
-          </span>
           <span className="m">
             <Ic.File size={14} /> {size}
           </span>

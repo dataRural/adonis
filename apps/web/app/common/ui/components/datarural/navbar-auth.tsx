@@ -101,10 +101,10 @@ export function NavUser({ user }: { user?: UserProps | null }) {
           <button role="menuitem">
             <Ic.User size={16} /> Meu perfil público
           </button>
-          <Link role="menuitem" href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 11, width: '100%', padding: '9px 10px', fontSize: '13.5px', fontWeight: 700 }}>
+          <Link role="menuitem" href="/dashboard">
             <Ic.Database size={16} /> Meus datasets
           </Link>
-          <Link role="menuitem" href="/groups" style={{ display: 'flex', alignItems: 'center', gap: 11, width: '100%', padding: '9px 10px', fontSize: '13.5px', fontWeight: 700 }}>
+          <Link role="menuitem" href="/groups">
             <Ic.Users size={16} /> Meus grupos
           </Link>
           <button role="menuitem">
@@ -114,9 +114,6 @@ export function NavUser({ user }: { user?: UserProps | null }) {
             <Ic.Settings size={16} /> Configurações da conta
           </button>
           <div className="sep"></div>
-          <button role="menuitem">
-            <Ic.Book size={16} /> Ajuda &amp; documentação
-          </button>
           <button className="danger" role="menuitem" onClick={handleLogout}>
             <Ic.Logout size={16} /> Sair
           </button>

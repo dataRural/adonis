@@ -149,13 +149,8 @@ function DatasetRow({
       </div>
 
       <div className="col-dl dr-mds-metric">
-        <span className="num">{d.downloads}</span>
-        <span className="lbl">downloads</span>
-      </div>
-
-      <div className="col-views dr-mds-metric">
-        <span className="num">{d.views}</span>
-        <span className="lbl">visualizações</span>
+        <span className="num">{d.likes ?? d.downloads ?? '0'}</span>
+        <span className="lbl">curtidas</span>
       </div>
 
       <div className="col-usab">
@@ -193,8 +188,7 @@ export default function DatasetTable({ list, onEdit, onPublish }: DatasetTablePr
       <div className="dr-mds-head">
         <span>Dataset</span>
         <span>Status</span>
-        <span>Downloads</span>
-        <span>Visualizações</span>
+        <span>Curtidas</span>
         <span>Usabilidade</span>
         <span></span>
       </div>

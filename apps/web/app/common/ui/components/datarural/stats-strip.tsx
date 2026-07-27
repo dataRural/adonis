@@ -9,10 +9,10 @@ interface StatsStripProps {
 }
 
 const DEFAULT_STATS: StatItem[] = [
-  { val: '1.247', label: 'Datasets publicados', color: 'var(--brand-blue)' },
-  { val: '38,9 mil', label: 'Downloads realizados', color: 'var(--brand-green)' },
-  { val: '12', label: 'Institutos contribuindo', color: 'var(--brand-yellow)' },
-  { val: '540', label: 'Pesquisadores', color: 'var(--brand-orange)' },
+  { val: '0', label: 'Datasets públicos', color: 'var(--brand-blue)' },
+  { val: '10', label: 'Áreas do conhecimento', color: 'var(--brand-green)' },
+  { val: '0', label: 'Grupos de pesquisa', color: 'var(--brand-yellow)' },
+  { val: '0', label: 'Pesquisadores', color: 'var(--brand-orange)' },
 ]
 
 export default function StatsStrip({ stats = DEFAULT_STATS }: StatsStripProps) {

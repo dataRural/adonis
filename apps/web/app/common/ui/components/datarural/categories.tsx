@@ -14,20 +14,20 @@ interface CategoriesProps {
   categories?: CategoryItem[]
 }
 
-const DEFAULT_CATEGORIES: CategoryItem[] = [
-  { id: 'agro', name: 'Agronomia', count: 214, icon: 'sprout', color: 'var(--brand-green)' },
-  { id: 'vet', name: 'Veterinária', count: 168, icon: 'paw', color: 'var(--brand-orange)' },
-  { id: 'clima', name: 'Clima & Meteorologia', count: 96, icon: 'cloud', color: 'var(--brand-sky)' },
-  { id: 'bio', name: 'Ciências Biológicas', count: 143, icon: 'leaf', color: 'var(--brand-lightgreen)' },
-  { id: 'flor', name: 'Florestas', count: 71, icon: 'tree', color: 'var(--brand-teal)' },
-  { id: 'exatas', name: 'Ciências Exatas', count: 88, icon: 'chart', color: 'var(--brand-blue)' },
-  { id: 'quim', name: 'Química', count: 64, icon: 'flask', color: 'var(--brand-purple)' },
-  { id: 'zoo', name: 'Zootecnia', count: 102, icon: 'database', color: 'var(--brand-orange)' },
-  { id: 'soc', name: 'Ciências Sociais', count: 79, icon: 'users', color: 'var(--brand-blue)' },
-  { id: 'econ', name: 'Economia & Gestão', count: 58, icon: 'chart', color: 'var(--brand-green)' },
+export const BASE_CATEGORIES: CategoryItem[] = [
+  { id: 'agro', name: 'Agronomia', count: 0, icon: 'sprout', color: 'var(--brand-green)' },
+  { id: 'vet', name: 'Veterinária', count: 0, icon: 'paw', color: 'var(--brand-orange)' },
+  { id: 'clima', name: 'Clima & Meteorologia', count: 0, icon: 'cloud', color: 'var(--brand-sky)' },
+  { id: 'bio', name: 'Ciências Biológicas', count: 0, icon: 'leaf', color: 'var(--brand-lightgreen)' },
+  { id: 'flor', name: 'Florestas', count: 0, icon: 'tree', color: 'var(--brand-teal)' },
+  { id: 'exatas', name: 'Ciências Exatas', count: 0, icon: 'chart', color: 'var(--brand-blue)' },
+  { id: 'quim', name: 'Química', count: 0, icon: 'flask', color: 'var(--brand-purple)' },
+  { id: 'zoo', name: 'Zootecnia', count: 0, icon: 'database', color: 'var(--brand-amber)' },
+  { id: 'soc', name: 'Ciências Sociais', count: 0, icon: 'users', color: 'var(--brand-rose)' },
+  { id: 'econ', name: 'Economia & Gestão', count: 0, icon: 'chart', color: 'var(--brand-indigo)' },
 ]
 
-export default function Categories({ active, onPick, categories = DEFAULT_CATEGORIES }: CategoriesProps) {
+export default function Categories({ active, onPick, categories = BASE_CATEGORIES }: CategoriesProps) {
   return (
     <section className="dr-section" id="categorias">
       <div className="dr-container">
@@ -36,9 +36,6 @@ export default function Categories({ active, onPick, categories = DEFAULT_CATEGO
             <h2>Explore por área de conhecimento</h2>
             <p>Dados organizados pelos institutos e unidades da Universidade.</p>
           </div>
-          <a className="dr-link-more" href="#">
-            Ver todas as áreas <Ic.Arrow size={16} style={{ display: 'inline', marginLeft: 4 }} />
-          </a>
         </div>
         <div className="dr-cat-grid">
           {categories.map((c) => {
@@ -57,7 +54,9 @@ export default function Categories({ active, onPick, categories = DEFAULT_CATEGO
                 </span>
                 <span>
                   <span className="dr-cat-name">{c.name}</span>
-                  <span className="dr-cat-count">{c.count} datasets</span>
+                  <span className="dr-cat-count">
+                    {c.count} {c.count === 1 ? 'dataset' : 'datasets'}
+                  </span>
                 </span>
               </button>
             )
