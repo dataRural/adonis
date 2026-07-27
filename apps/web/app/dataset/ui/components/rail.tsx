@@ -1,11 +1,14 @@
+import { useState } from 'react'
 import * as Ic from '#common/ui/components/datarural/icons'
 import { DatasetDetail } from './detail-data'
+import LicenseModal from './license-modal'
 
 interface RailProps {
   ds: DatasetDetail
 }
 
 export default function Rail({ ds }: RailProps) {
+  const [licenseModalOpen, setLicenseModalOpen] = useState(false)
 
   const meta = [
     { k: 'Formato', v: ds.format, icon: 'File' },
@@ -23,18 +26,23 @@ export default function Rail({ ds }: RailProps) {
           </h4>
         </div>
         <div className="dr-rail-card-body">
-          <a className="dr-license-pill" href={ds.licenseUrl}>
+          <button
+            type="button"
+            className="dr-license-pill"
+            onClick={() => setLicenseModalOpen(true)}
+            style={{ width: '100%', textAlign: 'left', cursor: 'pointer' }}
+          >
             <span className="lic-ic">
               <Ic.Scale size={16} />
             </span>
             <span style={{ minWidth: 0 }}>
               <span className="lt">{ds.license}</span>
-              <span className="ld">Atribuição · uso livre com crédito</span>
+              <span className="ld">Clique para ler os termos completos</span>
             </span>
             <span className="ext">
-              <Ic.External size={15} />
+              <Ic.Info size={15} />
             </span>
-          </a>
+          </button>
         </div>
       </div>
 
@@ -137,6 +145,11 @@ export default function Rail({ ds }: RailProps) {
           </div>
         </div>
       </div>
+      <LicenseModal
+        isOpen={licenseModalOpen}
+        onClose={() => setLicenseModalOpen(false)}
+        licenseName={ds.license}
+      />
     </aside>
   )
 }

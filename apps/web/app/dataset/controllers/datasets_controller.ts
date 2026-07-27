@@ -691,7 +691,7 @@ export default class DatasetsController {
   public async show({ params, inertia, auth, response, session }: HttpContext) {
     const datasetId = Number(params.id)
     if (Number.isNaN(datasetId)) {
-      return inertia.render('dataset/show', {})
+      return response.redirect().toPath('/dashboard')
     }
 
     const dataset = await Dataset.query()
@@ -706,7 +706,7 @@ export default class DatasetsController {
       .first()
 
     if (!dataset) {
-      return inertia.render('dataset/show', {})
+      return response.redirect().toPath('/dashboard')
     }
 
     await auth.check()
@@ -1038,7 +1038,7 @@ export default class DatasetsController {
     return inertia.render('dataset/dashboard', { datasets: datasetsPayload, userGroups, totalLikesCount })
   }
 
-  public async publish({ inertia, request, auth }: HttpContext) {
+  public async publish({ inertia, request, auth, response, session }: HttpContext) {
     const datasetId = request.input('id')
     let editDataset: any = null
 

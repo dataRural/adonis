@@ -21,7 +21,6 @@ function RowMenu({
   onClose: () => void
   openUpwards?: boolean
 }) {
-  const isPub = d.status === 'published'
   return (
     <div
       className="dr-row-menu"

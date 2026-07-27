@@ -9,12 +9,12 @@ import FilesTab from '../components/files-tab'
 import Rail from '../components/rail'
 import RelatedSection from '../components/related-section'
 import Footer from '#common/ui/components/datarural/footer'
-import { DS, DatasetDetail } from '../components/detail-data'
+import { DatasetDetail } from '../components/detail-data'
 
 import type { InertiaProps } from '#core/ui/types'
 
 type PageProps = InertiaProps<{
-  dataset?: DatasetDetail
+  dataset: DatasetDetail
   previewColumns?: any[]
   previewRows?: any[][]
   versions?: any[]
@@ -36,7 +36,7 @@ export default function DatasetShowPage({ dataset, previewColumns, previewRows, 
     return 'overview'
   })
 
-  const ds = dataset || DS
+  const ds = dataset
 
   useEffect(() => {
     const root = document.documentElement

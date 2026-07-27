@@ -1,8 +1,8 @@
 import * as Ic from '#common/ui/components/datarural/icons'
-import { FILES, VERSIONS, DS, DatasetDetail } from './detail-data'
+import { DatasetDetail } from './detail-data'
 
-export default function FilesTab({ ds, versions }: { ds?: DatasetDetail; versions?: any[] }) {
-  const finalDs = ds || DS
+export default function FilesTab({ ds, versions }: { ds: DatasetDetail; versions?: any[] }) {
+  const finalDs = ds
   const finalVersions = versions && versions.length > 0 ? versions : []
 
   const latest = finalVersions[0]
@@ -27,7 +27,7 @@ export default function FilesTab({ ds, versions }: { ds?: DatasetDetail; version
           versionId: null as number | null,
         },
       ]
-    : FILES.map((f) => ({ ...f, versionId: null as number | null }))
+    : []
 
   // Build versions history list
   const versionsList =
@@ -41,7 +41,7 @@ export default function FilesTab({ ds, versions }: { ds?: DatasetDetail; version
           current: v.isLatest,
           id: v.id,
         }))
-      : VERSIONS.map((v) => ({ ...v, id: null as number | null }))
+      : []
 
   const handleDownload = (versionId: number | null, fileName: string) => {
     if (versionId !== null) {

@@ -28,10 +28,10 @@ interface MemberListProps {
   groupId: number
   members: MemberItem[]
   canManage: boolean
-  currentUserRole: string | null
+  currentUserRole?: string | null
 }
 
-export default function MemberList({ groupId, members, canManage, currentUserRole }: MemberListProps) {
+export default function MemberList({ groupId, members, canManage }: MemberListProps) {
   const [changingRole, setChangingRole] = useState<number | null>(null)
 
   const handleRoleChange = (memberId: number, newRole: string) => {

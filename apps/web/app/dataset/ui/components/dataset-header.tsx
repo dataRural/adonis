@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { router } from '@inertiajs/react'
 import * as Ic from '#common/ui/components/datarural/icons'
 import { DatasetDetail } from './detail-data'
+import LicenseModal from './license-modal'
 
 interface DatasetHeaderProps {
   ds: DatasetDetail
@@ -12,6 +13,7 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
   const [saved, setSaved] = useState(false)
   const [shareOpen, setShareOpen] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [licenseModalOpen, setLicenseModalOpen] = useState(false)
   const shareRef = useRef<HTMLDivElement>(null)
   const isLiked = !!(ds as any).isLiked
   const isOwner = !!(ds as any).isOwner
@@ -106,9 +108,15 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
                 <Ic.Verified size={15} /> <b>{ds.usability}</b> usabilidade
               </span>
               <span className="vsep"></span>
-              <span className="mi">
+              <button
+                type="button"
+                className="mi"
+                onClick={() => setLicenseModalOpen(true)}
+                style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer', color: 'inherit' }}
+                title="Clique para ler os termos da licença"
+              >
                 <Ic.Scale size={14} /> {ds.license}
-              </span>
+              </button>
               <span className="mi">
                 <Ic.File size={14} /> {ds.format} · {ds.size}
               </span>
@@ -192,6 +200,11 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
           </div>
         </div>
       </div>
+      <LicenseModal
+        isOpen={licenseModalOpen}
+        onClose={() => setLicenseModalOpen(false)}
+        licenseName={ds.license}
+      />
     </section>
   )
 }

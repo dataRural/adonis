@@ -213,7 +213,7 @@ export const TYPE_LABEL = { num: 'Número', text: 'Texto', date: 'Data', geo: 'G
 export const QA_CHECKS: QaCheckItem[] = [
   { id: 'enc', state: 'ok', title: 'Codificação UTF-8', desc: 'Arquivo lido sem caracteres inválidos.' },
   { id: 'head', state: 'ok', title: 'Cabeçalho detectado', desc: '6 colunas nomeadas na primeira linha.' },
-  { id: 'empty', state: 'warn', title: '3 linhas vazias', desc: 'Serão ignoradas na publicação. Revise se necessário.' },
+  { id: 'empty', state: 'warn', title: '3 linhas vazias', desc: 'Revise se necessário.' },
   { id: 'types', state: 'ok', title: 'Tipos consistentes', desc: 'Nenhum valor fora do tipo detectado por coluna.' },
 ]
 

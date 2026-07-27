@@ -1,13 +1,13 @@
 import DatasetCard, { DatasetItem } from '#common/ui/components/datarural/dataset-card'
 import * as Ic from '#common/ui/components/datarural/icons'
-import { RELATED } from './detail-data'
 
 interface RelatedSectionProps {
   items?: DatasetItem[]
 }
 
 export default function RelatedSection({ items }: RelatedSectionProps) {
-  const list = items && items.length > 0 ? items : RELATED
+  const list = items && items.length > 0 ? items : []
+
 
   return (
     <section className="dr-section dr-related-wrap" style={{ paddingTop: 14 }}>

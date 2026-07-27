@@ -4,11 +4,11 @@ import type React from 'react'
 import type { Prettify } from '@adonisjs/core/types/common'
 
 type ExtractProps<T> =
-  T extends React.FC<infer Props>
+  T extends React.ComponentType<infer Props>
     ? Prettify<Omit<Props, 'children'>>
-    : T extends React.Component<infer Props>
+    : T extends (props: infer Props, ...args: any[]) => any
       ? Prettify<Omit<Props, 'children'>>
-      : never
+      : any
 
 declare module '@adonisjs/inertia/types' {
   export interface InertiaPages {
@@ -24,9 +24,9 @@ declare module '@adonisjs/inertia/types' {
     'dataset/publish': ExtractProps<(typeof import('../../app/dataset/ui/pages/publish.tsx'))['default']>
     'dataset/show': ExtractProps<(typeof import('../../app/dataset/ui/pages/show.tsx'))['default']>
     'dataset/view': ExtractProps<(typeof import('../../app/dataset/ui/pages/view.tsx'))['default']>
-    'groups/index': ExtractProps<(typeof import('../../app/groups/ui/pages/index.tsx'))['default']>
-    'groups/show': ExtractProps<(typeof import('../../app/groups/ui/pages/show.tsx'))['default']>
-    'marketing/show': ExtractProps<(typeof import('../../app/marketing/ui/pages/show.tsx'))['default']>
+    'groups/index': any
+    'groups/show': any
+    'marketing/show': any
     'users/appearance': ExtractProps<(typeof import('../../app/users/ui/pages/appearance.tsx'))['default']>
     'users/index': ExtractProps<(typeof import('../../app/users/ui/pages/index.tsx'))['default']>
     'users/password': ExtractProps<(typeof import('../../app/users/ui/pages/password.tsx'))['default']>
