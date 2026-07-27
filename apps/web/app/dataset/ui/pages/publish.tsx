@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { router } from '@inertiajs/react'
+import { router, Head } from '@inertiajs/react'
 import PanelNav from '#common/ui/components/datarural/navbar-auth'
 import PanelFooter from '#common/ui/components/datarural/footer-simple'
 import WizardStepper from '../components/dashboard/wizard-stepper'
@@ -252,6 +252,7 @@ export default function PublishWizard({ editDataset, userGroups = [] }: PageProp
 
   return (
     <div className="dr-app dr-panel-wrap">
+      <Head title={editDataset ? "Editar Dataset" : "Publicar Dataset"} />
       <PanelNav
         theme={theme}
         onToggleTheme={handleToggleTheme}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { router } from '@inertiajs/react'
+import { router, Head } from '@inertiajs/react'
 import PanelNav from '#common/ui/components/datarural/navbar-auth'
 import PanelFooter from '#common/ui/components/datarural/footer-simple'
 import MemberList from '../components/member-list'
@@ -80,6 +80,7 @@ export default function GroupShow({ group, currentUserRole, members = [], datase
 
   return (
     <div className="dr-app dr-panel-wrap">
+      <Head title={group?.name || 'Grupo'} />
       <PanelNav
         theme={theme}
         onToggleTheme={() => setTheme((p) => (p === 'dark' ? 'light' : 'dark'))}

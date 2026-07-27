@@ -10,12 +10,12 @@ import { isSSREnableForPage } from 'config/ssr'
 import { I18nextProvider } from 'react-i18next'
 import { setupI18n } from '../config/i18n.config'
 
-const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS Starter Kit'
+const appName = import.meta.env.VITE_APP_NAME || 'DataRural — UFRRJ'
 
 createInertiaApp({
-  progress: { color: 'black' },
+  progress: { color: 'var(--brand-green, #16a34a)' },
 
-  title: (title) => (title ? `${title} - ${appName}` : appName),
+  title: (title) => title || appName,
 
   resolve: (name) => {
     const firstPart = name.split('/')[0]

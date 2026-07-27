@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import { router } from '@inertiajs/react'
+import { router, Head } from '@inertiajs/react'
 import PanelNav from '#common/ui/components/datarural/navbar-auth'
 import PanelFooter from '#common/ui/components/datarural/footer-simple'
 import DashboardStats from '../components/dashboard/dashboard-stats'
@@ -72,6 +72,7 @@ export default function Dashboard({ datasets = [], userGroups = [] }: PageProps)
 
   return (
     <div className="dr-app dr-panel-wrap">
+      <Head title="Meus Datasets" />
       <PanelNav
         theme={theme}
         onToggleTheme={handleToggleTheme}

@@ -48,8 +48,8 @@
 ### 1. Clonar o Repositório e Instalar Dependências
 
 ```bash
-git clone https://github.com/rafael/teste23.git
-cd teste23
+git clone git@github.com:dataRural/adonis.git
+cd adonis
 pnpm install
 ```
 

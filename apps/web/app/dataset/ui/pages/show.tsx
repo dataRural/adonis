@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Head } from '@inertiajs/react'
 import Navbar from '#common/ui/components/datarural/navbar'
 import DatasetHeader from '../components/dataset-header'
 import TabBar from '../components/tab-bar'
@@ -53,6 +54,7 @@ export default function DatasetShowPage({ dataset, previewColumns, previewRows, 
 
   return (
     <div className="dr-app">
+      <Head title={ds.title || "Dataset"} />
       <Navbar theme={theme} onToggleTheme={handleToggleTheme} activePage="datasets" />
       <DatasetHeader ds={ds} latestVersionId={versions && versions[0]?.id} />
       <TabBar tab={tab} onTab={setTab} />

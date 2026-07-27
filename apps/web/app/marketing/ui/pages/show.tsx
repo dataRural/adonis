@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
+import { Head } from '@inertiajs/react'
 import Navbar from '#common/ui/components/datarural/navbar'
 import Hero from '#common/ui/components/datarural/hero'
 import StatsStrip from '#common/ui/components/datarural/stats-strip'
@@ -61,10 +62,7 @@ export default function Page({ datasets = [] }: PageProps) {
     setQuery(t)
     const el = document.getElementById('datasets')
     if (el) {
-      window.scrollTo({
-        top: el.getBoundingClientRect().top + window.scrollY - 80,
-        behavior: 'smooth',
-      })
+      el.scrollIntoView({ behavior: 'smooth' })
     }
   }
 
@@ -74,6 +72,7 @@ export default function Page({ datasets = [] }: PageProps) {
 
   return (
     <div className="dr-app">
+      <Head title="DataRural" />
       <Navbar theme={theme} onToggleTheme={handleToggleTheme} />
       <Hero
         query={query}
