@@ -478,6 +478,26 @@ html, body {
   font-size: 12.5px; font-weight: 700; color: var(--muted-foreground);
 }
 .dr-ds-meta .m { display: inline-flex; align-items: center; gap: 5px; }
+.dr-card-like-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: transparent; border: none; padding: 2px 6px;
+  border-radius: 6px; cursor: pointer;
+  font-size: 12.5px; font-weight: 700; color: var(--muted-foreground);
+  transition: background-color 0.15s, color 0.15s, transform 0.12s;
+  margin: -2px -4px;
+}
+.dr-card-like-btn:hover {
+  background: color-mix(in srgb, var(--destructive) 10%, transparent);
+  color: var(--destructive);
+  transform: scale(1.06);
+}
+.dr-card-like-btn.liked {
+  color: #e11d48;
+}
+.dr-card-like-btn.liked svg {
+  fill: #e11d48;
+  color: #e11d48;
+}
 .dr-ds-meta .spacer { flex: 1; }
 .dr-ds-license {
   font-size: 11px; font-weight: 800; color: var(--muted-foreground);

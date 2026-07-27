@@ -7,6 +7,7 @@ import { dirname, join } from 'node:path'
 
 import Dataset from '../models/dataset.js'
 import DatasetVersion from '../models/dataset_version.js'
+import DatasetLike from '../models/dataset_like.js'
 import { addDatasetVersionValidator, createDatasetValidator, updateDatasetValidator } from '#app/dataset/validators'
 import { attachmentManager } from '@jrmc/adonis-attachment'
 import { marked } from 'marked'
@@ -693,6 +694,7 @@ export default class DatasetsController {
         query.orderBy('id', 'desc')
       })
       .preload('license')
+      .preload('likes')
       .first()
 
     if (!dataset) {
@@ -701,6 +703,8 @@ export default class DatasetsController {
 
     await auth.check()
     const currentUserId = auth.user?.id ?? null
+    const votesCount = dataset.likes ? dataset.likes.length : 0
+    const isLiked = currentUserId ? dataset.likes.some(l => Number(l.userId) === Number(currentUserId)) : false
     if (!dataset.isPublic && Number(currentUserId) !== Number(dataset.userId)) {
       // Check if user is a member of the dataset's group
       let hasGroupAccess = false
@@ -813,7 +817,8 @@ export default class DatasetsController {
       files: dataset.versions.length,
       downloads: '0',
       views: '0',
-      votes: 0,
+      votes: votesCount,
+      isLiked,
       watchers: 0,
       freq: 'Mensal',
       coverageTime: dataset.period || '—',
@@ -993,5 +998,48 @@ export default class DatasetsController {
     }))
 
     return inertia.render('dataset/publish', { editDataset, userGroups })
+  }
+
+  public async toggleLike({ params, response, session, auth, request }: HttpContext) {
+    const datasetId = Number(params.id)
+    const dataset = await Dataset.find(datasetId)
+
+    if (!dataset) {
+      return response.notFound({ error: 'Dataset não encontrado' })
+    }
+
+    await auth.check()
+    const user = auth.user
+    if (!user) {
+      const isJson = request.accepts(['html', 'json']) === 'json' || request.ajax()
+      if (isJson) {
+        return response.unauthorized({ error: 'Você precisa estar autenticado para curtir.' })
+      }
+      session.flash('error', 'Você precisa estar autenticado para curtir.')
+      return response.redirect().toPath('/login')
+    }
+
+    const existingLike = await DatasetLike.query()
+      .where('datasetId', dataset.id)
+      .where('userId', user.id)
+      .first()
+
+    if (existingLike) {
+      await existingLike.delete()
+    } else {
+      await DatasetLike.create({
+        datasetId: dataset.id,
+        userId: user.id,
+      })
+    }
+
+    const isJson = !request.header('x-inertia') && (request.accepts(['html', 'json']) === 'json' || request.ajax())
+    if (isJson) {
+      const likesRes = await DatasetLike.query().where('datasetId', dataset.id).count('* as total')
+      const count = Number((likesRes[0] as any)?.$extras?.total || 0)
+      return response.ok({ liked: !existingLike, count })
+    }
+
+    return response.redirect().back()
   }
 }

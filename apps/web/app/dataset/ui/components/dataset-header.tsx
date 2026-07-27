@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { router } from '@inertiajs/react'
 import * as Ic from '#common/ui/components/datarural/icons'
 import { DatasetDetail } from './detail-data'
 
@@ -8,9 +9,14 @@ interface DatasetHeaderProps {
 }
 
 export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProps) {
-  const [voted, setVoted] = useState(false)
   const [saved, setSaved] = useState(false)
-  const votes = ds.votes + (voted ? 1 : 0)
+  const isLiked = !!(ds as any).isLiked
+  const votes = ds.votes || 0
+
+  const handleLike = (e: React.MouseEvent) => {
+    e.preventDefault()
+    router.post(`/datasets/${ds.id}/like`, {}, { preserveScroll: true })
+  }
 
   const handleDownload = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -89,11 +95,12 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
             </div>
             <div className="dr-ds-action-row">
               <button
-                className={`dr-btn-count ${voted ? 'on' : ''}`}
-                onClick={() => setVoted(!voted)}
+                className={`dr-btn-count ${isLiked ? 'on' : ''}`}
+                onClick={handleLike}
                 style={{ flex: 1 }}
+                title="Curtir dataset"
               >
-                <Ic.Heart size={15} className="ic" style={{ marginRight: 6 }} />{' '}
+                <Ic.Heart size={15} className="ic" style={{ marginRight: 6, color: isLiked ? '#e11d48' : undefined, fill: isLiked ? '#e11d48' : 'none' }} />{' '}
                 <span className="n">{votes}</span>
               </button>
               <button

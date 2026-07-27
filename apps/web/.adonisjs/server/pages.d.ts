@@ -32,5 +32,12 @@ declare module '@adonisjs/inertia/types' {
     'users/password': ExtractProps<(typeof import('../../app/users/ui/pages/password.tsx'))['default']>
     'users/profile': ExtractProps<(typeof import('../../app/users/ui/pages/profile.tsx'))['default']>
     'users/tokens': ExtractProps<(typeof import('../../app/users/ui/pages/tokens.tsx'))['default']>
+    'dataset/models/dataset_like': ExtractProps<(typeof import('../../app/dataset/models/dataset_like.ts'))['default']>
+    'dataset/database/migrations/1761021001001_create_licenses_table': ExtractProps<(typeof import('../../app/dataset/database/migrations/1761021001001_create_licenses_table.ts'))['default']>
+    'dataset/database/migrations/1761021001002_create_datasets_table': ExtractProps<(typeof import('../../app/dataset/database/migrations/1761021001002_create_datasets_table.ts'))['default']>
+    'dataset/database/migrations/1761021001003_create_dataset_version_table': ExtractProps<(typeof import('../../app/dataset/database/migrations/1761021001003_create_dataset_version_table.ts'))['default']>
+    'dataset/database/migrations/1761021001004_create_dataset_likes_table': ExtractProps<(typeof import('../../app/dataset/database/migrations/1761021001004_create_dataset_likes_table.ts'))['default']>
+    'dataset/database/seeders/dataset_seeder': ExtractProps<(typeof import('../../app/dataset/database/seeders/dataset_seeder.ts'))['default']>
+    'dataset/database/seeders/license_seeder': ExtractProps<(typeof import('../../app/dataset/database/seeders/license_seeder.ts'))['default']>
   }
 }

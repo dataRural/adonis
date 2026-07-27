@@ -32,6 +32,21 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class DatasetLikeSchema extends BaseModel {
+  static $columns = ['createdAt', 'datasetId', 'id', 'updatedAt', 'userId'] as const
+  $columns = DatasetLikeSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare datasetId: number | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number | null
+}
+
 export class DatasetVersionSchema extends BaseModel {
   static $columns = ['createdAt', 'datasetId', 'id', 'name', 'path', 'updatedAt'] as const
   $columns = DatasetVersionSchema.$columns

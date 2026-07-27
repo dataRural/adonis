@@ -11,7 +11,7 @@ export default class MarketingController {
     await auth.check()
     const currentUserId = auth.user?.id ?? null
 
-    let query = Dataset.query().preload('versions').preload('license').orderBy('updatedAt', 'desc')
+    let query = Dataset.query().preload('versions').preload('license').preload('likes').orderBy('updatedAt', 'desc')
 
     if (currentUserId) {
       const userGroupIds = (
@@ -81,6 +81,9 @@ export default class MarketingController {
         const usability = d.usabilityScore !== null && d.usabilityScore !== undefined ? String(d.usabilityScore) : '8.5'
         const tint = (d.area && AREA_COLORS[d.area]) ? AREA_COLORS[d.area] : 'var(--brand-blue)'
 
+        const likesCount = d.likes ? d.likes.length : 0
+        const isLiked = currentUserId ? d.likes.some((l) => Number(l.userId) === Number(currentUserId)) : false
+
         return {
           id: d.id,
           title: d.name,
@@ -92,8 +95,10 @@ export default class MarketingController {
           tint,
           size,
           rows: '---',
-          downloads: 0,
-          dl: '0',
+          downloads: likesCount,
+          dl: String(likesCount),
+          likesCount,
+          isLiked,
           updated: d.updatedAt ? d.updatedAt.toRelative() || 'recentemente' : 'recentemente',
           license: d.license ? d.license.name : 'CC BY 4.0',
           usability,
