@@ -25,6 +25,10 @@ export default class InertiaMiddleware extends BaseInertiaMiddleware {
     const error = session?.flashMessages.get('error') as string
     const success = session?.flashMessages.get('success') as string
 
+    if (auth) {
+      await auth.check()
+    }
+
     let abilities: Awaited<ReturnType<AbilitiesService['getAllAbilities']>> = []
 
     if (auth?.user) {

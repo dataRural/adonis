@@ -19,8 +19,13 @@ declare module '@adonisjs/inertia/types' {
     'auth/sign_up': ExtractProps<(typeof import('../../app/auth/ui/pages/sign_up.tsx'))['default']>
     'core/errors/not_found': ExtractProps<(typeof import('../../app/core/ui/pages/errors/not_found.tsx'))['default']>
     'core/errors/server_error': ExtractProps<(typeof import('../../app/core/ui/pages/errors/server_error.tsx'))['default']>
+    'dataset/dashboard': ExtractProps<(typeof import('../../app/dataset/ui/pages/dashboard.tsx'))['default']>
     'dataset/index': ExtractProps<(typeof import('../../app/dataset/ui/pages/index.tsx'))['default']>
+    'dataset/publish': ExtractProps<(typeof import('../../app/dataset/ui/pages/publish.tsx'))['default']>
+    'dataset/show': ExtractProps<(typeof import('../../app/dataset/ui/pages/show.tsx'))['default']>
     'dataset/view': ExtractProps<(typeof import('../../app/dataset/ui/pages/view.tsx'))['default']>
+    'groups/index': ExtractProps<(typeof import('../../app/groups/ui/pages/index.tsx'))['default']>
+    'groups/show': ExtractProps<(typeof import('../../app/groups/ui/pages/show.tsx'))['default']>
     'marketing/show': ExtractProps<(typeof import('../../app/marketing/ui/pages/show.tsx'))['default']>
     'users/appearance': ExtractProps<(typeof import('../../app/users/ui/pages/appearance.tsx'))['default']>
     'users/index': ExtractProps<(typeof import('../../app/users/ui/pages/index.tsx'))['default']>

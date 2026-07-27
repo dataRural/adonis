@@ -13,6 +13,7 @@ import Role from '#users/models/role'
 
 import Roles from '#users/enums/role'
 import ResetPasswordToken from '#users/models/reset_password_token'
+import GroupMember from '#app/groups/models/group_member'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -46,6 +47,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @hasMany(() => ResetPasswordToken)
   declare resetPasswordTokens: HasMany<typeof ResetPasswordToken>
+
+  @hasMany(() => GroupMember)
+  declare groupMemberships: HasMany<typeof GroupMember>
 
   @computed()
   get isAdmin() {

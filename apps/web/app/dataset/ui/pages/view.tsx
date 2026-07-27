@@ -1,4 +1,4 @@
-import { Link } from '@adonisjs/inertia/react'
+import { Link } from '@inertiajs/react'
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
 

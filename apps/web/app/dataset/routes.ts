@@ -38,3 +38,17 @@ router
   .only(['index', 'store'])
   .use('*', middleware.auth())
   .as('datasets')
+
+router
+  .get('/datasets/:id', [DatasetsController, 'show'])
+  .as('datasets.show')
+
+router
+  .get('/dashboard', [DatasetsController, 'dashboard'])
+  .middleware(middleware.auth())
+  .as('dashboard.show')
+
+router
+  .get('/dashboard/publish', [DatasetsController, 'publish'])
+  .middleware(middleware.auth())
+  .as('dashboard.publish')

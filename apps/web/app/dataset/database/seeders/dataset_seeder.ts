@@ -49,6 +49,12 @@ export default class DatasetSeeder extends BaseSeeder {
             path: datasetPath,
             isPublic: false,
             userId: owner.id,
+            unit: 'Instituto de Ciências Exatas',
+            area: 'clima',
+            period: '2026',
+            region: 'Campus Seropédica',
+            tags: ['clima', 'séries temporais'],
+            usabilityScore: 9.5,
           },
           { client: trx }
         )
@@ -57,6 +63,12 @@ export default class DatasetSeeder extends BaseSeeder {
           name: datasetName,
           userId: owner.id,
           isPublic: false,
+          unit: 'Instituto de Ciências Exatas',
+          area: 'clima',
+          period: '2026',
+          region: 'Campus Seropédica',
+          tags: ['clima', 'séries temporais'],
+          usabilityScore: 9.5,
         })
         await dataset.save()
       }
