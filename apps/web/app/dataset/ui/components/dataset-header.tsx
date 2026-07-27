@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { router } from '@inertiajs/react'
 import * as Ic from '#common/ui/components/datarural/icons'
 import { DatasetDetail } from './detail-data'
@@ -10,8 +10,25 @@ interface DatasetHeaderProps {
 
 export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProps) {
   const [saved, setSaved] = useState(false)
+  const [shareOpen, setShareOpen] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const shareRef = useRef<HTMLDivElement>(null)
   const isLiked = !!(ds as any).isLiked
+  const isOwner = !!(ds as any).isOwner
   const votes = ds.votes || 0
+  const publisherName = (ds as any).publisherName || ds.unit || 'UFRRJ'
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (shareRef.current && !shareRef.current.contains(e.target as Node)) {
+        setShareOpen(false)
+      }
+    }
+    if (shareOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [shareOpen])
 
   const handleLike = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -27,10 +44,36 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
     }
   }
 
+  const getShareUrl = () => typeof window !== 'undefined' ? window.location.href : ''
+
+  const handleCopyLink = async () => {
+    await navigator.clipboard.writeText(getShareUrl())
+    setCopied(true)
+    setTimeout(() => { setCopied(false); setShareOpen(false) }, 1500)
+  }
+
+  const handleEmailShare = () => {
+    const subject = encodeURIComponent(ds.title)
+    const body = encodeURIComponent(`Confira este dataset: ${getShareUrl()}`)
+    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank')
+    setShareOpen(false)
+  }
+
+  const handleTwitterShare = () => {
+    const text = encodeURIComponent(`${ds.title} — ${getShareUrl()}`)
+    window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank', 'width=550,height=420')
+    setShareOpen(false)
+  }
+
+  const handleLinkedInShare = () => {
+    const url = encodeURIComponent(getShareUrl())
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank', 'width=550,height=420')
+    setShareOpen(false)
+  }
+
   return (
     <section className="dr-ds-header">
       <div className="dr-ds-header-arcos">
-        {/* We can inline the arcos clustering svg or use a decorative graphic */}
         <svg viewBox="0 0 400 420" fill="none" className="strand strand-right" style={{ width: 400, height: 420, position: 'absolute', right: 0, top: -40, opacity: 0.15 }}>
           <circle cx="300" cy="70" r="46" stroke="var(--brand-blue)" strokeWidth="2.4" />
           <path d="M 75 0 Q 0 -32 75 0 Q 0 32 75 0 Z" transform="translate(150 60) rotate(18)" stroke="var(--brand-green)" strokeWidth="2.4" />
@@ -46,7 +89,7 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
           <span className="sep">
             <Ic.Chevr size={13} />
           </span>
-          <span className="here">Estação Seropédica</span>
+          <span className="here">{publisherName}</span>
         </nav>
 
         <div className="dr-ds-head-top">
@@ -85,14 +128,16 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
             <button className="dr-btn dr-btn-primary dr-btn-lg" onClick={handleDownload}>
               <Ic.Download size={18} /> Baixar ({ds.size})
             </button>
-            <div className="dr-ds-action-row">
-              <a className="dr-btn dr-btn-outline" href="#notebooks">
-                <Ic.Code size={16} /> Notebook
-              </a>
-              <a className="dr-btn dr-btn-outline" href="#">
-                <Ic.Columns size={16} /> API
-              </a>
-            </div>
+            {isOwner && (
+              <div className="dr-ds-action-row">
+                <a className="dr-btn dr-btn-outline" href={`/dashboard/publish?id=${ds.id}`}>
+                  <Ic.Edit size={16} /> Editar
+                </a>
+                <a className="dr-btn dr-btn-outline" href={`/dashboard/publish?id=${ds.id}`}>
+                  <Ic.Plus size={16} /> Nova versão
+                </a>
+              </div>
+            )}
             <div className="dr-ds-action-row">
               <button
                 className={`dr-btn-count ${isLiked ? 'on' : ''}`}
@@ -112,16 +157,42 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
                 <Ic.Bookmark size={15} className="ic" style={{ marginRight: 6 }} />{' '}
                 {saved ? 'Salvo' : 'Salvar'}
               </button>
-              <button className="dr-btn-count" title="Compartilhar">
-                <Ic.Share size={15} className="ic" />
-              </button>
+              <div ref={shareRef} style={{ position: 'relative' }}>
+                <button
+                  className={`dr-btn-count ${shareOpen ? 'on' : ''}`}
+                  title="Compartilhar"
+                  onClick={() => setShareOpen(!shareOpen)}
+                >
+                  <Ic.Share size={15} className="ic" />
+                </button>
+                {shareOpen && (
+                  <div className="dr-share-menu">
+                    <div className="dr-share-menu-header">Compartilhar</div>
+                    <button className="dr-share-menu-item" onClick={handleCopyLink}>
+                      {copied ? <Ic.Check size={16} /> : <Ic.Copy size={16} />}
+                      {copied ? 'Link copiado!' : 'Copiar link'}
+                    </button>
+                    <button className="dr-share-menu-item" onClick={handleEmailShare}>
+                      <Ic.Send size={16} />
+                      Email
+                    </button>
+                    <div className="dr-share-menu-sep"></div>
+                    <button className="dr-share-menu-item" onClick={handleTwitterShare}>
+                      <Ic.External size={16} />
+                      Twitter / X
+                    </button>
+                    <button className="dr-share-menu-item" onClick={handleLinkedInShare}>
+                      <Ic.External size={16} />
+                      LinkedIn
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-            <span className="dr-ds-dl-hint">
-              {ds.downloads} downloads · {ds.views} visualizações
-            </span>
           </div>
         </div>
       </div>
     </section>
   )
 }
+

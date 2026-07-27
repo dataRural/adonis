@@ -13,9 +13,10 @@ import type { InertiaProps } from '#core/ui/types'
 type PageProps = InertiaProps<{
   datasets?: UserDatasetItem[]
   userGroups?: { id: number; name: string }[]
+  totalLikesCount?: number
 }>
 
-export default function Dashboard({ datasets = [], userGroups = [] }: PageProps) {
+export default function Dashboard({ datasets = [], userGroups = [], totalLikesCount }: PageProps) {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -137,7 +138,15 @@ export default function Dashboard({ datasets = [], userGroups = [] }: PageProps)
       </div>
 
       <div className="dr-container">
-        <DashboardStats stats={{ publishedCount: counts.published, reviewCount: counts.review }} />
+        <DashboardStats
+          stats={{
+            publishedCount: counts.published,
+            reviewCount: counts.review,
+            likesCount: totalLikesCount !== undefined
+              ? totalLikesCount
+              : datasets.reduce((acc, d) => acc + Number(d.likes || d.downloads || 0), 0),
+          }}
+        />
         <Toolbar
           filter={filter}
           onFilterChange={setFilter}

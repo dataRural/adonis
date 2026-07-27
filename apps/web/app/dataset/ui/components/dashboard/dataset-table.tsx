@@ -56,15 +56,6 @@ function RowMenu({
         <Ic.Chart size={16} /> Estatísticas de uso
       </button>
       <div className="sep"></div>
-      {isPub ? (
-        <button onClick={onClose}>
-          <Ic.Eyeoff size={16} /> Despublicar
-        </button>
-      ) : (
-        <button onClick={onClose}>
-          <Ic.Send size={16} /> Publicar agora
-        </button>
-      )}
       <button
         className="danger"
         onClick={() => {
@@ -142,7 +133,15 @@ function DatasetRow({
       </div>
 
       <div className="col-status">
-        <span className={'dr-status-badge ' + d.status}>
+        <span
+          className={'dr-status-badge ' + d.status}
+          onClick={(e) => {
+            e.stopPropagation()
+            router.post(`/datasets/${d.id}/privacy`, {}, { preserveScroll: true })
+          }}
+          title={d.status === 'published' ? 'Clique para tornar Privado' : 'Clique para tornar Público'}
+          style={{ cursor: 'pointer' }}
+        >
           <span className="d" style={{ background: sm.color }}></span>
           {sm.label}
         </span>

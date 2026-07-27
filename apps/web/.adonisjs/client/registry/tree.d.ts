@@ -59,22 +59,6 @@ export interface ApiDefinition {
     show: typeof routes['dashboard.show']
     publish: typeof routes['dashboard.publish']
   }
-  groups: {
-    index: typeof routes['groups.index']
-    store: typeof routes['groups.store']
-    show: typeof routes['groups.show']
-    update: typeof routes['groups.update']
-    destroy: typeof routes['groups.destroy']
-    members: {
-      store: typeof routes['groups.members.store']
-      update: typeof routes['groups.members.update']
-      destroy: typeof routes['groups.members.destroy']
-    }
-    datasets: {
-      store: typeof routes['groups.datasets.store']
-      destroy: typeof routes['groups.datasets.destroy']
-    }
-  }
   users: {
     index: typeof routes['users.index']
     store: typeof routes['users.store']
@@ -105,5 +89,21 @@ export interface ApiDefinition {
   }
   appearance: {
     show: typeof routes['appearance.show']
+  }
+  groups: {
+    index: typeof routes['groups.index']
+    store: typeof routes['groups.store']
+    show: typeof routes['groups.show']
+    update: typeof routes['groups.update']
+    destroy: typeof routes['groups.destroy']
+    members: {
+      store: typeof routes['groups.members.store']
+      update: typeof routes['groups.members.update']
+      destroy: typeof routes['groups.members.destroy']
+    }
+    datasets: {
+      store: typeof routes['groups.datasets.store']
+      destroy: typeof routes['groups.datasets.destroy']
+    }
   }
 }

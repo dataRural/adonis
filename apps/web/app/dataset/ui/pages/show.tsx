@@ -6,8 +6,6 @@ import TabBar from '../components/tab-bar'
 import OverviewTab from '../components/overview-tab'
 import ViewerTab from '../components/viewer-tab'
 import FilesTab from '../components/files-tab'
-import NotebooksTab from '../components/notebooks-tab'
-import DiscussionTab from '../components/discussion-tab'
 import Rail from '../components/rail'
 import RelatedSection from '../components/related-section'
 import Footer from '#common/ui/components/datarural/footer'
@@ -20,9 +18,10 @@ type PageProps = InertiaProps<{
   previewColumns?: any[]
   previewRows?: any[][]
   versions?: any[]
+  related?: any[]
 }>
 
-export default function DatasetShowPage({ dataset, previewColumns, previewRows, versions }: PageProps) {
+export default function DatasetShowPage({ dataset, previewColumns, previewRows, versions, related }: PageProps) {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -31,7 +30,8 @@ export default function DatasetShowPage({ dataset, previewColumns, previewRows, 
   })
   const [tab, setTab] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('dr-detail-tab') || 'overview'
+      const stored = localStorage.getItem('dr-detail-tab')
+      if (stored === 'overview' || stored === 'viewer' || stored === 'files') return stored
     }
     return 'overview'
   })
@@ -73,15 +73,13 @@ export default function DatasetShowPage({ dataset, previewColumns, previewRows, 
                 />
               )}
               {tab === 'files' && <FilesTab ds={ds} versions={versions} />}
-              {tab === 'notebooks' && <NotebooksTab />}
-              {tab === 'discussion' && <DiscussionTab />}
             </div>
             <Rail ds={ds} />
           </div>
         </div>
       </main>
 
-      <RelatedSection />
+      <RelatedSection items={related} />
       <Footer />
     </div>
   )

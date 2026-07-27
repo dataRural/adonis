@@ -19,8 +19,6 @@ export default function TabBar({
     { id: 'overview', label: 'Visão geral', icon: 'Book' },
     { id: 'viewer', label: 'Visualizador', icon: 'Table' },
     { id: 'files', label: 'Arquivos', icon: 'Folder', badge: filesCount },
-    { id: 'notebooks', label: 'Notebooks', icon: 'Code', badge: notebooksCount },
-    { id: 'discussion', label: 'Discussão', icon: 'Message', badge: discussionCount },
   ]
 
   return (

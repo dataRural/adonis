@@ -431,12 +431,18 @@ export default class DatasetsController {
         dataset.isPublic = Boolean(bodyVal)
       }
 
+      if (dataset.isPublic) {
+        dataset.status = 'published'
+      } else {
+        dataset.status = 'unpublished'
+      }
+
       await dataset.save()
-      session.flash('success', 'Dataset privacy updated.')
-      return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
+      session.flash('success', dataset.isPublic ? 'Dataset publicado com sucesso.' : 'Dataset tornado privado.')
+      return response.redirect().back()
     } catch (err) {
-      session.flash('error', `Unable to update privacy. ${err && (err as any).message ? (err as any).message : ''}`)
-      return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
+      session.flash('error', `Não foi possível alterar a visibilidade. ${err && (err as any).message ? (err as any).message : ''}`)
+      return response.redirect().back()
     }
   }
 
@@ -695,6 +701,8 @@ export default class DatasetsController {
       })
       .preload('license')
       .preload('likes')
+      .preload('user')
+      .preload('group')
       .first()
 
     if (!dataset) {
@@ -745,6 +753,7 @@ export default class DatasetsController {
     let previewRows: string[][] = []
     let format = 'CSV'
     let sizeStr = '0 B'
+    let totalRowCount = 0
 
     if (latestVersion && latestVersion.path) {
       try {
@@ -753,6 +762,10 @@ export default class DatasetsController {
         const preview = parseCsvPreview(csvContent, 100)
         previewHeaders = preview.headers
         previewRows = preview.rows
+
+        // Count total lines in the CSV (excluding header and empty lines)
+        const allLines = csvContent.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0)
+        totalRowCount = Math.max(0, allLines.length - 1) // subtract header
 
         const fileBytes = latestVersion.path.size
         if (fileBytes) {
@@ -794,6 +807,20 @@ export default class DatasetsController {
       econ: 'Economia & Gestão',
     }
 
+    const publisherName = dataset.user?.fullName || dataset.user?.email || 'Usuário UFRRJ'
+    const publisherInitials = publisherName.split(/\s+/).filter(w => w.length > 0).map(w => w[0].toUpperCase()).join('').slice(0, 2)
+    const isOwner = currentUserId ? Number(currentUserId) === Number(dataset.userId) : false
+
+    let maintainerName = publisherName
+    let maintainerRole = 'Publicador'
+    let maintainerInitials = publisherInitials
+
+    if (dataset.group) {
+      maintainerName = dataset.group.name
+      maintainerRole = 'Grupo'
+      maintainerInitials = dataset.group.name.split(/\s+/).filter(w => w.length > 0).map(w => w[0].toUpperCase()).join('').slice(0, 2)
+    }
+
     const datasetPayload = {
       id: dataset.id,
       title: dataset.name,
@@ -812,21 +839,23 @@ export default class DatasetsController {
       updated: dataset.updatedAt ? dataset.updatedAt.toRelative() || 'Recém atualizado' : 'Recém atualizado',
       published: dataset.createdAt ? dataset.createdAt.toRelative() || 'Recentemente' : 'Recentemente',
       size: sizeStr,
-      rows: String(previewRows.length),
+      rows: String(totalRowCount),
       cols: previewHeaders.length,
       files: dataset.versions.length,
       downloads: '0',
       views: '0',
       votes: votesCount,
       isLiked,
+      isOwner,
       watchers: 0,
       freq: 'Mensal',
       coverageTime: dataset.period || '—',
       coverageGeo: dataset.region || '—',
       collection: 'Leituras coletadas pelo sistema local.',
       tags: dataset.tags || [],
+      publisherName: maintainerName,
       authors: [
-        { name: 'Pesquisador UFRRJ', role: 'Mantenedor', inst: 'UFRRJ', color: 'var(--brand-sky)', initials: 'PR' }
+        { name: maintainerName, role: maintainerRole, inst: dataset.unit || 'UFRRJ', color: 'var(--brand-sky)', initials: maintainerInitials }
       ],
       description,
     }
@@ -852,11 +881,85 @@ export default class DatasetsController {
       }
     })
 
+    let relatedDatasetsQuery = await Dataset.query()
+      .where('is_public', true)
+      .whereNot('id', dataset.id)
+      .where('area', dataset.area)
+      .preload('versions', (q) => q.orderBy('id', 'desc'))
+      .preload('license')
+      .preload('likes')
+      .orderBy('updatedAt', 'desc')
+      .limit(3)
+
+    if (relatedDatasetsQuery.length < 3) {
+      const existingIds = [dataset.id, ...relatedDatasetsQuery.map((d) => d.id)]
+      const fallbackDatasets = await Dataset.query()
+        .where('is_public', true)
+        .whereNotIn('id', existingIds)
+        .preload('versions', (q) => q.orderBy('id', 'desc'))
+        .preload('license')
+        .preload('likes')
+        .orderBy('updatedAt', 'desc')
+        .limit(3 - relatedDatasetsQuery.length)
+
+      relatedDatasetsQuery = [...relatedDatasetsQuery, ...fallbackDatasets]
+    }
+
+    const AREA_COLORS: Record<string, string> = {
+      agro: 'var(--brand-green)',
+      vet: 'var(--brand-orange)',
+      clima: 'var(--brand-sky)',
+      bio: 'var(--brand-lightgreen)',
+      flor: 'var(--brand-teal)',
+      exatas: 'var(--brand-blue)',
+      quim: 'var(--brand-purple)',
+      zoo: 'var(--brand-amber)',
+      soc: 'var(--brand-rose)',
+      econ: 'var(--brand-indigo)',
+    }
+
+    const relatedPayload = relatedDatasetsQuery.map((rd) => {
+      const latestVer = rd.versions[0]
+      let rdFormat = 'CSV'
+      let rdSize = '0 B'
+      if (latestVer && latestVer.path) {
+        const fileBytes = latestVer.path.size
+        if (fileBytes) {
+          if (fileBytes > 1024 * 1024) {
+            rdSize = `${(fileBytes / (1024 * 1024)).toFixed(1)} MB`
+          } else {
+            rdSize = `${(fileBytes / 1024).toFixed(1)} KB`
+          }
+        }
+        const fileExt = latestVer.path.name?.split('.').pop()?.toUpperCase()
+        if (fileExt) rdFormat = fileExt
+      }
+
+      const rdVotes = rd.likes ? rd.likes.length : 0
+      const rdIsLiked = currentUserId ? rd.likes.some((l) => Number(l.userId) === Number(currentUserId)) : false
+      const rdTint = rd.area && AREA_COLORS[rd.area] ? AREA_COLORS[rd.area] : 'var(--brand-blue)'
+
+      return {
+        id: rd.id,
+        title: rd.name,
+        unit: rd.unit,
+        tint: rdTint,
+        format: rdFormat,
+        size: rdSize,
+        tags: rd.tags || [],
+        likesCount: rdVotes,
+        isLiked: rdIsLiked,
+        updated: rd.updatedAt ? rd.updatedAt.toRelative() || 'recentemente' : 'recentemente',
+        usability: rd.usabilityScore !== null && rd.usabilityScore !== undefined ? String(rd.usabilityScore) : '8.5',
+      }
+    })
+
     return inertia.render('dataset/show', {
       dataset: datasetPayload,
       previewColumns,
       previewRows,
       versions: versionsPayload,
+      related: relatedPayload,
     })
   }
 
@@ -876,7 +979,21 @@ export default class DatasetsController {
       })
       .preload('versions')
       .preload('license')
+      .preload('likes')
       .orderBy('updatedAt', 'desc')
+
+    const AREA_COLORS: Record<string, string> = {
+      agro: 'var(--brand-green)',
+      vet: 'var(--brand-orange)',
+      clima: 'var(--brand-sky)',
+      bio: 'var(--brand-lightgreen)',
+      flor: 'var(--brand-teal)',
+      exatas: 'var(--brand-blue)',
+      quim: 'var(--brand-purple)',
+      zoo: 'var(--brand-amber)',
+      soc: 'var(--brand-rose)',
+      econ: 'var(--brand-indigo)',
+    }
 
     const datasetsPayload = userDatasets.map((d) => {
       const latestVersion = d.versions[d.versions.length - 1]
@@ -890,22 +1007,27 @@ export default class DatasetsController {
 
       const status = (d.status || (d.isPublic ? 'published' : 'unpublished')) as 'published' | 'unpublished' | 'review' | 'draft'
       const usability = d.usabilityScore !== null && d.usabilityScore !== undefined ? String(d.usabilityScore) : '8.5'
+      const likesCount = d.likes ? d.likes.length : 0
+      const tint = (d.area && AREA_COLORS[d.area]) ? AREA_COLORS[d.area] : 'var(--brand-blue)'
 
       return {
         id: d.id,
         title: d.name,
         unit: d.unit,
         format,
-        tint: 'var(--brand-sky)',
+        tint,
         status,
         version: versionName,
         updated: d.updatedAt ? d.updatedAt.toRelative() || 'recentemente' : 'recentemente',
-        likes: '0',
+        likes: String(likesCount),
+        likesCount,
         usability,
         rows: '---',
         groupId: d.groupId,
       }
     })
+
+    const totalLikesCount = userDatasets.reduce((sum, d) => sum + (d.likes ? d.likes.length : 0), 0)
 
     const memberships = await auth.user!.related('groupMemberships').query().preload('group')
     const userGroups = memberships.map((m) => ({
@@ -913,7 +1035,7 @@ export default class DatasetsController {
       name: m.group.name,
     }))
 
-    return inertia.render('dataset/dashboard', { datasets: datasetsPayload, userGroups })
+    return inertia.render('dataset/dashboard', { datasets: datasetsPayload, userGroups, totalLikesCount })
   }
 
   public async publish({ inertia, request, auth }: HttpContext) {

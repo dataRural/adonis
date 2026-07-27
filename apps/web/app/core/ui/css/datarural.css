@@ -582,7 +582,8 @@ html, body {
 /* ====================== DETAIL: HEADER ===================== */
 .dr-ds-header {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  z-index: 45;
   background: var(--hero-bg);
   border-bottom: 1px solid var(--border);
 }
@@ -648,6 +649,29 @@ html, body {
 .dr-btn-count.on { color: var(--destructive); border-color: color-mix(in srgb, var(--destructive) 40%, var(--input)); }
 .dr-btn-count.on .ic { color: var(--destructive); }
 .dr-ds-dl-hint { font-size: 11.5px; font-weight: 700; color: var(--muted-foreground); text-align: center; }
+
+/* Share dropdown menu */
+.dr-share-menu {
+  position: absolute; top: calc(100% + 6px); right: 0; z-index: 100;
+  min-width: 200px; background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  padding: 4px 0; animation: drShareFadeIn 0.15s ease;
+}
+.dr-share-menu-header {
+  padding: 8px 14px 6px; font-size: 12px; font-weight: 800;
+  color: var(--muted-foreground); border-bottom: 1px solid var(--border);
+  margin-bottom: 2px; letter-spacing: 0.02em;
+}
+.dr-share-menu-item {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 8px 14px; font-size: 13.5px; font-weight: 600;
+  color: var(--foreground); background: none; border: none;
+  cursor: pointer; text-align: left; transition: background 0.1s;
+}
+.dr-share-menu-item:hover { background: var(--secondary); }
+.dr-share-menu-item svg { flex-shrink: 0; color: var(--muted-foreground); }
+.dr-share-menu-sep { height: 1px; background: var(--border); margin: 2px 0; }
+@keyframes drShareFadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ====================== DETAIL: TABS ======================= */
 .dr-ds-tabbar {
