@@ -21,6 +21,7 @@ export const createUserValidator = vine.compile(
 export const updateProfileValidator = vine.compile(
   vine.object({
     fullName: vine.string().trim().minLength(3).maxLength(255),
+    username: vine.string().trim().minLength(3).maxLength(100).regex(/^[a-zA-Z0-9_-]+$/).optional(),
     bio: vine.string().trim().maxLength(1000).nullable().optional(),
     institution: vine.string().trim().maxLength(255).nullable().optional(),
     location: vine.string().trim().maxLength(255).nullable().optional(),

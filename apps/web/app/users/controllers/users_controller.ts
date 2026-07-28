@@ -15,19 +15,22 @@ export default class UsersController {
   public async publicProfile({ auth, params, response, inertia }: HttpContext) {
     await auth.check()
 
-    if (params.id && auth.user && Number(params.id) === auth.user.id) {
-      return response.redirect().toPath('/profile')
+    const username = params.username
+
+    let targetUser: User | null = null
+
+    if (username) {
+      targetUser = await User.query().where('username', username).first()
+    } else if (auth.user) {
+      targetUser = auth.user
     }
 
-    const targetUserId = params.id ? Number(params.id) : auth.user?.id
-
-    if (!targetUserId) {
-      return response.redirect().toRoute('dashboard.show')
-    }
-
-    const targetUser = await User.find(targetUserId)
     if (!targetUser) {
       return response.redirect().toRoute('dashboard.show')
+    }
+
+    if (auth.user && targetUser.id === auth.user.id) {
+      return response.redirect().toPath('/profile')
     }
 
     await User.preComputeUrls(targetUser)

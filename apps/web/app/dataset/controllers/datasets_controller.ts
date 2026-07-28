@@ -849,7 +849,7 @@ export default class DatasetsController {
             inst: dataset.unit || 'UFRRJ',
             color: 'var(--brand-sky)',
             initials: uInitials,
-            profileUrl: `/users/${m.user.id}/profile`,
+            profileUrl: `/u/${m.user.username || m.user.email.split('@')[0]}`,
             avatarUrl: transformed?.avatarUrl || null,
           }
         })
@@ -869,7 +869,7 @@ export default class DatasetsController {
           inst: dataset.unit || 'UFRRJ',
           color: 'var(--brand-sky)',
           initials: publisherInitials,
-          profileUrl: `/users/${dataset.userId}/profile`,
+          profileUrl: `/u/${dataset.user?.username || dataset.user?.email?.split('@')[0] || 'user'}`,
           avatarUrl: transformedOwner?.avatarUrl || null,
         },
       ]

@@ -25,8 +25,7 @@ export type ScannedRoutes = {
     'users.invite.handle': { paramsTuple?: []; params?: {} }
     'users.impersonate.handle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'user.profile': { paramsTuple?: []; params?: {} }
-    'users.public_profile': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'users.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'users.public_profile': { paramsTuple: [ParamValue]; params: {'username': ParamValue} }
     'settings.index': { paramsTuple?: []; params?: {} }
     'profile.update': { paramsTuple?: []; params?: {} }
     'profile.show': { paramsTuple?: []; params?: {} }
@@ -35,6 +34,16 @@ export type ScannedRoutes = {
     'tokens.store': { paramsTuple?: []; params?: {} }
     'password.update': { paramsTuple?: []; params?: {} }
     'password.show': { paramsTuple?: []; params?: {} }
+    'groups.index': { paramsTuple?: []; params?: {} }
+    'groups.store': { paramsTuple?: []; params?: {} }
+    'groups.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'groups.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'groups.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'groups.members.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'groups.members.update': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'memberId': ParamValue} }
+    'groups.members.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'memberId': ParamValue} }
+    'groups.datasets.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'groups.datasets.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'datasetId': ParamValue} }
     'datasets.viewer': { paramsTuple?: []; params?: {} }
     'licenses.index': { paramsTuple?: []; params?: {} }
     'datasets.privacy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -49,16 +58,6 @@ export type ScannedRoutes = {
     'datasets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.show': { paramsTuple?: []; params?: {} }
     'dashboard.publish': { paramsTuple?: []; params?: {} }
-    'groups.index': { paramsTuple?: []; params?: {} }
-    'groups.store': { paramsTuple?: []; params?: {} }
-    'groups.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'groups.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'groups.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'groups.members.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'groups.members.update': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'memberId': ParamValue} }
-    'groups.members.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'memberId': ParamValue} }
-    'groups.datasets.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'groups.datasets.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'datasetId': ParamValue} }
   }
   GET: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
@@ -71,12 +70,13 @@ export type ScannedRoutes = {
     'social.callback': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
     'users.index': { paramsTuple?: []; params?: {} }
     'user.profile': { paramsTuple?: []; params?: {} }
-    'users.public_profile': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'users.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'users.public_profile': { paramsTuple: [ParamValue]; params: {'username': ParamValue} }
     'settings.index': { paramsTuple?: []; params?: {} }
     'profile.show': { paramsTuple?: []; params?: {} }
     'tokens.index': { paramsTuple?: []; params?: {} }
     'password.show': { paramsTuple?: []; params?: {} }
+    'groups.index': { paramsTuple?: []; params?: {} }
+    'groups.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'datasets.viewer': { paramsTuple?: []; params?: {} }
     'licenses.index': { paramsTuple?: []; params?: {} }
     'datasets.version.new': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -85,8 +85,6 @@ export type ScannedRoutes = {
     'datasets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.show': { paramsTuple?: []; params?: {} }
     'dashboard.publish': { paramsTuple?: []; params?: {} }
-    'groups.index': { paramsTuple?: []; params?: {} }
-    'groups.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   HEAD: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
@@ -99,12 +97,13 @@ export type ScannedRoutes = {
     'social.callback': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
     'users.index': { paramsTuple?: []; params?: {} }
     'user.profile': { paramsTuple?: []; params?: {} }
-    'users.public_profile': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'users.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'users.public_profile': { paramsTuple: [ParamValue]; params: {'username': ParamValue} }
     'settings.index': { paramsTuple?: []; params?: {} }
     'profile.show': { paramsTuple?: []; params?: {} }
     'tokens.index': { paramsTuple?: []; params?: {} }
     'password.show': { paramsTuple?: []; params?: {} }
+    'groups.index': { paramsTuple?: []; params?: {} }
+    'groups.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'datasets.viewer': { paramsTuple?: []; params?: {} }
     'licenses.index': { paramsTuple?: []; params?: {} }
     'datasets.version.new': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -113,8 +112,6 @@ export type ScannedRoutes = {
     'datasets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.show': { paramsTuple?: []; params?: {} }
     'dashboard.publish': { paramsTuple?: []; params?: {} }
-    'groups.index': { paramsTuple?: []; params?: {} }
-    'groups.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   POST: {
     'auth.sign_in.handle': { paramsTuple?: []; params?: {} }
@@ -128,15 +125,15 @@ export type ScannedRoutes = {
     'users.impersonate.handle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'profile.update': { paramsTuple?: []; params?: {} }
     'tokens.store': { paramsTuple?: []; params?: {} }
+    'groups.store': { paramsTuple?: []; params?: {} }
+    'groups.members.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'groups.datasets.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'datasets.privacy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'datasets.like.toggle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'datasets.version.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'datasets.version.restore': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'versionId': ParamValue} }
     'datasets.version.delete': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'versionId': ParamValue} }
     'datasets.store': { paramsTuple?: []; params?: {} }
-    'groups.store': { paramsTuple?: []; params?: {} }
-    'groups.members.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'groups.datasets.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PUT: {
     'users.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

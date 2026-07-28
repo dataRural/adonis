@@ -15,7 +15,7 @@ const ROLE_OPTIONS = [
 ]
 
 export default function AddMemberDialog({ groupId, open, onClose }: AddMemberDialogProps) {
-  const [userId, setUserId] = useState('')
+  const [username, setUsername] = useState('')
   const [role, setRole] = useState('viewer')
   const [loading, setLoading] = useState(false)
 
@@ -23,15 +23,15 @@ export default function AddMemberDialog({ groupId, open, onClose }: AddMemberDia
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!userId.trim()) return
+    if (!username.trim()) return
 
     setLoading(true)
     router.post(
       `/groups/${groupId}/members`,
-      { userId: Number(userId), role },
+      { username: username.trim(), role },
       {
         onSuccess: () => {
-          setUserId('')
+          setUsername('')
           setRole('viewer')
           setLoading(false)
           onClose()
@@ -79,13 +79,13 @@ export default function AddMemberDialog({ groupId, open, onClose }: AddMemberDia
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: 16 }}>
             <label style={{ fontSize: '13px', fontWeight: 600, display: 'block', marginBottom: 6 }}>
-              ID do usuário
+              Nome de usuário (Username) ou E-mail
             </label>
             <input
-              type="number"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-              placeholder="Ex: 42"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Ex: @rafael ou rafael@ufrrj.br"
               style={{
                 width: '100%',
                 padding: '10px 14px',
@@ -143,8 +143,8 @@ export default function AddMemberDialog({ groupId, open, onClose }: AddMemberDia
             <button
               type="submit"
               className="dr-btn dr-btn-primary"
-              disabled={!userId.trim() || loading}
-              style={!userId.trim() || loading ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+              disabled={!username.trim() || loading}
+              style={!username.trim() || loading ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
             >
               <Ic.Plus size={16} /> Adicionar
             </button>

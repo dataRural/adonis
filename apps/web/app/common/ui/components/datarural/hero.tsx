@@ -4,13 +4,11 @@ import * as Ic from './icons'
 interface HeroProps {
   query: string
   onQuery: (val: string) => void
-  onChip: (val: string) => void
+  onChip?: (val: string) => void
   onSearch?: () => void
 }
 
-const POPULAR = ['Produção agrícola', 'Clima Seropédica', 'Solos', 'Rebanho bovino', 'Qualidade da água']
-
-export default function Hero({ query, onQuery, onChip, onSearch }: HeroProps) {
+export default function Hero({ query, onQuery, onChip: _onChip, onSearch }: HeroProps) {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && onSearch) {
       onSearch()
@@ -53,15 +51,6 @@ export default function Hero({ query, onQuery, onChip, onSearch }: HeroProps) {
             <button className="dr-btn dr-btn-primary" onClick={onSearch}>
               Buscar
             </button>
-          </div>
-
-          <div className="dr-hero-tags">
-            <span className="lbl">Buscas populares:</span>
-            {POPULAR.map((t) => (
-              <button key={t} className="dr-chip" onClick={() => onChip(t)}>
-                {t}
-              </button>
-            ))}
           </div>
         </div>
       </div>

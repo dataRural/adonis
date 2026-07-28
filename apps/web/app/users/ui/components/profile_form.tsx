@@ -24,6 +24,7 @@ export function ProfileForm({ user }: Props) {
 
   const { data, setData, errors, post, progress } = useForm({
     fullName: user.fullName ?? '',
+    username: (user as any).username ?? user.email.split('@')[0],
     bio: (user as any).bio ?? '',
     institution: (user as any).institution ?? '',
     location: (user as any).location ?? '',
@@ -99,6 +100,19 @@ export function ProfileForm({ user }: Props) {
               className={errors?.fullName ? 'border-destructive' : ''}
             />
             <FieldErrorBag errors={errors} field="fullName" />
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="username">Nome de usuário (Username)</FieldLabel>
+            <Input
+              id="username"
+              placeholder="Ex: rafael_vasconcelos"
+              value={data.username}
+              onChange={(e) => setData('username', e.target.value)}
+              className={errors?.username ? 'border-destructive' : ''}
+            />
+            <p className="text-xs text-muted-foreground mt-1">Seu perfil público estará disponível em datarural.ufrrj.br/u/{data.username || 'username'}</p>
+            <FieldErrorBag errors={errors} field="username" />
           </Field>
 
           <Field>

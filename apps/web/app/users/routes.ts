@@ -37,12 +37,8 @@ router
   .as('user.profile')
 
 router
-  .get('/users/:id/profile', [UsersController, 'publicProfile'])
+  .get('/u/:username', [UsersController, 'publicProfile'])
   .as('users.public_profile')
-
-router
-  .get('/users/:id', [UsersController, 'publicProfile'])
-  .as('users.show')
 
 router
   .get('/settings', ({ response }) => {

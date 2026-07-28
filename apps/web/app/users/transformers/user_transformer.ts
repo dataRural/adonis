@@ -11,6 +11,7 @@ export default class UserTransformer extends BaseTransformer<User> {
       id: user.id,
       roleId: user.roleId,
       fullName: user.fullName,
+      username: user.username || user.email.split('@')[0],
       email: user.email,
       bio: user.bio ?? null,
       institution: user.institution ?? null,

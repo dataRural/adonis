@@ -114,7 +114,7 @@ export default function Rail({ ds }: RailProps) {
         </div>
         <div className="dr-rail-card-body">
           {ds.authors.map((a) => {
-            const href = a.profileUrl || (a.userId ? `/users/${a.userId}/profile` : '/profile')
+            const href = a.profileUrl || '/profile'
             return (
               <Link href={href} className="dr-author-item" key={a.userId || a.name}>
                 {a.avatarUrl ? (

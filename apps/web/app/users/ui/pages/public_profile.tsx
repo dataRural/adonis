@@ -32,6 +32,7 @@ interface GroupItem {
 interface UserProfile {
   id: number
   fullName: string | null
+  username?: string | null
   email: string
   avatarUrl: string | null
   bio?: string | null
@@ -267,7 +268,7 @@ export default function PublicProfilePage({
             <div style={{ marginBottom: 16 }}>
               <h1 style={{ fontSize: 24, fontWeight: 800, margin: 0, lineHeight: 1.2 }}>{name}</h1>
               <p style={{ color: 'var(--muted-foreground)', fontSize: 16, margin: '4px 0 0', fontWeight: 500 }}>
-                @{emailPrefix}
+                @{userProfile.username || emailPrefix}
               </p>
             </div>
 

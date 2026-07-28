@@ -73,7 +73,7 @@ export default function MemberList({ groupId, members, canManage }: MemberListPr
             }}
           >
             <Link
-              href={`/users/${m.userId}/profile`}
+              href={`/u/${(m as any).username || m.email.split('@')[0]}`}
               style={{
                 width: 38,
                 height: 38,
@@ -114,7 +114,7 @@ export default function MemberList({ groupId, members, canManage }: MemberListPr
             </Link>
             <div style={{ flex: 1, minWidth: 0 }}>
               <Link
-                href={`/users/${m.userId}/profile`}
+                href={`/u/${(m as any).username || m.email.split('@')[0]}`}
                 style={{ fontSize: '14px', fontWeight: 600, lineHeight: 1.3, color: 'var(--foreground)', textDecoration: 'none' }}
               >
                 {m.fullName}
