@@ -200,6 +200,103 @@ export default class DatasetsController {
     return inertia.render('dataset/index', {})
   }
 
+  public async explore({ inertia, request, auth }: HttpContext) {
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
+
+    let query = Dataset.query().preload('versions').preload('license').preload('likes').orderBy('updatedAt', 'desc')
+
+    if (currentUserId) {
+      const userGroupIds = (
+        await GroupMember.query().where('userId', currentUserId).select('groupId')
+      ).map((m) => m.groupId)
+
+      query = query.where((q) => {
+        q.where('is_public', true).orWhere('user_id', currentUserId)
+        if (userGroupIds.length > 0) {
+          q.orWhereIn('group_id', userGroupIds)
+        }
+      })
+    } else {
+      query = query.where('is_public', true)
+    }
+
+    const publicDatasets = await query
+
+    const datasetsPayload = await Promise.all(
+      publicDatasets.map(async (d, index) => {
+        const latestVersion = d.versions[d.versions.length - 1]
+
+        let format = 'CSV'
+        let size = '0 B'
+        if (latestVersion && latestVersion.path) {
+          const fileExt = latestVersion.path.name?.split('.').pop()?.toUpperCase()
+          if (fileExt) format = fileExt
+
+          const fileBytes = latestVersion.path.size
+          if (fileBytes) {
+            if (fileBytes > 1024 * 1024) {
+              size = `${(fileBytes / (1024 * 1024)).toFixed(1)} MB`
+            } else {
+              size = `${(fileBytes / 1024).toFixed(1)} KB`
+            }
+          }
+        }
+
+        const AREA_COLORS: Record<string, string> = {
+          agro: 'var(--brand-green)',
+          vet: 'var(--brand-orange)',
+          clima: 'var(--brand-sky)',
+          bio: 'var(--brand-lightgreen)',
+          flor: 'var(--brand-teal)',
+          exatas: 'var(--brand-blue)',
+          quim: 'var(--brand-purple)',
+          zoo: 'var(--brand-amber)',
+          soc: 'var(--brand-rose)',
+          econ: 'var(--brand-indigo)',
+        }
+
+        const usability = d.usabilityScore !== null && d.usabilityScore !== undefined ? String(d.usabilityScore) : '8.5'
+        const tint = (d.area && AREA_COLORS[d.area]) ? AREA_COLORS[d.area] : 'var(--brand-blue)'
+
+        const likesCount = d.likes ? d.likes.length : 0
+        const isLiked = currentUserId ? d.likes.some((l) => Number(l.userId) === Number(currentUserId)) : false
+
+        return {
+          id: d.id,
+          title: d.name,
+          unit: d.unit,
+          desc: d.description || 'Nenhuma descrição fornecida.',
+          tags: d.tags || [],
+          cat: d.area,
+          format,
+          tint,
+          size,
+          rows: '---',
+          downloads: likesCount,
+          dl: String(likesCount),
+          likesCount,
+          isLiked,
+          updated: d.updatedAt ? d.updatedAt.toRelative() || 'recentemente' : 'recentemente',
+          license: d.license ? d.license.name : 'CC BY 4.0',
+          usability,
+          featured: true,
+          recent: index < 3,
+          order: index + 1,
+        }
+      })
+    )
+
+    const initialSearch = request.input('search') || ''
+    const initialArea = request.input('area') || ''
+
+    return inertia.render('dataset/index', {
+      datasets: datasetsPayload,
+      initialSearch,
+      initialArea,
+    })
+  }
+
   public async viewer({ inertia, request, auth }: HttpContext) {
     const currentUserId = auth?.user?.id ?? null
 

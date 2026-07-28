@@ -148,7 +148,10 @@ export default function PanelNav({ theme, onToggleTheme, onPublish, active, user
           </span>
         </Link>
         <nav className="dr-nav-links">
-          <Link className="dr-nav-link" href="/#datasets">
+          <Link
+            className={'dr-nav-link' + (active === 'datasets' ? ' active' : '')}
+            href="/datasets"
+          >
             Datasets
           </Link>
           <Link className="dr-nav-link" href="/#categorias">

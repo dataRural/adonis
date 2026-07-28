@@ -6,6 +6,18 @@ export type ScannedRoutes = {
   ALL: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'marketing.show': { paramsTuple?: []; params?: {} }
+    'auth.sign_in.show': { paramsTuple?: []; params?: {} }
+    'auth.sign_in.handle': { paramsTuple?: []; params?: {} }
+    'auth.sign_out.handle': { paramsTuple?: []; params?: {} }
+    'auth.sign_up.show': { paramsTuple?: []; params?: {} }
+    'auth.sign_up.handle': { paramsTuple?: []; params?: {} }
+    'auth.forgot_password.show': { paramsTuple?: []; params?: {} }
+    'auth.forgot_password.handle': { paramsTuple?: []; params?: {} }
+    'auth.reset_password.show': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'auth.reset_password.handle': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'social.create': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
+    'social.callback': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
+    'locale.switch': { paramsTuple: [ParamValue]; params: {'locale': ParamValue} }
     'users.index': { paramsTuple?: []; params?: {} }
     'users.store': { paramsTuple?: []; params?: {} }
     'users.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -32,7 +44,7 @@ export type ScannedRoutes = {
     'datasets.version.restore': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'versionId': ParamValue} }
     'datasets.version.delete': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'versionId': ParamValue} }
     'datasets.version.download': { paramsTuple: [ParamValue,ParamValue]; params: {'datasetId': ParamValue,'versionId': ParamValue} }
-    'datasets.index': { paramsTuple?: []; params?: {} }
+    'datasets.explore': { paramsTuple?: []; params?: {} }
     'datasets.store': { paramsTuple?: []; params?: {} }
     'datasets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.show': { paramsTuple?: []; params?: {} }
@@ -47,22 +59,16 @@ export type ScannedRoutes = {
     'groups.members.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'memberId': ParamValue} }
     'groups.datasets.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'groups.datasets.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'datasetId': ParamValue} }
-    'auth.sign_in.show': { paramsTuple?: []; params?: {} }
-    'auth.sign_in.handle': { paramsTuple?: []; params?: {} }
-    'auth.sign_out.handle': { paramsTuple?: []; params?: {} }
-    'auth.sign_up.show': { paramsTuple?: []; params?: {} }
-    'auth.sign_up.handle': { paramsTuple?: []; params?: {} }
-    'auth.forgot_password.show': { paramsTuple?: []; params?: {} }
-    'auth.forgot_password.handle': { paramsTuple?: []; params?: {} }
-    'auth.reset_password.show': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
-    'auth.reset_password.handle': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
-    'social.create': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
-    'social.callback': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
-    'locale.switch': { paramsTuple: [ParamValue]; params: {'locale': ParamValue} }
   }
   GET: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'marketing.show': { paramsTuple?: []; params?: {} }
+    'auth.sign_in.show': { paramsTuple?: []; params?: {} }
+    'auth.sign_up.show': { paramsTuple?: []; params?: {} }
+    'auth.forgot_password.show': { paramsTuple?: []; params?: {} }
+    'auth.reset_password.show': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'social.create': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
+    'social.callback': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
     'users.index': { paramsTuple?: []; params?: {} }
     'users.search': { paramsTuple?: []; params?: {} }
     'user.profile': { paramsTuple?: []; params?: {} }
@@ -75,22 +81,22 @@ export type ScannedRoutes = {
     'licenses.index': { paramsTuple?: []; params?: {} }
     'datasets.version.new': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'datasets.version.download': { paramsTuple: [ParamValue,ParamValue]; params: {'datasetId': ParamValue,'versionId': ParamValue} }
-    'datasets.index': { paramsTuple?: []; params?: {} }
+    'datasets.explore': { paramsTuple?: []; params?: {} }
     'datasets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.show': { paramsTuple?: []; params?: {} }
     'dashboard.publish': { paramsTuple?: []; params?: {} }
     'groups.index': { paramsTuple?: []; params?: {} }
     'groups.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'auth.sign_in.show': { paramsTuple?: []; params?: {} }
-    'auth.sign_up.show': { paramsTuple?: []; params?: {} }
-    'auth.forgot_password.show': { paramsTuple?: []; params?: {} }
-    'auth.reset_password.show': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
-    'social.create': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
-    'social.callback': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
   }
   HEAD: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'marketing.show': { paramsTuple?: []; params?: {} }
+    'auth.sign_in.show': { paramsTuple?: []; params?: {} }
+    'auth.sign_up.show': { paramsTuple?: []; params?: {} }
+    'auth.forgot_password.show': { paramsTuple?: []; params?: {} }
+    'auth.reset_password.show': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'social.create': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
+    'social.callback': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
     'users.index': { paramsTuple?: []; params?: {} }
     'users.search': { paramsTuple?: []; params?: {} }
     'user.profile': { paramsTuple?: []; params?: {} }
@@ -103,20 +109,20 @@ export type ScannedRoutes = {
     'licenses.index': { paramsTuple?: []; params?: {} }
     'datasets.version.new': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'datasets.version.download': { paramsTuple: [ParamValue,ParamValue]; params: {'datasetId': ParamValue,'versionId': ParamValue} }
-    'datasets.index': { paramsTuple?: []; params?: {} }
+    'datasets.explore': { paramsTuple?: []; params?: {} }
     'datasets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.show': { paramsTuple?: []; params?: {} }
     'dashboard.publish': { paramsTuple?: []; params?: {} }
     'groups.index': { paramsTuple?: []; params?: {} }
     'groups.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'auth.sign_in.show': { paramsTuple?: []; params?: {} }
-    'auth.sign_up.show': { paramsTuple?: []; params?: {} }
-    'auth.forgot_password.show': { paramsTuple?: []; params?: {} }
-    'auth.reset_password.show': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
-    'social.create': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
-    'social.callback': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
   }
   POST: {
+    'auth.sign_in.handle': { paramsTuple?: []; params?: {} }
+    'auth.sign_out.handle': { paramsTuple?: []; params?: {} }
+    'auth.sign_up.handle': { paramsTuple?: []; params?: {} }
+    'auth.forgot_password.handle': { paramsTuple?: []; params?: {} }
+    'auth.reset_password.handle': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'locale.switch': { paramsTuple: [ParamValue]; params: {'locale': ParamValue} }
     'users.store': { paramsTuple?: []; params?: {} }
     'users.invite.handle': { paramsTuple?: []; params?: {} }
     'users.impersonate.handle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -131,12 +137,6 @@ export type ScannedRoutes = {
     'groups.store': { paramsTuple?: []; params?: {} }
     'groups.members.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'groups.datasets.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'auth.sign_in.handle': { paramsTuple?: []; params?: {} }
-    'auth.sign_out.handle': { paramsTuple?: []; params?: {} }
-    'auth.sign_up.handle': { paramsTuple?: []; params?: {} }
-    'auth.forgot_password.handle': { paramsTuple?: []; params?: {} }
-    'auth.reset_password.handle': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
-    'locale.switch': { paramsTuple: [ParamValue]; params: {'locale': ParamValue} }
   }
   PUT: {
     'users.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

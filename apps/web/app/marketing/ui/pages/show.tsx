@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import { Head } from '@inertiajs/react'
+import { Head, router } from '@inertiajs/react'
 import Navbar from '#common/ui/components/datarural/navbar'
 import Hero from '#common/ui/components/datarural/hero'
 import StatsStrip from '#common/ui/components/datarural/stats-strip'
@@ -26,7 +26,7 @@ export default function Page({ datasets = [], stats, categories }: PageProps) {
     return 'light'
   })
   const [query, setQuery] = useState('')
-  const [activeCat, setActiveCat] = useState<string | null>(null)
+  const [activeCat] = useState<string | null>(null)
   const [tab, setTab] = useState('recent')
   const [view, setView] = useState<'grid' | 'list'>('grid')
 
@@ -36,6 +36,9 @@ export default function Page({ datasets = [], stats, categories }: PageProps) {
     localStorage.setItem('dr-theme', theme)
   }, [theme])
 
+  const normalize = (str: string) =>
+    str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+
   const list = useMemo(() => {
     let arr = datasets.slice()
     if (activeCat) {
@@ -43,19 +46,41 @@ export default function Page({ datasets = [], stats, categories }: PageProps) {
       arr = arr.filter((d) => d.cat && d.cat.toLowerCase().trim() === catLower)
     }
 
-    const q = query.trim().toLowerCase()
-    if (q) {
-      arr = arr.filter((d) => {
-        const titleText = (d.title || d.name || '').toLowerCase()
-        const unitText = (d.unit || '').toLowerCase()
-        const descText = (d.desc || d.description || '').toLowerCase()
-        const tagText = d.tags ? d.tags.join(' ').toLowerCase() : ''
-        return titleText.includes(q) || unitText.includes(q) || descText.includes(q) || tagText.includes(q)
-      })
+    const raw = query.trim()
+    if (raw) {
+      const tokens = normalize(raw).split(/\s+/).filter(Boolean)
+
+      const scored = arr
+        .map((d) => {
+          const title = normalize(d.title || d.name || '')
+          const unit = normalize(d.unit || '')
+          const desc = normalize(d.desc || d.description || '')
+          const tagText = normalize(d.tags ? d.tags.join(' ') : '')
+          const all = `${title} ${unit} ${desc} ${tagText}`
+
+          let score = 0
+          let allMatch = true
+
+          for (const token of tokens) {
+            if (all.includes(token)) {
+              if (title.includes(token)) score += 3
+              else if (tagText.includes(token)) score += 2
+              else score += 1
+            } else {
+              allMatch = false
+            }
+          }
+
+          return { d, score, allMatch }
+        })
+        .filter((item) => item.allMatch || (tokens.length > 1 && item.score > 0))
+        .sort((a, b) => b.score - a.score)
+
+      arr = scored.map((item) => item.d)
     }
 
     if (tab === 'recent') {
-      arr.sort((a, b) => b.id - a.id)
+      if (!raw) arr.sort((a, b) => b.id - a.id)
     } else if (tab === 'featured') {
       arr.sort((a, b) => {
         const scoreA = Number(a.usability) || 0
@@ -70,11 +95,23 @@ export default function Page({ datasets = [], stats, categories }: PageProps) {
     return arr
   }, [datasets, query, activeCat, tab])
 
+  const handleSearch = () => {
+    if (query.trim()) {
+      router.visit(`/datasets?search=${encodeURIComponent(query.trim())}`)
+    } else {
+      router.visit('/datasets')
+    }
+  }
+
   const handleChip = (t: string) => {
-    setQuery(t)
-    const el = document.getElementById('datasets')
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' })
+    router.visit(`/datasets?search=${encodeURIComponent(t)}`)
+  }
+
+  const handlePickCategory = (catId: string | null) => {
+    if (catId) {
+      router.visit(`/datasets?area=${encodeURIComponent(catId)}`)
+    } else {
+      router.visit('/datasets')
     }
   }
 
@@ -90,9 +127,10 @@ export default function Page({ datasets = [], stats, categories }: PageProps) {
         query={query}
         onQuery={setQuery}
         onChip={handleChip}
+        onSearch={handleSearch}
       />
       <StatsStrip stats={stats} />
-      <Categories active={activeCat} onPick={setActiveCat} categories={categories} />
+      <Categories active={activeCat} onPick={handlePickCategory} categories={categories} />
       <DatasetsSection
         list={list}
         tab={tab}

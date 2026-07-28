@@ -10,6 +10,34 @@ export interface ApiDefinition {
   marketing: {
     show: typeof routes['marketing.show']
   }
+  auth: {
+    signIn: {
+      show: typeof routes['auth.sign_in.show']
+      handle: typeof routes['auth.sign_in.handle']
+    }
+    signOut: {
+      handle: typeof routes['auth.sign_out.handle']
+    }
+    signUp: {
+      show: typeof routes['auth.sign_up.show']
+      handle: typeof routes['auth.sign_up.handle']
+    }
+    forgotPassword: {
+      show: typeof routes['auth.forgot_password.show']
+      handle: typeof routes['auth.forgot_password.handle']
+    }
+    resetPassword: {
+      show: typeof routes['auth.reset_password.show']
+      handle: typeof routes['auth.reset_password.handle']
+    }
+  }
+  social: {
+    create: typeof routes['social.create']
+    callback: typeof routes['social.callback']
+  }
+  locale: {
+    switch: typeof routes['locale.switch']
+  }
   users: {
     index: typeof routes['users.index']
     store: typeof routes['users.store']
@@ -56,7 +84,7 @@ export interface ApiDefinition {
       delete: typeof routes['datasets.version.delete']
       download: typeof routes['datasets.version.download']
     }
-    index: typeof routes['datasets.index']
+    explore: typeof routes['datasets.explore']
     store: typeof routes['datasets.store']
     show: typeof routes['datasets.show']
   }
@@ -82,33 +110,5 @@ export interface ApiDefinition {
       store: typeof routes['groups.datasets.store']
       destroy: typeof routes['groups.datasets.destroy']
     }
-  }
-  auth: {
-    signIn: {
-      show: typeof routes['auth.sign_in.show']
-      handle: typeof routes['auth.sign_in.handle']
-    }
-    signOut: {
-      handle: typeof routes['auth.sign_out.handle']
-    }
-    signUp: {
-      show: typeof routes['auth.sign_up.show']
-      handle: typeof routes['auth.sign_up.handle']
-    }
-    forgotPassword: {
-      show: typeof routes['auth.forgot_password.show']
-      handle: typeof routes['auth.forgot_password.handle']
-    }
-    resetPassword: {
-      show: typeof routes['auth.reset_password.show']
-      handle: typeof routes['auth.reset_password.handle']
-    }
-  }
-  social: {
-    create: typeof routes['social.create']
-    callback: typeof routes['social.callback']
-  }
-  locale: {
-    switch: typeof routes['locale.switch']
   }
 }

@@ -26,7 +26,7 @@ export default function Navbar({ theme, onToggleTheme, activePage }: NavbarProps
         <nav className="dr-nav-links">
           <Link
             className={`dr-nav-link ${activePage === 'datasets' ? 'active' : ''}`}
-            href="/#datasets"
+            href="/datasets"
           >
             Datasets
           </Link>

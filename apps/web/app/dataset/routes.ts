@@ -54,10 +54,13 @@ router
   .as('datasets.version.download')
 
 router
-  .resource('/datasets', DatasetsController)
-  .only(['index', 'store'])
-  .use('*', middleware.auth())
-  .as('datasets')
+  .get('/datasets', [DatasetsController, 'explore'])
+  .as('datasets.explore')
+
+router
+  .post('/datasets', [DatasetsController, 'store'])
+  .middleware(middleware.auth())
+  .as('datasets.store')
 
 router
   .get('/datasets/:id', [DatasetsController, 'show'])
