@@ -94,6 +94,45 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
           <span className="here">{publisherName}</span>
         </nav>
 
+        {(ds as any).isLatestVersionSelected === false && (
+          <div style={{
+            background: 'color-mix(in srgb, var(--brand-sky) 15%, transparent)',
+            border: '1px solid var(--brand-sky)',
+            color: 'var(--foreground)',
+            padding: '12px 18px',
+            borderRadius: 'var(--radius)',
+            marginBottom: 20,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 12,
+            fontSize: 13.5,
+            flexWrap: 'wrap',
+          }}>
+            <span>
+              <Ic.Clock size={16} style={{ display: 'inline', marginRight: 6, color: 'var(--brand-sky)' }} />
+              Você está visualizando a versão arquivada <strong>{(ds as any).selectedVersionName || ds.version}</strong>.
+            </span>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              {isOwner && (
+                <button
+                  className="dr-btn dr-btn-primary dr-btn-sm"
+                  onClick={() => {
+                    if (confirm(`Deseja restaurar a versão ${(ds as any).selectedVersionName || ds.version} como a mais recente?`)) {
+                      router.post(`/datasets/${ds.id}/version/${(ds as any).selectedVersionId}/restore`)
+                    }
+                  }}
+                >
+                  <Ic.Rotate size={14} style={{ marginRight: 4 }} /> Restaurar esta versão
+                </button>
+              )}
+              <a href={`/datasets/${ds.id}`} className="dr-btn dr-btn-outline dr-btn-sm">
+                Ir para a versão mais recente
+              </a>
+            </div>
+          </div>
+        )}
+
         <div className="dr-ds-head-top">
           <div className="dr-ds-head-main">
             <span className="dr-ds-head-unit">
@@ -141,7 +180,7 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
                 <a className="dr-btn dr-btn-outline" href={`/dashboard/publish?id=${ds.id}`}>
                   <Ic.Edit size={16} /> Editar
                 </a>
-                <a className="dr-btn dr-btn-outline" href={`/dashboard/publish?id=${ds.id}`}>
+                <a className="dr-btn dr-btn-outline" href={`/datasets/${ds.id}/version/new`}>
                   <Ic.Plus size={16} /> Nova versão
                 </a>
               </div>

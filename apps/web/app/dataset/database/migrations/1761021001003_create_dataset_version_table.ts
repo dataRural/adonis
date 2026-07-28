@@ -15,6 +15,7 @@ export default class extends BaseSchema {
         .notNullable()
       table.string('name', 255).notNullable()
       table.json('path').notNullable()
+      table.boolean('is_deleted').notNullable().defaultTo(false)
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()
     })

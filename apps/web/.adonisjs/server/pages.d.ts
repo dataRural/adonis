@@ -20,16 +20,17 @@ declare module '@adonisjs/inertia/types' {
     'core/errors/server_error': ExtractProps<(typeof import('../../app/core/ui/pages/errors/server_error.tsx'))['default']>
     'dataset/dashboard': ExtractProps<(typeof import('../../app/dataset/ui/pages/dashboard.tsx'))['default']>
     'dataset/index': ExtractProps<(typeof import('../../app/dataset/ui/pages/index.tsx'))['default']>
-    'dataset/publish': ExtractProps<(typeof import('../../app/dataset/ui/pages/publish.tsx'))['default']>
-    'dataset/show': ExtractProps<(typeof import('../../app/dataset/ui/pages/show.tsx'))['default']>
-    'dataset/view': ExtractProps<(typeof import('../../app/dataset/ui/pages/view.tsx'))['default']>
+    'dataset/new_version': any
+    'dataset/publish': any
+    'dataset/show': any
+    'dataset/view': any
     'groups/index': any
     'groups/show': any
     'marketing/show': any
-    'users/index': ExtractProps<(typeof import('../../app/users/ui/pages/index.tsx'))['default']>
-    'users/password': ExtractProps<(typeof import('../../app/users/ui/pages/password.tsx'))['default']>
-    'users/profile': ExtractProps<(typeof import('../../app/users/ui/pages/profile.tsx'))['default']>
+    'users/index': any
+    'users/password': any
+    'users/profile': any
     'users/public_profile': any
-    'users/tokens': ExtractProps<(typeof import('../../app/users/ui/pages/tokens.tsx'))['default']>
+    'users/tokens': any
   }
 }

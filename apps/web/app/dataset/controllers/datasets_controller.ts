@@ -15,6 +15,7 @@ import GroupMember from '#app/groups/models/group_member'
 import GroupMemberRole from '#app/groups/enums/group_member_role'
 import User from '#users/models/user'
 import UserTransformer from '#users/transformers/user_transformer'
+import { DateTime } from 'luxon'
 
 function sanitizePathSegment(value: string) {
   return value
@@ -301,10 +302,10 @@ export default class DatasetsController {
         tags: dataset.tags,
         license: dataset.license
           ? {
-              id: dataset.license.id,
-              name: dataset.license.name,
-              description: dataset.license.description,
-            }
+            id: dataset.license.id,
+            name: dataset.license.name,
+            description: dataset.license.description,
+          }
           : null,
         versions: await Promise.all(
           dataset.versions.map(async (version) => ({
@@ -395,8 +396,17 @@ export default class DatasetsController {
         path: attachment,
       })
 
-      session.flash('success', `Version ${versionName} saved successfully.`)
-      return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}&versionId=${version.id}`)
+      if (payload.description !== undefined && payload.description !== null) {
+        dataset.description = payload.description
+      }
+      if (payload.usabilityScore !== undefined && payload.usabilityScore !== null) {
+        dataset.usabilityScore = payload.usabilityScore
+      }
+      dataset.updatedAt = DateTime.now()
+      await dataset.save()
+
+      session.flash('success', `Versão ${versionName} adicionada com sucesso.`)
+      return response.redirect().toPath(`/datasets/${dataset.id}?versionId=${version.id}`)
     } catch (err) {
       console.error('Error saving dataset version (addVersion):', err)
       session.flash('error', `Unable to save the dataset version. ${err && (err as any).message ? (err as any).message : ''}`)
@@ -536,6 +546,7 @@ export default class DatasetsController {
         await Database.transaction(async (trx) => {
           dataset.merge({
             name: payload.name,
+            description: payload.description || null,
             isPublic: payload.isPublic ? true : false,
             licenseId,
             unit: payload.unit,
@@ -655,6 +666,7 @@ export default class DatasetsController {
         const dataset = await Dataset.create(
           {
             name: payload.name,
+            description: payload.description || null,
             path: datasetPath,
             isPublic: payload.isPublic ? true : false,
             userId: auth.user!.id,
@@ -690,7 +702,7 @@ export default class DatasetsController {
     }
   }
 
-  public async show({ params, inertia, auth, response, session }: HttpContext) {
+  public async show({ params, request, inertia, auth, response, session }: HttpContext) {
     const datasetId = Number(params.id)
     if (Number.isNaN(datasetId)) {
       return response.redirect().toPath('/dashboard')
@@ -699,7 +711,7 @@ export default class DatasetsController {
     const dataset = await Dataset.query()
       .where('id', datasetId)
       .preload('versions', (query) => {
-        query.orderBy('id', 'desc')
+        query.where('is_deleted', false).orderBy('id', 'desc')
       })
       .preload('license')
       .preload('likes')
@@ -731,24 +743,21 @@ export default class DatasetsController {
       }
     }
 
-    const latestVersion = dataset.versions[0]
-
+    const requestedVersionId = request.input('versionId')
+    let selectedVersion = dataset.versions[0]
+    if (requestedVersionId) {
+      const found = dataset.versions.find((v) => Number(v.id) === Number(requestedVersionId))
+      if (found) {
+        selectedVersion = found
+      }
+    }
     let description = '<p>Nenhuma descrição fornecida.</p>'
-    if (latestVersion && dataset.path) {
+    if (dataset.description) {
       try {
-        const readmePath = join(dataset.path, latestVersion.name, 'README.md')
-        const readmeContent = await readFile(readmePath, 'utf8')
-        const lines = readmeContent.split('\n').map(l => l.trim()).filter(l => l.length > 0)
-        let markdownText = ''
-        if (lines.length > 1) {
-          markdownText = lines.slice(1).join('\n')
-        } else if (lines.length === 1 && !lines[0].startsWith('#')) {
-          markdownText = lines[0]
-        }
-        if (markdownText) {
-          description = await marked.parse(markdownText)
-        }
-      } catch {}
+        description = await marked.parse(dataset.description)
+      } catch {
+        description = `<p>${dataset.description}</p>`
+      }
     }
 
     let previewHeaders: string[] = []
@@ -757,9 +766,9 @@ export default class DatasetsController {
     let sizeStr = '0 B'
     let totalRowCount = 0
 
-    if (latestVersion && latestVersion.path) {
+    if (selectedVersion && selectedVersion.path) {
       try {
-        const buffer = await latestVersion.path.getBuffer()
+        const buffer = await selectedVersion.path.getBuffer()
         const csvContent = buffer.toString('utf8')
         const preview = parseCsvPreview(csvContent, 100)
         previewHeaders = preview.headers
@@ -769,7 +778,7 @@ export default class DatasetsController {
         const allLines = csvContent.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0)
         totalRowCount = Math.max(0, allLines.length - 1) // subtract header
 
-        const fileBytes = latestVersion.path.size
+        const fileBytes = selectedVersion.path.size
         if (fileBytes) {
           if (fileBytes > 1024 * 1024) {
             sizeStr = `${(fileBytes / (1024 * 1024)).toFixed(1)} MB`
@@ -778,7 +787,7 @@ export default class DatasetsController {
           }
         }
 
-        const fileExt = latestVersion.path.name?.split('.').pop()?.toUpperCase()
+        const fileExt = selectedVersion.path.name?.split('.').pop()?.toUpperCase()
         if (fileExt) format = fileExt
       } catch (err) {
         console.error('Error reading csv preview in show action:', err)
@@ -880,7 +889,10 @@ export default class DatasetsController {
       licenseUrl: '#',
       usability: dataset.usabilityScore !== null && dataset.usabilityScore !== undefined ? String(dataset.usabilityScore) : '8.5',
       doi: '10.5281/datarural.local',
-      version: latestVersion?.name || 'V1',
+      version: selectedVersion?.name || 'V1',
+      selectedVersionId: selectedVersion?.id,
+      selectedVersionName: selectedVersion?.name || 'V1',
+      isLatestVersionSelected: selectedVersion?.id === dataset.versions[0]?.id,
       updated: dataset.updatedAt ? dataset.updatedAt.toRelative() || 'Recém atualizado' : 'Recém atualizado',
       published: dataset.createdAt ? dataset.createdAt.toRelative() || 'Recentemente' : 'Recentemente',
       size: sizeStr,
@@ -921,6 +933,7 @@ export default class DatasetsController {
         size: sizeStr,
         createdAt: v.createdAt ? v.createdAt.toRelative() || 'recentemente' : 'recentemente',
         isLatest: index === 0,
+        isSelected: v.id === selectedVersion?.id,
       }
     })
 
@@ -1081,6 +1094,140 @@ export default class DatasetsController {
     return inertia.render('dataset/dashboard', { datasets: datasetsPayload, userGroups, totalLikesCount })
   }
 
+  public async newVersion({ params, inertia, auth, response, session }: HttpContext) {
+    const dataset = await Dataset.query()
+      .where('id', params.id)
+      .preload('versions', (query) => {
+        query.orderBy('id', 'desc')
+      })
+      .firstOrFail()
+
+    let canAddVersion = Number(auth.user!.id) === Number(dataset.userId)
+    if (!canAddVersion && dataset.groupId) {
+      const membership = await GroupMember.query()
+        .where('groupId', dataset.groupId)
+        .where('userId', auth.user!.id)
+        .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN, GroupMemberRole.EDITOR])
+        .first()
+      canAddVersion = !!membership
+    }
+
+    if (!canAddVersion) {
+      session.flash('error', 'Você não tem permissão para adicionar versões a este dataset.')
+      return response.redirect().toPath(`/datasets/${dataset.id}`)
+    }
+
+    const suggestedVersion = getNextVersionName(dataset.versions.map((v) => v.name))
+    const currentVersion = dataset.versions.length > 0 ? dataset.versions[0].name : 'V1'
+
+    const versions = dataset.versions.map((v) => ({
+      id: v.id,
+      name: v.name,
+      createdAt: v.createdAt ? v.createdAt.toISO() : null,
+    }))
+
+    return inertia.render('dataset/new_version', {
+      dataset: {
+        id: dataset.id,
+        name: dataset.name,
+        description: dataset.description || '',
+        currentVersion,
+        suggestedVersion,
+      },
+      versions,
+    })
+  }
+
+  public async restoreVersion({ params, response, session, auth }: HttpContext) {
+    const dataset = await Dataset.query().where('id', params.id).preload('versions').firstOrFail()
+
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
+    let canRestore = currentUserId ? Number(currentUserId) === Number(dataset.userId) : false
+
+    if (!canRestore && currentUserId && dataset.groupId) {
+      const membership = await GroupMember.query()
+        .where('groupId', dataset.groupId)
+        .where('userId', currentUserId)
+        .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN, GroupMemberRole.EDITOR])
+        .first()
+      canRestore = !!membership
+    }
+
+    if (!canRestore) {
+      session.flash('error', 'Você não tem permissão para restaurar versões deste dataset.')
+      return response.redirect().toPath(`/datasets/${dataset.id}`)
+    }
+
+    const versionToRestore = await DatasetVersion.query()
+      .where('datasetId', dataset.id)
+      .where('id', params.versionId)
+      .firstOrFail()
+
+    const restoredVersionName = `${versionToRestore.name} - Restaurada`
+
+    try {
+      const newVersion = await DatasetVersion.create({
+        datasetId: dataset.id,
+        name: restoredVersionName,
+        path: versionToRestore.path,
+      })
+
+      if (dataset.path) {
+        try {
+          const oldReadmePath = join(dataset.path, sanitizePathSegment(versionToRestore.name), 'README.md')
+          const newVersionPath = join(dataset.path, sanitizePathSegment(restoredVersionName))
+          await mkdir(newVersionPath, { recursive: true })
+          const readmeContent = await readFile(oldReadmePath, 'utf8')
+          await writeFile(join(newVersionPath, 'README.md'), readmeContent, 'utf8')
+        } catch { }
+      }
+
+      dataset.updatedAt = DateTime.now()
+      await dataset.save()
+
+      session.flash('success', `Versão ${versionToRestore.name} restaurada com sucesso como "${restoredVersionName}"!`)
+      return response.redirect().toPath(`/datasets/${dataset.id}?versionId=${newVersion.id}`)
+    } catch (err) {
+      console.error('Error restoring version:', err)
+      session.flash('error', 'Não foi possível restaurar a versão.')
+      return response.redirect().toPath(`/datasets/${dataset.id}`)
+    }
+  }
+
+  public async deleteVersion({ params, response, session, auth }: HttpContext) {
+    const dataset = await Dataset.query().where('id', params.id).preload('versions').firstOrFail()
+
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
+    let canDelete = currentUserId ? Number(currentUserId) === Number(dataset.userId) : false
+
+    if (!canDelete && currentUserId && dataset.groupId) {
+      const membership = await GroupMember.query()
+        .where('groupId', dataset.groupId)
+        .where('userId', currentUserId)
+        .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN])
+        .first()
+      canDelete = !!membership
+    }
+
+    if (!canDelete) {
+      session.flash('error', 'Você não tem permissão para excluir versões deste dataset.')
+      return response.redirect().toPath(`/datasets/${dataset.id}`)
+    }
+
+    const versionToDelete = await DatasetVersion.query()
+      .where('datasetId', dataset.id)
+      .where('id', params.versionId)
+      .firstOrFail()
+
+    versionToDelete.isDeleted = true
+    await versionToDelete.save()
+
+    session.flash('success', `Versão ${versionToDelete.name} excluída com sucesso.`)
+    return response.redirect().toPath(`/datasets/${dataset.id}`)
+  }
+
   public async publish({ inertia, request, auth, response, session }: HttpContext) {
     const datasetId = request.input('id')
     let editDataset: any = null
@@ -1109,20 +1256,7 @@ export default class DatasetsController {
           session.flash('error', 'You are not authorized to edit this dataset.')
           return response.redirect().toPath('/dashboard')
         }
-        let description = ''
-        const latestVersion = dataset.versions[0]
-        if (latestVersion && dataset.path) {
-          try {
-            const readmePath = join(dataset.path, latestVersion.name, 'README.md')
-            const readmeContent = await readFile(readmePath, 'utf8')
-            const lines = readmeContent.split('\n').map(l => l.trim()).filter(l => l.length > 0)
-            if (lines.length > 1) {
-              description = lines.slice(1).join('\n')
-            } else if (lines.length === 1 && !lines[0].startsWith('#')) {
-              description = lines[0]
-            }
-          } catch {}
-        }
+        let description = dataset.description || ''
 
         let licenseKey = 'custom'
         if (dataset.licenseId === 1) licenseKey = 'cc0'
@@ -1131,6 +1265,7 @@ export default class DatasetsController {
 
         let fileName = ''
         let fileSize = '0 MB'
+        const latestVersion = dataset.versions[0]
         if (latestVersion && latestVersion.path) {
           fileName = latestVersion.path.originalName || latestVersion.path.name || ''
           const sizeBytes = latestVersion.path.size || 0

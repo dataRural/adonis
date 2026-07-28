@@ -16,6 +16,9 @@ export default class DatasetVersion extends BaseModel {
   @column()
   declare name: string
 
+  @column()
+  declare isDeleted: boolean
+
   @attachment()
   declare path: Attachment
 

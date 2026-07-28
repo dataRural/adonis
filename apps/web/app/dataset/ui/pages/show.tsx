@@ -6,6 +6,7 @@ import TabBar from '../components/tab-bar'
 import OverviewTab from '../components/overview-tab'
 import ViewerTab from '../components/viewer-tab'
 import FilesTab from '../components/files-tab'
+import VersionsTab from '../components/versions-tab'
 import Rail from '../components/rail'
 import RelatedSection from '../components/related-section'
 import Footer from '#common/ui/components/datarural/footer'
@@ -31,7 +32,7 @@ export default function DatasetShowPage({ dataset, previewColumns, previewRows, 
   const [tab, setTab] = useState(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('dr-detail-tab')
-      if (stored === 'overview' || stored === 'viewer' || stored === 'files') return stored
+      if (stored === 'overview' || stored === 'viewer' || stored === 'files' || stored === 'versions') return stored
     }
     return 'overview'
   })
@@ -57,7 +58,7 @@ export default function DatasetShowPage({ dataset, previewColumns, previewRows, 
       <Head title={ds.title || "Dataset"} />
       <Navbar theme={theme} onToggleTheme={handleToggleTheme} activePage="datasets" />
       <DatasetHeader ds={ds} latestVersionId={versions && versions[0]?.id} />
-      <TabBar tab={tab} onTab={setTab} />
+      <TabBar tab={tab} onTab={setTab} versionsCount={versions?.length} />
 
       <main className="dr-ds-page">
         <div className="dr-container">
@@ -73,6 +74,7 @@ export default function DatasetShowPage({ dataset, previewColumns, previewRows, 
                 />
               )}
               {tab === 'files' && <FilesTab ds={ds} versions={versions} />}
+              {tab === 'versions' && <VersionsTab ds={ds} versions={versions} />}
             </div>
             <Rail ds={ds} />
           </div>

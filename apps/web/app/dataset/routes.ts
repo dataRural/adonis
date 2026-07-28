@@ -30,9 +30,24 @@ router
   .as('datasets.like.toggle');
 
 router
+  .get('/datasets/:id/version/new', [DatasetsController, 'newVersion'])
+  .middleware(middleware.auth())
+  .as('datasets.version.new');
+
+router
   .post('/datasets/:id/version', [DatasetsController, 'addVersion'])
   .middleware(middleware.auth())
   .as('datasets.version.store');
+
+router
+  .post('/datasets/:id/version/:versionId/restore', [DatasetsController, 'restoreVersion'])
+  .middleware(middleware.auth())
+  .as('datasets.version.restore');
+
+router
+  .post('/datasets/:id/version/:versionId/delete', [DatasetsController, 'deleteVersion'])
+  .middleware(middleware.auth())
+  .as('datasets.version.delete');
 
 router
   .get('/datasets/:datasetId/version/:versionId/download', [DatasetsController, 'downloadVersion'])

@@ -41,6 +41,11 @@ export type DatasetDetail = {
   tags: string[]
   authors: AuthorItem[]
   description?: string
+  isOwner?: boolean
+  isLiked?: boolean
+  selectedVersionId?: number
+  selectedVersionName?: string
+  isLatestVersionSelected?: boolean
 }
 
 export interface QualityItem {
@@ -50,7 +55,7 @@ export interface QualityItem {
 }
 
 export const QUALITY: QualityItem[] = [
-  { label: 'Completude', desc: 'Metadados, descrição e dicionário de colunas preenchidos.', score: 1.0 },
-  { label: 'Credibilidade', desc: 'Fonte, proveniência e metodologia de coleta declaradas.', score: 1.0 },
-  { label: 'Compatibilidade', desc: 'Licença aberta, formato CSV e atualização contínua.', score: 0.88 },
+  { label: 'Completude: ', desc: 'Metadados, descrição e dicionário de colunas preenchidos.', score: 1.0 },
+  { label: 'Credibilidade: ', desc: 'Fonte, proveniência e metodologia de coleta declaradas.', score: 1.0 },
+  { label: 'Compatibilidade: ', desc: 'Licença aberta, formato CSV e atualização contínua.', score: 0.88 },
 ]

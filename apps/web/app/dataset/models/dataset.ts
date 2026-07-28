@@ -59,6 +59,9 @@ export default class Dataset extends BaseModel {
   declare status: string
 
   @column()
+  declare description: string | null
+
+  @column()
   licenseId: number | null = null
 
   @column()

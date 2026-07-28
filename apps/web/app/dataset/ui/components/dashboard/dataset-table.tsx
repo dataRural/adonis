@@ -37,7 +37,7 @@ function RowMenu({
       </button>
       <button
         onClick={() => {
-          onEdit(d)
+          router.visit(`/datasets/${d.id}/version/new`)
           onClose()
         }}
       >

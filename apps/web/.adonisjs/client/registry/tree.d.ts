@@ -38,43 +38,6 @@ export interface ApiDefinition {
   locale: {
     switch: typeof routes['locale.switch']
   }
-  datasets: {
-    viewer: typeof routes['datasets.viewer']
-    privacy: typeof routes['datasets.privacy']
-    like: {
-      toggle: typeof routes['datasets.like.toggle']
-    }
-    version: {
-      store: typeof routes['datasets.version.store']
-      download: typeof routes['datasets.version.download']
-    }
-    index: typeof routes['datasets.index']
-    store: typeof routes['datasets.store']
-    show: typeof routes['datasets.show']
-  }
-  licenses: {
-    index: typeof routes['licenses.index']
-  }
-  dashboard: {
-    show: typeof routes['dashboard.show']
-    publish: typeof routes['dashboard.publish']
-  }
-  groups: {
-    index: typeof routes['groups.index']
-    store: typeof routes['groups.store']
-    show: typeof routes['groups.show']
-    update: typeof routes['groups.update']
-    destroy: typeof routes['groups.destroy']
-    members: {
-      store: typeof routes['groups.members.store']
-      update: typeof routes['groups.members.update']
-      destroy: typeof routes['groups.members.destroy']
-    }
-    datasets: {
-      store: typeof routes['groups.datasets.store']
-      destroy: typeof routes['groups.datasets.destroy']
-    }
-  }
   users: {
     index: typeof routes['users.index']
     store: typeof routes['users.store']
@@ -107,5 +70,45 @@ export interface ApiDefinition {
   password: {
     update: typeof routes['password.update']
     show: typeof routes['password.show']
+  }
+  datasets: {
+    viewer: typeof routes['datasets.viewer']
+    privacy: typeof routes['datasets.privacy']
+    like: {
+      toggle: typeof routes['datasets.like.toggle']
+    }
+    version: {
+      new: typeof routes['datasets.version.new']
+      store: typeof routes['datasets.version.store']
+      restore: typeof routes['datasets.version.restore']
+      delete: typeof routes['datasets.version.delete']
+      download: typeof routes['datasets.version.download']
+    }
+    index: typeof routes['datasets.index']
+    store: typeof routes['datasets.store']
+    show: typeof routes['datasets.show']
+  }
+  licenses: {
+    index: typeof routes['licenses.index']
+  }
+  dashboard: {
+    show: typeof routes['dashboard.show']
+    publish: typeof routes['dashboard.publish']
+  }
+  groups: {
+    index: typeof routes['groups.index']
+    store: typeof routes['groups.store']
+    show: typeof routes['groups.show']
+    update: typeof routes['groups.update']
+    destroy: typeof routes['groups.destroy']
+    members: {
+      store: typeof routes['groups.members.store']
+      update: typeof routes['groups.members.update']
+      destroy: typeof routes['groups.members.destroy']
+    }
+    datasets: {
+      store: typeof routes['groups.datasets.store']
+      destroy: typeof routes['groups.datasets.destroy']
+    }
   }
 }
