@@ -20,6 +20,9 @@ export default class extends BaseSchema {
       table.string('password').nullable()
       table.string('avatar_url').nullable().defaultTo(null)
       table.json('avatar').nullable()
+      table.text('bio').nullable()
+      table.string('institution').nullable()
+      table.string('location').nullable()
 
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()

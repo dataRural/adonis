@@ -34,6 +34,9 @@ interface UserProfile {
   fullName: string | null
   email: string
   avatarUrl: string | null
+  bio?: string | null
+  institution?: string | null
+  location?: string | null
   createdAt: string
 }
 
@@ -90,20 +93,6 @@ export default function PublicProfilePage({
     month: 'long',
     year: 'numeric',
   })
-
-  // Generate 52-week mock/calculated contribution matrix (364 days)
-  const contributionData = Array.from({ length: 52 * 7 }, (_, i) => {
-    // Generate deterministic green activity levels for demonstration
-    const seed = (i * 17 + (userProfile.id || 1) * 31) % 100
-    let level = 0
-    if (seed > 85) level = 4
-    else if (seed > 70) level = 3
-    else if (seed > 55) level = 2
-    else if (seed > 40) level = 1
-    return level
-  })
-
-  const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
 
   const filteredDatasets = datasets.filter((ds) =>
     ds.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -282,8 +271,8 @@ export default function PublicProfilePage({
               </p>
             </div>
 
-            <p style={{ fontSize: 14, color: 'var(--foreground)', lineHeight: 1.5, marginBottom: 20 }}>
-              Pesquisador(a) no ecossistema DataRural UFRRJ. Especialista em inteligência de dados agrícolas, sensoriamento remoto e preservação ambiental.
+            <p style={{ fontSize: 14, color: userProfile.bio ? 'var(--foreground)' : 'var(--muted-foreground)', lineHeight: 1.5, marginBottom: 20, fontStyle: userProfile.bio ? 'normal' : 'italic' }}>
+              {userProfile.bio || (isOwnProfile ? 'Sem biografia informada. Clique em Editar perfil para adicionar.' : 'Nenhuma biografia informada.')}
             </p>
 
             {isOwnProfile && (
@@ -308,11 +297,15 @@ export default function PublicProfilePage({
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 14, color: 'var(--muted-foreground)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <Ic.Building size={16} style={{ flexShrink: 0 }} />
-                <span>Instituto de Ciências Exatas — UFRRJ</span>
+                <span style={{ fontStyle: userProfile.institution ? 'normal' : 'italic', opacity: userProfile.institution ? 1 : 0.7 }}>
+                  {userProfile.institution || 'Nenhuma instituição informada'}
+                </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <Ic.Pin size={16} style={{ flexShrink: 0 }} />
-                <span>Seropédica, Rio de Janeiro</span>
+                <span style={{ fontStyle: userProfile.location ? 'normal' : 'italic', opacity: userProfile.location ? 1 : 0.7 }}>
+                  {userProfile.location || 'Nenhuma localização informada'}
+                </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <Ic.Globe size={16} style={{ flexShrink: 0 }} />
@@ -495,29 +488,38 @@ export default function PublicProfilePage({
                 {/* Recent Activity Stream */}
                 <div>
                   <h3 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 16px' }}>Atividade Recente</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    {datasets.slice(0, 3).map((ds) => (
-                      <div key={ds.id} className="dr-panel" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
-                        <div style={{ background: 'color-mix(in srgb, var(--brand-green) 12%, transparent)', color: 'var(--brand-green)', padding: 10, borderRadius: '50%' }}>
-                          <Ic.Plus size={18} />
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: 14, fontWeight: 600 }}>
-                            Publicou nova versão <span style={{ color: 'var(--brand-green)' }}>{ds.version}</span> do dataset{' '}
-                            <Link href={`/datasets/${ds.id}`} style={{ color: 'var(--foreground)', textDecoration: 'none', fontWeight: 700 }}>
-                              {ds.title}
-                            </Link>
+                  {datasets.length === 0 ? (
+                    <div className="dr-panel" style={{ padding: '24px 20px', textAlign: 'center', margin: 0, marginTop: 0 }}>
+                      <Ic.Clock size={28} style={{ color: 'var(--muted-foreground)', marginBottom: 8 }} />
+                      <p style={{ color: 'var(--muted-foreground)', fontSize: 13, margin: 0 }}>
+                        Nenhuma atividade recente registrada no ecossistema.
+                      </p>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      {datasets.slice(0, 3).map((ds) => (
+                        <div key={ds.id} className="dr-panel" style={{ margin: 0, marginTop: 0, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
+                          <div style={{ background: 'color-mix(in srgb, var(--brand-green) 12%, transparent)', color: 'var(--brand-green)', padding: 10, borderRadius: '50%' }}>
+                            <Ic.Plus size={18} />
                           </div>
-                          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 2 }}>
-                            {ds.area} • {ds.size} • {ds.fileCount} arquivo(s)
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: 14, fontWeight: 600 }}>
+                              Publicou nova versão <span style={{ color: 'var(--brand-green)' }}>{ds.version}</span> do dataset{' '}
+                              <Link href={`/datasets/${ds.id}`} style={{ color: 'var(--foreground)', textDecoration: 'none', fontWeight: 700 }}>
+                                {ds.title}
+                              </Link>
+                            </div>
+                            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 2 }}>
+                              {ds.area} • {ds.size} • {ds.fileCount} arquivo(s)
+                            </div>
+                          </div>
+                          <div style={{ fontSize: 12, color: 'var(--muted-foreground)' }}>
+                            {new Date(ds.updatedAt).toLocaleDateString('pt-BR')}
                           </div>
                         </div>
-                        <div style={{ fontSize: 12, color: 'var(--muted-foreground)' }}>
-                          {new Date(ds.updatedAt).toLocaleDateString('pt-BR')}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

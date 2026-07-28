@@ -42,6 +42,15 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare avatarUrl: string | null
 
+  @column()
+  declare bio: string | null
+
+  @column()
+  declare institution: string | null
+
+  @column()
+  declare location: string | null
+
   @belongsTo(() => Role)
   declare role: BelongsTo<typeof Role>
 

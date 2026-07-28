@@ -194,12 +194,14 @@ export class RoleSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['avatar', 'avatarUrl', 'createdAt', 'email', 'fullName', 'id', 'password', 'roleId', 'updatedAt'] as const
+  static $columns = ['avatar', 'avatarUrl', 'bio', 'createdAt', 'email', 'fullName', 'id', 'institution', 'location', 'password', 'roleId', 'updatedAt'] as const
   $columns = UserSchema.$columns
   @column()
   declare avatar: any | null
   @column()
   declare avatarUrl: string | null
+  @column()
+  declare bio: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column()
@@ -208,6 +210,10 @@ export class UserSchema extends BaseModel {
   declare fullName: string | null
   @column({ isPrimary: true })
   declare id: number
+  @column()
+  declare institution: string | null
+  @column()
+  declare location: string | null
   @column({ serializeAs: null })
   declare password: string | null
   @column()

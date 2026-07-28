@@ -21,12 +21,16 @@ export const createUserValidator = vine.compile(
 export const updateProfileValidator = vine.compile(
   vine.object({
     fullName: vine.string().trim().minLength(3).maxLength(255),
+    bio: vine.string().trim().maxLength(1000).nullable().optional(),
+    institution: vine.string().trim().maxLength(255).nullable().optional(),
+    location: vine.string().trim().maxLength(255).nullable().optional(),
     avatar: vine
       .file({
         extnames: ['png', 'jpg', 'jpeg', 'gif'],
         size: 1 * 1024 * 1024,
       })
-      .nullable(),
+      .nullable()
+      .optional(),
   })
 )
 
