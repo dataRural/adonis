@@ -50,6 +50,14 @@ export default function Navbar({ theme, onToggleTheme, activePage }: NavbarProps
               >
                 Grupos
               </Link>
+              {useUser() && (useUser()!.roleId === 2 || (useUser() as any)!.roleId === 2) && (
+                <Link
+                  className={`dr-nav-link ${activePage === 'users' ? 'active' : ''}`}
+                  href="/users"
+                >
+                  Usuários
+                </Link>
+              )}
             </>
           )}
         </nav>

@@ -134,6 +134,7 @@ export function NavUser({ user }: { user?: UserProps | null }) {
 }
 
 export default function PanelNav({ theme, onToggleTheme, onPublish, active, user, hidePublishButton }: PanelNavProps) {
+  const loggedInUser = useUser()
   return (
     <header className="dr-nav">
       <div className="dr-container dr-nav-inner">
@@ -165,6 +166,14 @@ export default function PanelNav({ theme, onToggleTheme, onPublish, active, user
           >
             Grupos
           </Link>
+          {loggedInUser && (loggedInUser.roleId === 2 || (loggedInUser as any).roleId === 2) && (
+            <Link
+              className={'dr-nav-link' + (active === 'users' ? ' active' : '')}
+              href="/users"
+            >
+              Usuários
+            </Link>
+          )}
         </nav>
         <div className="dr-nav-right">
           <button
