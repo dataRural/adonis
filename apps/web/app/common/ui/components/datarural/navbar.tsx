@@ -30,12 +30,6 @@ export default function Navbar({ theme, onToggleTheme, activePage }: NavbarProps
           >
             Datasets
           </Link>
-          <Link
-            className={`dr-nav-link ${activePage === 'categorias' ? 'active' : ''}`}
-            href="/#categorias"
-          >
-            Áreas
-          </Link>
           {useUser() && (
             <>
               <Link

@@ -18,18 +18,19 @@ export default function Footer() {
             </Link>
             <p className="dr-footer-about">
               Plataforma institucional de datasets da Universidade Federal Rural do Rio de Janeiro.
+            </p>
+            <p className="dr-footer-about">
               Dados abertos para ensino, pesquisa e extensão.
             </p>
             <p className="dr-footer-addr">
-              BR-465, Km 7 — Campus Seropédica
+              R. Savero José Bruno, 485 — Instituto Multidisciplinar
               <br />
-              Seropédica, Rio de Janeiro · CEP 23897-000
+              Moquetá, Nova Iguaçu - RJ · CEP 26285-020
             </p>
           </div>
           <div className="dr-footer-col">
             <h4>Plataforma</h4>
-            <Link href="/#datasets">Explorar datasets</Link>
-            <Link href="/#categorias">Áreas de conhecimento</Link>
+            <Link href="/datasets">Explorar datasets</Link>
             <Link href="/dashboard/publish">Publicar dados</Link>
             <a href="#">Coleções</a>
           </div>
