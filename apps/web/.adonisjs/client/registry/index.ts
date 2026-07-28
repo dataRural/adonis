@@ -54,6 +54,24 @@ const routes = {
     tokens: [{"old":"/users/impersonate/:id","type":0,"val":"users","end":""},{"old":"/users/impersonate/:id","type":0,"val":"impersonate","end":""},{"old":"/users/impersonate/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['users.impersonate.handle']['types'],
   },
+  'user.profile': {
+    methods: ["GET","HEAD"],
+    pattern: '/profile',
+    tokens: [{"old":"/profile","type":0,"val":"profile","end":""}],
+    types: placeholder as Registry['user.profile']['types'],
+  },
+  'users.public_profile': {
+    methods: ["GET","HEAD"],
+    pattern: '/users/:id/profile',
+    tokens: [{"old":"/users/:id/profile","type":0,"val":"users","end":""},{"old":"/users/:id/profile","type":1,"val":"id","end":""},{"old":"/users/:id/profile","type":0,"val":"profile","end":""}],
+    types: placeholder as Registry['users.public_profile']['types'],
+  },
+  'users.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/users/:id',
+    tokens: [{"old":"/users/:id","type":0,"val":"users","end":""},{"old":"/users/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['users.show']['types'],
+  },
   'settings.index': {
     methods: ["GET","HEAD"],
     pattern: '/settings',
@@ -61,7 +79,7 @@ const routes = {
     types: placeholder as Registry['settings.index']['types'],
   },
   'profile.update': {
-    methods: ["PUT"],
+    methods: ["POST"],
     pattern: '/settings/profile',
     tokens: [{"old":"/settings/profile","type":0,"val":"settings","end":""},{"old":"/settings/profile","type":0,"val":"profile","end":""}],
     types: placeholder as Registry['profile.update']['types'],
@@ -101,12 +119,6 @@ const routes = {
     pattern: '/settings/password',
     tokens: [{"old":"/settings/password","type":0,"val":"settings","end":""},{"old":"/settings/password","type":0,"val":"password","end":""}],
     types: placeholder as Registry['password.show']['types'],
-  },
-  'appearance.show': {
-    methods: ["GET","HEAD"],
-    pattern: '/settings/appearance',
-    tokens: [{"old":"/settings/appearance","type":0,"val":"settings","end":""},{"old":"/settings/appearance","type":0,"val":"appearance","end":""}],
-    types: placeholder as Registry['appearance.show']['types'],
   },
   'datasets.viewer': {
     methods: ["GET","HEAD"],

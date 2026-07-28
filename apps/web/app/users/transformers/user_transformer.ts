@@ -4,6 +4,7 @@ import type User from '#users/models/user'
 export default class UserTransformer extends BaseTransformer<User> {
   toObject() {
     const user = this.resource
+    const url = user.avatar?.url
     const thumbnail = user.avatar?.getVariant('thumbnail')?.url
 
     return {
@@ -11,7 +12,7 @@ export default class UserTransformer extends BaseTransformer<User> {
       roleId: user.roleId,
       fullName: user.fullName,
       email: user.email,
-      avatarUrl: thumbnail ? thumbnail : user.avatarUrl,
+      avatarUrl: thumbnail ? thumbnail : (url ? url : user.avatarUrl),
       createdAt: user.createdAt.toISO()!,
       updatedAt: user.updatedAt ? user.updatedAt.toISO()! : '',
     }

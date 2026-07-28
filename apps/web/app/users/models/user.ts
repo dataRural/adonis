@@ -66,6 +66,8 @@ export default class User extends compose(BaseModel, AuthFinder) {
       return
     }
 
+    await attachmentManager.computeUrl(models.avatar)
+
     const thumbnail = models.avatar.getVariant('thumbnail')
 
     if (thumbnail) {

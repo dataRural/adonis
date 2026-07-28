@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from '@inertiajs/react'
 import * as Ic from '#common/ui/components/datarural/icons'
 import { DatasetDetail } from './detail-data'
 import LicenseModal from './license-modal'
@@ -112,19 +113,31 @@ export default function Rail({ ds }: RailProps) {
           </h4>
         </div>
         <div className="dr-rail-card-body">
-          {ds.authors.map((a) => (
-            <div className="dr-author-item" key={a.name}>
-              <span className="dr-author-av" style={{ background: a.color }}>
-                {a.initials}
-              </span>
-              <span style={{ minWidth: 0 }}>
-                <span className="an">{a.name}</span>
-                <span className="ar">
-                  {a.role} · {a.inst}
+          {ds.authors.map((a) => {
+            const href = a.profileUrl || (a.userId ? `/users/${a.userId}/profile` : '/profile')
+            return (
+              <Link href={href} className="dr-author-item" key={a.userId || a.name}>
+                {a.avatarUrl ? (
+                  <img
+                    src={a.avatarUrl}
+                    alt={a.name}
+                    className="dr-author-av"
+                    style={{ objectFit: 'cover' }}
+                  />
+                ) : (
+                  <span className="dr-author-av" style={{ background: a.color }}>
+                    {a.initials}
+                  </span>
+                )}
+                <span style={{ minWidth: 0 }}>
+                  <span className="an">{a.name}</span>
+                  <span className="ar">
+                    {a.role} · {a.inst}
+                  </span>
                 </span>
-              </span>
-            </div>
-          ))}
+              </Link>
+            )
+          })}
         </div>
       </div>
 

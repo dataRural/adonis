@@ -4,6 +4,9 @@ export type AuthorItem = {
   inst: string
   color: string
   initials: string
+  userId?: number
+  profileUrl?: string
+  avatarUrl?: string | null
 }
 
 export type DatasetDetail = {

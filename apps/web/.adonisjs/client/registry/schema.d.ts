@@ -103,6 +103,42 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/impersonates_controller').default['store']>>>
     }
   }
+  'user.profile': {
+    methods: ["GET","HEAD"]
+    pattern: '/profile'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['publicProfile']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['publicProfile']>>>
+    }
+  }
+  'users.public_profile': {
+    methods: ["GET","HEAD"]
+    pattern: '/users/:id/profile'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['publicProfile']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['publicProfile']>>>
+    }
+  }
+  'users.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/users/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['publicProfile']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['publicProfile']>>>
+    }
+  }
   'settings.index': {
     methods: ["GET","HEAD"]
     pattern: '/settings'
@@ -116,7 +152,7 @@ export interface Registry {
     }
   }
   'profile.update': {
-    methods: ["PUT"]
+    methods: ["POST"]
     pattern: '/settings/profile'
     types: {
       body: ExtractBody<InferInput<(typeof import('#users/validators').updateProfileValidator)>>
@@ -197,18 +233,6 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/password_controller').default['show']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/password_controller').default['show']>>>
-    }
-  }
-  'appearance.show': {
-    methods: ["GET","HEAD"]
-    pattern: '/settings/appearance'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: unknown
-      errorResponse: unknown
     }
   }
   'datasets.viewer': {

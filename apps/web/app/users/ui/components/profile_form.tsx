@@ -22,7 +22,7 @@ export function ProfileForm({ user }: Props) {
   const { t } = useTranslation()
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
-  const { data, setData, errors, put, progress } = useForm({
+  const { data, setData, errors, post, progress } = useForm({
     fullName: user.fullName ?? '',
     avatar: null as File | null,
   })
@@ -42,7 +42,7 @@ export function ProfileForm({ user }: Props) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    put(urlFor('profile.update'), {
+    post(urlFor('profile.update'), {
       preserveScroll: true,
       onSuccess: () => {
         setPreviewUrl(null)

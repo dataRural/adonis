@@ -13,6 +13,8 @@ import { attachmentManager } from '@jrmc/adonis-attachment'
 import { marked } from 'marked'
 import GroupMember from '#app/groups/models/group_member'
 import GroupMemberRole from '#app/groups/enums/group_member_role'
+import User from '#users/models/user'
+import UserTransformer from '#users/transformers/user_transformer'
 
 function sanitizePathSegment(value: string) {
   return value
@@ -812,13 +814,56 @@ export default class DatasetsController {
     const isOwner = currentUserId ? Number(currentUserId) === Number(dataset.userId) : false
 
     let maintainerName = publisherName
-    let maintainerRole = 'Publicador'
-    let maintainerInitials = publisherInitials
-
     if (dataset.group) {
       maintainerName = dataset.group.name
-      maintainerRole = 'Grupo'
-      maintainerInitials = dataset.group.name.split(/\s+/).filter(w => w.length > 0).map(w => w[0].toUpperCase()).join('').slice(0, 2)
+    }
+
+    let authors: any[] = []
+
+    if (dataset.groupId) {
+      const groupMemberships = await GroupMember.query()
+        .where('groupId', dataset.groupId)
+        .preload('user')
+
+      if (groupMemberships.length > 0) {
+        await Promise.all(groupMemberships.map((m) => User.preComputeUrls(m.user)))
+
+        authors = groupMemberships.map((m) => {
+          const transformed = m.user ? new UserTransformer(m.user).toObject() : null
+          const uName = transformed?.fullName || m.user.fullName || m.user.email
+          const uInitials = uName.split(/\s+/).filter((w) => w.length > 0).map((w) => w[0].toUpperCase()).join('').slice(0, 2)
+          const roleLabel = m.role === 'owner' ? 'Dono do Grupo' : m.role === 'admin' ? 'Admin' : 'Membro'
+          return {
+            userId: m.user.id,
+            name: uName,
+            role: roleLabel,
+            inst: dataset.unit || 'UFRRJ',
+            color: 'var(--brand-sky)',
+            initials: uInitials,
+            profileUrl: `/users/${m.user.id}/profile`,
+            avatarUrl: transformed?.avatarUrl || null,
+          }
+        })
+      }
+    }
+
+    if (authors.length === 0) {
+      if (dataset.user) {
+        await User.preComputeUrls(dataset.user)
+      }
+      const transformedOwner = dataset.user ? new UserTransformer(dataset.user).toObject() : null
+      authors = [
+        {
+          userId: dataset.userId,
+          name: publisherName,
+          role: 'Publicador',
+          inst: dataset.unit || 'UFRRJ',
+          color: 'var(--brand-sky)',
+          initials: publisherInitials,
+          profileUrl: `/users/${dataset.userId}/profile`,
+          avatarUrl: transformedOwner?.avatarUrl || null,
+        },
+      ]
     }
 
     const datasetPayload = {
@@ -854,9 +899,7 @@ export default class DatasetsController {
       collection: 'Leituras coletadas pelo sistema local.',
       tags: dataset.tags || [],
       publisherName: maintainerName,
-      authors: [
-        { name: maintainerName, role: maintainerRole, inst: dataset.unit || 'UFRRJ', color: 'var(--brand-sky)', initials: maintainerInitials }
-      ],
+      authors,
       description,
     }
 

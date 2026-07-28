@@ -4,9 +4,6 @@
  */
 
 export const controllers = {
-  analytics: {
-    Dashboard: () => import('#app/analytics/controllers/dashboard_controller'),
-  },
   auth: {
     ForgotPassword: () => import('#app/auth/controllers/forgot_password_controller'),
     ResetPassword: () => import('#app/auth/controllers/reset_password_controller'),

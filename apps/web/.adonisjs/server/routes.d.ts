@@ -12,6 +12,9 @@ export type ScannedRoutes = {
     'users.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'users.invite.handle': { paramsTuple?: []; params?: {} }
     'users.impersonate.handle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'user.profile': { paramsTuple?: []; params?: {} }
+    'users.public_profile': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'users.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'settings.index': { paramsTuple?: []; params?: {} }
     'profile.update': { paramsTuple?: []; params?: {} }
     'profile.show': { paramsTuple?: []; params?: {} }
@@ -20,7 +23,6 @@ export type ScannedRoutes = {
     'tokens.store': { paramsTuple?: []; params?: {} }
     'password.update': { paramsTuple?: []; params?: {} }
     'password.show': { paramsTuple?: []; params?: {} }
-    'appearance.show': { paramsTuple?: []; params?: {} }
     'datasets.viewer': { paramsTuple?: []; params?: {} }
     'licenses.index': { paramsTuple?: []; params?: {} }
     'datasets.privacy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -59,11 +61,13 @@ export type ScannedRoutes = {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'marketing.show': { paramsTuple?: []; params?: {} }
     'users.index': { paramsTuple?: []; params?: {} }
+    'user.profile': { paramsTuple?: []; params?: {} }
+    'users.public_profile': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'users.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'settings.index': { paramsTuple?: []; params?: {} }
     'profile.show': { paramsTuple?: []; params?: {} }
     'tokens.index': { paramsTuple?: []; params?: {} }
     'password.show': { paramsTuple?: []; params?: {} }
-    'appearance.show': { paramsTuple?: []; params?: {} }
     'datasets.viewer': { paramsTuple?: []; params?: {} }
     'licenses.index': { paramsTuple?: []; params?: {} }
     'datasets.version.download': { paramsTuple: [ParamValue,ParamValue]; params: {'datasetId': ParamValue,'versionId': ParamValue} }
@@ -84,11 +88,13 @@ export type ScannedRoutes = {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
     'marketing.show': { paramsTuple?: []; params?: {} }
     'users.index': { paramsTuple?: []; params?: {} }
+    'user.profile': { paramsTuple?: []; params?: {} }
+    'users.public_profile': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'users.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'settings.index': { paramsTuple?: []; params?: {} }
     'profile.show': { paramsTuple?: []; params?: {} }
     'tokens.index': { paramsTuple?: []; params?: {} }
     'password.show': { paramsTuple?: []; params?: {} }
-    'appearance.show': { paramsTuple?: []; params?: {} }
     'datasets.viewer': { paramsTuple?: []; params?: {} }
     'licenses.index': { paramsTuple?: []; params?: {} }
     'datasets.version.download': { paramsTuple: [ParamValue,ParamValue]; params: {'datasetId': ParamValue,'versionId': ParamValue} }
@@ -109,6 +115,7 @@ export type ScannedRoutes = {
     'users.store': { paramsTuple?: []; params?: {} }
     'users.invite.handle': { paramsTuple?: []; params?: {} }
     'users.impersonate.handle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'profile.update': { paramsTuple?: []; params?: {} }
     'tokens.store': { paramsTuple?: []; params?: {} }
     'datasets.privacy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'datasets.like.toggle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -126,7 +133,6 @@ export type ScannedRoutes = {
   }
   PUT: {
     'users.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'profile.update': { paramsTuple?: []; params?: {} }
     'password.update': { paramsTuple?: []; params?: {} }
     'groups.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'groups.members.update': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'memberId': ParamValue} }

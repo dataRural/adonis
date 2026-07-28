@@ -4,6 +4,8 @@ import Group from '#app/groups/models/group'
 import GroupMember from '#app/groups/models/group_member'
 import GroupMemberRole from '#app/groups/enums/group_member_role'
 import GroupPolicy from '#app/groups/policies/group_policy'
+import User from '#users/models/user'
+import UserTransformer from '#users/transformers/user_transformer'
 import { createGroupValidator, updateGroupValidator } from '#app/groups/validators'
 
 export default class GroupsController {
@@ -72,14 +74,20 @@ export default class GroupsController {
       .preload('user')
       .orderBy('createdAt', 'asc')
 
-    const membersPayload = memberships.map((m) => ({
-      id: m.id,
-      userId: m.userId,
-      fullName: m.user?.fullName || m.user?.email || 'Desconhecido',
-      email: m.user?.email || '',
-      role: m.role,
-      joinedAt: m.createdAt.toRelative() || 'recentemente',
-    }))
+    await Promise.all(memberships.map((m) => m.user && User.preComputeUrls(m.user)))
+
+    const membersPayload = memberships.map((m) => {
+      const transformedUser = m.user ? new UserTransformer(m.user).toObject() : null
+      return {
+        id: m.id,
+        userId: m.userId,
+        fullName: transformedUser?.fullName || m.user?.fullName || m.user?.email || 'Desconhecido',
+        email: m.user?.email || '',
+        role: m.role,
+        avatarUrl: transformedUser?.avatarUrl || null,
+        joinedAt: m.createdAt ? m.createdAt.toRelative() || 'recentemente' : 'recentemente',
+      }
+    })
 
     // Load group datasets
     const datasets = await group.related('datasets').query()

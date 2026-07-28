@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { router } from '@inertiajs/react'
+import { Link, router } from '@inertiajs/react'
 import * as Ic from '#common/ui/components/datarural/icons'
 
 export interface MemberItem {
@@ -9,6 +9,7 @@ export interface MemberItem {
   email: string
   role: string
   joinedAt: string
+  avatarUrl?: string | null
 }
 
 const ROLE_LABELS: Record<string, { label: string; color: string }> = {
@@ -71,25 +72,53 @@ export default function MemberList({ groupId, members, canManage }: MemberListPr
               borderBottom: '1px solid var(--border)',
             }}
           >
-            <div
+            <Link
+              href={`/users/${m.userId}/profile`}
               style={{
                 width: 38,
                 height: 38,
                 borderRadius: '50%',
-                background: `linear-gradient(135deg, ${roleMeta.color}, var(--primary))`,
+                flexShrink: 0,
+                textDecoration: 'none',
+                overflow: 'hidden',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '13px',
-                fontWeight: 700,
-                color: '#fff',
-                flexShrink: 0,
               }}
+              title={`Ver perfil de ${m.fullName}`}
             >
-              {initials}
-            </div>
+              {m.avatarUrl ? (
+                <img
+                  src={m.avatarUrl}
+                  alt={m.fullName}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              ) : (
+                <div
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '50%',
+                    background: `linear-gradient(135deg, ${roleMeta.color}, var(--primary))`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    color: '#fff',
+                  }}
+                >
+                  {initials}
+                </div>
+              )}
+            </Link>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: '14px', fontWeight: 600, lineHeight: 1.3 }}>{m.fullName}</div>
+              <Link
+                href={`/users/${m.userId}/profile`}
+                style={{ fontSize: '14px', fontWeight: 600, lineHeight: 1.3, color: 'var(--foreground)', textDecoration: 'none' }}
+              >
+                {m.fullName}
+              </Link>
               <div style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>
                 {m.email} · Entrou {m.joinedAt}
               </div>

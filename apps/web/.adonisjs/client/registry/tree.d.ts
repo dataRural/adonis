@@ -21,6 +21,11 @@ export interface ApiDefinition {
     impersonate: {
       handle: typeof routes['users.impersonate.handle']
     }
+    publicProfile: typeof routes['users.public_profile']
+    show: typeof routes['users.show']
+  }
+  user: {
+    profile: typeof routes['user.profile']
   }
   settings: {
     index: typeof routes['settings.index']
@@ -37,9 +42,6 @@ export interface ApiDefinition {
   password: {
     update: typeof routes['password.update']
     show: typeof routes['password.show']
-  }
-  appearance: {
-    show: typeof routes['appearance.show']
   }
   datasets: {
     viewer: typeof routes['datasets.viewer']
