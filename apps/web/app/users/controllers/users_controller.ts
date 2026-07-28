@@ -182,4 +182,39 @@ export default class UsersController {
 
     return response.redirect().toRoute('users.index')
   }
+
+  public async search({ auth, request, response }: HttpContext) {
+    await auth.check()
+
+    const q = (request.input('q') || '').trim()
+    if (!q || q.length < 2) {
+      return response.json([])
+    }
+
+    const cleanQ = q.startsWith('@') ? q.slice(1) : q
+
+    const users = await User.query()
+      .where((builder) => {
+        builder
+          .where('username', 'ilike', `%${cleanQ}%`)
+          .orWhere('full_name', 'ilike', `%${cleanQ}%`)
+          .orWhere('email', 'ilike', `%${cleanQ}%`)
+      })
+      .limit(8)
+
+    await User.preComputeUrls(users)
+
+    const results = users.map((u) => {
+      const transformed = new UserTransformer(u).toObject()
+      return {
+        id: u.id,
+        fullName: u.fullName || u.email,
+        username: u.username || u.email.split('@')[0],
+        email: u.email,
+        avatarUrl: transformed.avatarUrl,
+      }
+    })
+
+    return response.json(results)
+  }
 }

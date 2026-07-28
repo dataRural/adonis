@@ -32,6 +32,11 @@ router
   .as('users.impersonate.handle')
 
 router
+  .get('/api/users/search', [UsersController, 'search'])
+  .middleware(middleware.auth())
+  .as('users.search')
+
+router
   .get('/profile', [UsersController, 'publicProfile'])
   .middleware(middleware.auth())
   .as('user.profile')
