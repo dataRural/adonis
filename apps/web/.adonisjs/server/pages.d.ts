@@ -33,6 +33,5 @@ declare module '@adonisjs/inertia/types' {
     'users/profile': ExtractProps<(typeof import('../../app/users/ui/pages/profile.tsx'))['default']>
     'users/public_profile': ExtractProps<(typeof import('../../app/users/ui/pages/public_profile.tsx'))['default']>
     'users/tokens': ExtractProps<(typeof import('../../app/users/ui/pages/tokens.tsx'))['default']>
-    'users/controllers/audits_controller': ExtractProps<(typeof import('../../app/users/controllers/audits_controller.ts'))['default']>
   }
 }

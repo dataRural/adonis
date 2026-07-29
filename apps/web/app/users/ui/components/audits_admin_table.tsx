@@ -353,7 +353,8 @@ export default function AuditsAdminTable() {
               <div><strong>Usuário:</strong> {selectedAudit.userName}</div>
               <div><strong>Data / Hora:</strong> {formatDate(selectedAudit.createdAt)}</div>
               <div><strong>IP:</strong> {selectedAudit.ipAddress || '—'}</div>
-              {selectedAudit.url && <div style={{ gridColumn: 'span 2' }}><strong>URL:</strong> {selectedAudit.url}</div>}
+              {selectedAudit.url && <div style={{ gridColumn: 'span 2', wordBreak: 'break-all' }}><strong>URL:</strong> {selectedAudit.url}</div>}
+              {selectedAudit.userAgent && <div style={{ gridColumn: 'span 2', wordBreak: 'break-all', fontSize: 12, color: 'var(--muted-foreground)' }}><strong>Navegador (User Agent):</strong> {selectedAudit.userAgent}</div>}
               {selectedAudit.auditComment && <div style={{ gridColumn: 'span 2' }}><strong>Comentário:</strong> {selectedAudit.auditComment}</div>}
             </div>
 

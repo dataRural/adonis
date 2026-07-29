@@ -52,8 +52,12 @@ export default class AuditsController {
 
     const rows = auditList.map((audit) => {
       const json = audit.toJSON()
+      const meta = (json.metadata as Record<string, any>) || {}
       return {
         ...json,
+        ipAddress: json.ipAddress || meta.ip_address || meta.ipAddress || null,
+        userAgent: json.userAgent || meta.user_agent || meta.userAgent || null,
+        url: json.url || meta.url || null,
         userName: json.userId ? usersMap[String(json.userId)] || `Usuário #${json.userId}` : 'Sistema / Anônimo',
       }
     })

@@ -10,41 +10,33 @@ export interface ApiDefinition {
   marketing: {
     show: typeof routes['marketing.show']
   }
-  admin: {
-    index: typeof routes['admin.index']
-    store: typeof routes['admin.store']
-    update: typeof routes['admin.update']
-    destroy: typeof routes['admin.destroy']
-    audits: typeof routes['admin.audits']
-  }
-  users: {
-    invite: {
-      handle: typeof routes['users.invite.handle']
+  auth: {
+    signIn: {
+      show: typeof routes['auth.sign_in.show']
+      handle: typeof routes['auth.sign_in.handle']
     }
-    impersonate: {
-      handle: typeof routes['users.impersonate.handle']
+    signOut: {
+      handle: typeof routes['auth.sign_out.handle']
     }
-    search: typeof routes['users.search']
-    publicProfile: typeof routes['users.public_profile']
+    signUp: {
+      show: typeof routes['auth.sign_up.show']
+      handle: typeof routes['auth.sign_up.handle']
+    }
+    forgotPassword: {
+      show: typeof routes['auth.forgot_password.show']
+      handle: typeof routes['auth.forgot_password.handle']
+    }
+    resetPassword: {
+      show: typeof routes['auth.reset_password.show']
+      handle: typeof routes['auth.reset_password.handle']
+    }
   }
-  user: {
-    profile: typeof routes['user.profile']
+  social: {
+    create: typeof routes['social.create']
+    callback: typeof routes['social.callback']
   }
-  settings: {
-    index: typeof routes['settings.index']
-  }
-  profile: {
-    update: typeof routes['profile.update']
-    show: typeof routes['profile.show']
-  }
-  tokens: {
-    index: typeof routes['tokens.index']
-    destroy: typeof routes['tokens.destroy']
-    store: typeof routes['tokens.store']
-  }
-  password: {
-    update: typeof routes['password.update']
-    show: typeof routes['password.show']
+  locale: {
+    switch: typeof routes['locale.switch']
   }
   areas: {
     list: typeof routes['areas.list']
@@ -85,6 +77,42 @@ export interface ApiDefinition {
     show: typeof routes['dashboard.show']
     publish: typeof routes['dashboard.publish']
   }
+  admin: {
+    index: typeof routes['admin.index']
+    store: typeof routes['admin.store']
+    update: typeof routes['admin.update']
+    destroy: typeof routes['admin.destroy']
+    audits: typeof routes['admin.audits']
+  }
+  users: {
+    invite: {
+      handle: typeof routes['users.invite.handle']
+    }
+    impersonate: {
+      handle: typeof routes['users.impersonate.handle']
+    }
+    search: typeof routes['users.search']
+    publicProfile: typeof routes['users.public_profile']
+  }
+  user: {
+    profile: typeof routes['user.profile']
+  }
+  settings: {
+    index: typeof routes['settings.index']
+  }
+  profile: {
+    update: typeof routes['profile.update']
+    show: typeof routes['profile.show']
+  }
+  tokens: {
+    index: typeof routes['tokens.index']
+    destroy: typeof routes['tokens.destroy']
+    store: typeof routes['tokens.store']
+  }
+  password: {
+    update: typeof routes['password.update']
+    show: typeof routes['password.show']
+  }
   groups: {
     index: typeof routes['groups.index']
     store: typeof routes['groups.store']
@@ -100,33 +128,5 @@ export interface ApiDefinition {
       store: typeof routes['groups.datasets.store']
       destroy: typeof routes['groups.datasets.destroy']
     }
-  }
-  auth: {
-    signIn: {
-      show: typeof routes['auth.sign_in.show']
-      handle: typeof routes['auth.sign_in.handle']
-    }
-    signOut: {
-      handle: typeof routes['auth.sign_out.handle']
-    }
-    signUp: {
-      show: typeof routes['auth.sign_up.show']
-      handle: typeof routes['auth.sign_up.handle']
-    }
-    forgotPassword: {
-      show: typeof routes['auth.forgot_password.show']
-      handle: typeof routes['auth.forgot_password.handle']
-    }
-    resetPassword: {
-      show: typeof routes['auth.reset_password.show']
-      handle: typeof routes['auth.reset_password.handle']
-    }
-  }
-  social: {
-    create: typeof routes['social.create']
-    callback: typeof routes['social.callback']
-  }
-  locale: {
-    switch: typeof routes['locale.switch']
   }
 }
