@@ -126,9 +126,6 @@ export default function Dashboard({ datasets = [], userGroups = [], totalLikesCo
                   ))}
                 </select>
               )}
-              <button className="dr-btn dr-btn-outline dr-btn-lg" onClick={() => alert('Gerar Relatório')}>
-                <Ic.Chart size={18} /> Relatório
-              </button>
               <button className="dr-btn dr-btn-primary dr-btn-lg" onClick={handlePublish}>
                 <Ic.Plus size={18} /> Publicar dataset
               </button>
