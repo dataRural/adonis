@@ -44,11 +44,13 @@ export default function SettingsLayout({
       icon: <Ic.Lock size={18} />,
       href: '/settings/password',
     },
+    /*
     {
       title: t('users.layout.tokens'),
       icon: <Ic.Code size={18} />,
       href: '/settings/tokens',
     },
+    */
   ]
 
   return (
