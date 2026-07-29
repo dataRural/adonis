@@ -30,6 +30,16 @@ router
   .as('datasets.like.toggle');
 
 router
+  .post('/datasets/:id/favorite', [DatasetsController, 'toggleFavorite'])
+  .middleware(middleware.auth())
+  .as('datasets.favorite.toggle');
+
+router
+  .get('/favorites', [DatasetsController, 'favorites'])
+  .middleware(middleware.auth())
+  .as('favorites.index');
+
+router
   .get('/datasets/:id/version/new', [DatasetsController, 'newVersion'])
   .middleware(middleware.auth())
   .as('datasets.version.new');

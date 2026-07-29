@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import { Head, Link, router } from '@inertiajs/react'
+import { Head, Link } from '@inertiajs/react'
 import Navbar from '#common/ui/components/datarural/navbar'
 import Categories from '#common/ui/components/datarural/categories'
 import DatasetCard, { DatasetItem } from '#common/ui/components/datarural/dataset-card'

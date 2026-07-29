@@ -39,6 +39,12 @@ export default function Navbar({ theme, onToggleTheme, activePage }: NavbarProps
                 Meus datasets
               </Link>
               <Link
+                className={`dr-nav-link ${activePage === 'favorites' ? 'active' : ''}`}
+                href="/favorites"
+              >
+                Favoritos
+              </Link>
+              <Link
                 className={`dr-nav-link ${activePage === 'groups' ? 'active' : ''}`}
                 href="/groups"
               >

@@ -117,9 +117,9 @@ export function NavUser({ user }: { user?: UserProps | null }) {
           <Link role="menuitem" href="/groups">
             <Ic.Users size={16} /> Meus grupos
           </Link>
-          <button role="menuitem">
-            <Ic.Bookmark size={16} /> Salvos
-          </button>
+          <Link role="menuitem" href="/favorites">
+            <Ic.Bookmark size={16} /> Favoritos
+          </Link>
           <Link role="menuitem" href="/settings/profile">
             <Ic.Settings size={16} /> Configurações da conta
           </Link>
@@ -162,6 +162,12 @@ export default function PanelNav({ theme, onToggleTheme, onPublish, active, user
             href="/dashboard"
           >
             Meus datasets
+          </Link>
+          <Link
+            className={'dr-nav-link' + (active === 'favorites' ? ' active' : '')}
+            href="/favorites"
+          >
+            Favoritos
           </Link>
           <Link
             className={'dr-nav-link' + (active === 'groups' ? ' active' : '')}

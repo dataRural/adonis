@@ -8,6 +8,7 @@ import { dirname, join } from 'node:path'
 import Dataset from '../models/dataset.js'
 import DatasetVersion from '../models/dataset_version.js'
 import DatasetLike from '../models/dataset_like.js'
+import DatasetFavorite from '../models/dataset_favorite.js'
 import { addDatasetVersionValidator, createDatasetValidator, updateDatasetValidator } from '#app/dataset/validators'
 import { attachmentManager } from '@jrmc/adonis-attachment'
 import { marked } from 'marked'
@@ -204,7 +205,7 @@ export default class DatasetsController {
     await auth.check()
     const currentUserId = auth.user?.id ?? null
 
-    let query = Dataset.query().preload('versions').preload('license').preload('likes').orderBy('updatedAt', 'desc')
+    let query = Dataset.query().preload('versions').preload('license').preload('likes').preload('favorites').orderBy('updatedAt', 'desc')
 
     if (currentUserId) {
       const userGroupIds = (
@@ -261,6 +262,7 @@ export default class DatasetsController {
 
         const likesCount = d.likes ? d.likes.length : 0
         const isLiked = currentUserId ? d.likes.some((l) => Number(l.userId) === Number(currentUserId)) : false
+        const isSaved = currentUserId ? d.favorites && d.favorites.some((f) => Number(f.userId) === Number(currentUserId)) : false
 
         return {
           id: d.id,
@@ -277,6 +279,7 @@ export default class DatasetsController {
           dl: String(likesCount),
           likesCount,
           isLiked,
+          isSaved,
           updated: d.updatedAt ? d.updatedAt.toRelative() || 'recentemente' : 'recentemente',
           license: d.license ? d.license.name : 'CC BY 4.0',
           usability,
@@ -812,6 +815,7 @@ export default class DatasetsController {
       })
       .preload('license')
       .preload('likes')
+      .preload('favorites')
       .preload('user')
       .preload('group')
       .first()
@@ -824,6 +828,7 @@ export default class DatasetsController {
     const currentUserId = auth.user?.id ?? null
     const votesCount = dataset.likes ? dataset.likes.length : 0
     const isLiked = currentUserId ? dataset.likes.some(l => Number(l.userId) === Number(currentUserId)) : false
+    const isSaved = currentUserId ? dataset.favorites && dataset.favorites.some(f => Number(f.userId) === Number(currentUserId)) : false
     if (!dataset.isPublic && Number(currentUserId) !== Number(dataset.userId)) {
       // Check if user is a member of the dataset's group
       let hasGroupAccess = false
@@ -1000,6 +1005,7 @@ export default class DatasetsController {
       views: '0',
       votes: votesCount,
       isLiked,
+      isSaved,
       isOwner,
       watchers: 0,
       freq: 'Mensal',
@@ -1438,5 +1444,127 @@ export default class DatasetsController {
     }
 
     return response.redirect().back()
+  }
+
+  public async toggleFavorite({ request, response, params, auth }: HttpContext) {
+    const user = auth.user
+    if (!user) {
+      return response.redirect().toPath('/login')
+    }
+
+    const datasetId = Number(params.id)
+    const dataset = await Dataset.find(datasetId)
+    if (!dataset) {
+      return response.notFound({ error: 'Dataset não encontrado' })
+    }
+
+    const existingFavorite = await DatasetFavorite.query()
+      .where('datasetId', dataset.id)
+      .where('userId', user.id)
+      .first()
+
+    if (existingFavorite) {
+      await existingFavorite.delete()
+    } else {
+      await DatasetFavorite.create({
+        datasetId: dataset.id,
+        userId: user.id,
+      })
+    }
+
+    const isJson = !request.header('x-inertia') && (request.accepts(['html', 'json']) === 'json' || request.ajax())
+    if (isJson) {
+      const favsRes = await DatasetFavorite.query().where('datasetId', dataset.id).count('* as total')
+      const count = Number((favsRes[0] as any)?.$extras?.total || 0)
+      return response.ok({ saved: !existingFavorite, count })
+    }
+
+    return response.redirect().back()
+  }
+
+  public async favorites({ inertia, auth, response }: HttpContext) {
+    const user = auth.user
+    if (!user) {
+      return response.redirect().toPath('/login')
+    }
+
+    const userFavorites = await DatasetFavorite.query()
+      .where('userId', user.id)
+      .preload('dataset', (q) => {
+        q.preload('versions', (v) => v.orderBy('id', 'desc'))
+          .preload('license')
+          .preload('likes')
+          .preload('favorites')
+      })
+      .orderBy('createdAt', 'desc')
+
+    const favoritedDatasets = userFavorites
+      .map((fav) => fav.dataset)
+      .filter((d) => d && d.id)
+
+    const AREA_COLORS: Record<string, string> = {
+      agro: 'var(--brand-green)',
+      vet: 'var(--brand-orange)',
+      clima: 'var(--brand-sky)',
+      bio: 'var(--brand-lightgreen)',
+      flor: 'var(--brand-teal)',
+      exatas: 'var(--brand-blue)',
+      quim: 'var(--brand-purple)',
+      zoo: 'var(--brand-amber)',
+      soc: 'var(--brand-rose)',
+      econ: 'var(--brand-indigo)',
+    }
+
+    const datasetsPayload = favoritedDatasets.map((d, index) => {
+      const latestVersion = d.versions && d.versions.length > 0 ? d.versions[0] : null
+      let format = 'CSV'
+      let size = '0 B'
+      if (latestVersion && latestVersion.path) {
+        const fileExt = latestVersion.path.name?.split('.').pop()?.toUpperCase()
+        if (fileExt) format = fileExt
+
+        const fileBytes = latestVersion.path.size
+        if (fileBytes) {
+          if (fileBytes > 1024 * 1024) {
+            size = `${(fileBytes / (1024 * 1024)).toFixed(1)} MB`
+          } else {
+            size = `${(fileBytes / 1024).toFixed(1)} KB`
+          }
+        }
+      }
+
+      const usability = d.usabilityScore !== null && d.usabilityScore !== undefined ? String(d.usabilityScore) : '8.5'
+      const tint = (d.area && AREA_COLORS[d.area]) ? AREA_COLORS[d.area] : 'var(--brand-blue)'
+      const likesCount = d.likes ? d.likes.length : 0
+      const isLiked = d.likes ? d.likes.some((l) => Number(l.userId) === Number(user.id)) : false
+
+      return {
+        id: d.id,
+        title: d.name,
+        unit: d.unit,
+        desc: d.description || 'Nenhuma descrição fornecida.',
+        tags: d.tags || [],
+        cat: d.area,
+        format,
+        tint,
+        size,
+        rows: '---',
+        downloads: likesCount,
+        dl: String(likesCount),
+        likesCount,
+        isLiked,
+        isSaved: true,
+        updated: d.updatedAt ? d.updatedAt.toRelative() || 'recentemente' : 'recentemente',
+        license: d.license ? d.license.name : 'CC BY 4.0',
+        usability,
+        featured: true,
+        recent: index < 3,
+        order: index + 1,
+      }
+    })
+
+    return inertia.render('dataset/favorites', {
+      datasets: datasetsPayload,
+    })
   }
 }

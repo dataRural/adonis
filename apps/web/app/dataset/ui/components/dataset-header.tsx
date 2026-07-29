@@ -10,12 +10,12 @@ interface DatasetHeaderProps {
 }
 
 export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProps) {
-  const [saved, setSaved] = useState(false)
   const [shareOpen, setShareOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const [licenseModalOpen, setLicenseModalOpen] = useState(false)
   const shareRef = useRef<HTMLDivElement>(null)
   const isLiked = !!(ds as any).isLiked
+  const isSaved = !!(ds as any).isSaved
   const isOwner = !!(ds as any).isOwner
   const votes = ds.votes || 0
   const publisherName = (ds as any).publisherName || ds.unit || 'UFRRJ'
@@ -35,6 +35,11 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
   const handleLike = (e: React.MouseEvent) => {
     e.preventDefault()
     router.post(`/datasets/${ds.id}/like`, {}, { preserveScroll: true })
+  }
+
+  const handleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault()
+    router.post(`/datasets/${ds.id}/favorite`, {}, { preserveScroll: true })
   }
 
   const handleDownload = (e: React.MouseEvent) => {
@@ -196,13 +201,13 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
                 <span className="n">{votes}</span>
               </button>
               <button
-                className={`dr-btn-count ${saved ? 'on' : ''}`}
-                onClick={() => setSaved(!saved)}
-                title="Salvar"
+                className={`dr-btn-count ${isSaved ? 'on' : ''}`}
+                onClick={handleFavorite}
+                title={isSaved ? 'Remover dos favoritos' : 'Salvar nos favoritos'}
                 style={{ flex: 1 }}
               >
-                <Ic.Bookmark size={15} className="ic" style={{ marginRight: 6 }} />{' '}
-                {saved ? 'Salvo' : 'Salvar'}
+                <Ic.Bookmark size={15} className="ic" style={{ marginRight: 6, color: isSaved ? 'var(--brand-green)' : undefined, fill: isSaved ? 'var(--brand-green)' : 'none' }} />{' '}
+                {isSaved ? 'Salvo' : 'Salvar'}
               </button>
               <div ref={shareRef} style={{ position: 'relative' }}>
                 <button

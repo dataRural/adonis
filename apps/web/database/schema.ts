@@ -32,6 +32,21 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class DatasetFavoriteSchema extends BaseModel {
+  static $columns = ['createdAt', 'datasetId', 'id', 'updatedAt', 'userId'] as const
+  $columns = DatasetFavoriteSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare datasetId: number | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number | null
+}
+
 export class DatasetLikeSchema extends BaseModel {
   static $columns = ['createdAt', 'datasetId', 'id', 'updatedAt', 'userId'] as const
   $columns = DatasetLikeSchema.$columns
@@ -48,7 +63,7 @@ export class DatasetLikeSchema extends BaseModel {
 }
 
 export class DatasetVersionSchema extends BaseModel {
-  static $columns = ['createdAt', 'datasetId', 'id', 'name', 'path', 'updatedAt'] as const
+  static $columns = ['createdAt', 'datasetId', 'id', 'isDeleted', 'name', 'path', 'updatedAt'] as const
   $columns = DatasetVersionSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -56,6 +71,8 @@ export class DatasetVersionSchema extends BaseModel {
   declare datasetId: number
   @column({ isPrimary: true })
   declare id: number
+  @column()
+  declare isDeleted: boolean
   @column()
   declare name: string
   @column()
@@ -65,12 +82,14 @@ export class DatasetVersionSchema extends BaseModel {
 }
 
 export class DatasetSchema extends BaseModel {
-  static $columns = ['area', 'createdAt', 'groupId', 'id', 'isPublic', 'licenseId', 'name', 'path', 'period', 'region', 'status', 'tags', 'unit', 'updatedAt', 'usabilityScore', 'userId'] as const
+  static $columns = ['area', 'createdAt', 'description', 'groupId', 'id', 'isPublic', 'licenseId', 'name', 'path', 'period', 'region', 'status', 'tags', 'unit', 'updatedAt', 'usabilityScore', 'userId'] as const
   $columns = DatasetSchema.$columns
   @column()
   declare area: string
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
+  @column()
+  declare description: string | null
   @column()
   declare groupId: number | null
   @column({ isPrimary: true })
@@ -194,7 +213,7 @@ export class RoleSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['avatar', 'avatarUrl', 'bio', 'createdAt', 'email', 'fullName', 'id', 'institution', 'location', 'password', 'roleId', 'updatedAt'] as const
+  static $columns = ['avatar', 'avatarUrl', 'bio', 'createdAt', 'email', 'fullName', 'id', 'institution', 'location', 'password', 'roleId', 'updatedAt', 'username'] as const
   $columns = UserSchema.$columns
   @column()
   declare avatar: any | null
@@ -220,4 +239,6 @@ export class UserSchema extends BaseModel {
   declare roleId: number
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare username: string | null
 }

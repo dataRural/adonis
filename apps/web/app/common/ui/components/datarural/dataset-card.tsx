@@ -14,6 +14,7 @@ export interface DatasetItem {
   dl?: string | number
   likesCount?: number
   isLiked?: boolean
+  isSaved?: boolean
   updated?: string
   usability?: string | number | null
   rows?: string | number
@@ -35,6 +36,7 @@ export default function DatasetCard({ d }: DatasetCardProps) {
   const tags = d.tags && d.tags.length > 0 ? d.tags : ['Geral']
   const dl = d.likesCount !== undefined ? d.likesCount : (d.dl !== undefined ? d.dl : 0)
   const isLiked = !!d.isLiked
+  const isSaved = !!d.isSaved
   const updated = d.updated || 'Recentemente'
   const usability = d.usability !== null && d.usability !== undefined ? d.usability : '8.0'
   const size = d.size || '—'
@@ -43,6 +45,12 @@ export default function DatasetCard({ d }: DatasetCardProps) {
     e.preventDefault()
     e.stopPropagation()
     router.post(`/datasets/${id}/like`, {}, { preserveScroll: true })
+  }
+
+  const handleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    router.post(`/datasets/${id}/favorite`, {}, { preserveScroll: true })
   }
   
   let licenseName = 'Proprietária'
@@ -87,6 +95,15 @@ export default function DatasetCard({ d }: DatasetCardProps) {
             title="Curtir dataset"
           >
             <Ic.Heart size={14} style={{ color: isLiked ? '#e11d48' : undefined, fill: isLiked ? '#e11d48' : 'none' }} /> {dl}
+          </button>
+          <button
+            type="button"
+            className={`dr-card-like-btn ${isSaved ? 'liked' : ''}`}
+            onClick={handleFavorite}
+            title={isSaved ? 'Remover dos favoritos' : 'Salvar dataset'}
+            style={{ marginLeft: 6 }}
+          >
+            <Ic.Bookmark size={14} style={{ color: isSaved ? 'var(--brand-green)' : undefined, fill: isSaved ? 'var(--brand-green)' : 'none' }} />
           </button>
           <span className="m">
             <Ic.Clock size={14} /> {updated}
