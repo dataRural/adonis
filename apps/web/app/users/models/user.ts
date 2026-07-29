@@ -16,12 +16,17 @@ import ResetPasswordToken from '#users/models/reset_password_token'
 import GroupMember from '#app/groups/models/group_member'
 import DatasetFavorite from '#app/dataset/models/dataset_favorite'
 
+import { Auditable } from '@filipebraida/adonis-auditing'
+
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
   passwordColumnName: 'password',
 })
 
-export default class User extends compose(BaseModel, AuthFinder) {
+export default class User extends compose(BaseModel, AuthFinder, Auditable) {
+  static auditableName = 'user'
+  static auditMask = ['password']
+  static auditExclude = ['avatar']
   @column({ isPrimary: true })
   declare id: number
 

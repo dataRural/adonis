@@ -10,6 +10,7 @@ import { middleware } from '#start/kernel'
 import router from '@adonisjs/core/services/router'
 
 const UsersController = () => import('#users/controllers/users_controller')
+const AuditsController = () => import('#users/controllers/audits_controller')
 const ProfileController = () => import('#users/controllers/profile_controller')
 const PasswordController = () => import('#users/controllers/password_controller')
 const InviteController = () => import('#users/controllers/invite_controller')
@@ -17,10 +18,19 @@ const ImpersonatesController = () => import('#users/controllers/impersonates_con
 const TokensController = () => import('#users/controllers/tokens_controller')
 
 router
-  .resource('/users', UsersController)
+  .get('/users', ({ response }) => response.redirect().toPath('/admin'))
+  .middleware(middleware.auth())
+
+router
+  .resource('/admin', UsersController)
   .only(['index', 'store', 'update', 'destroy'])
   .use('*', middleware.auth())
-  .as('users')
+  .as('admin')
+
+router
+  .get('/api/admin/audits', [AuditsController, 'index'])
+  .middleware(middleware.auth())
+  .as('admin.audits')
 
 router
   .post('/users/invite', [InviteController])

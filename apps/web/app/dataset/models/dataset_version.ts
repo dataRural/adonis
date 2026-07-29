@@ -1,12 +1,17 @@
 import { belongsTo, column } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 
+import { compose } from '@adonisjs/core/helpers'
+import { Auditable } from '@filipebraida/adonis-auditing'
+
 import BaseModel from '#common/models/base_model'
 import Dataset from '#app/dataset/models/dataset'
 import { attachment } from '@jrmc/adonis-attachment'
 import type { Attachment } from '@jrmc/adonis-attachment/types/attachment'
 
-export default class DatasetVersion extends BaseModel {
+export default class DatasetVersion extends compose(BaseModel, Auditable) {
+  static auditableName = 'dataset_version'
+  static auditExclude = ['path']
   @column({ isPrimary: true })
   declare id: number
 

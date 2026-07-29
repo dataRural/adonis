@@ -23,6 +23,7 @@
     "#users/*": "./app/users/*.js",
     "#marketing/*": "./app/marketing/*.js",
     "#providers/*": "./providers/*.js",
+    "#audit_resolvers/*": "./app/audit_resolvers/*.js",
     "#tests/*": "./tests/*.js",
     "#generated/*": "./.adonisjs/server/*.js"
   },
@@ -56,6 +57,7 @@
     "@adonisjs/auth": "^10.0.0",
     "@adonisjs/bouncer": "^4.0.0",
     "@adonisjs/core": "^7.3.0",
+    "@filipebraida/adonis-auditing": "^2.0.0",
     "@adonisjs/cors": "^3.0.0",
     "@adonisjs/drive": "^4.0.0",
     "@adonisjs/i18n": "^3.0.0",

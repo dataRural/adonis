@@ -52,8 +52,8 @@ export default function Navbar({ theme, onToggleTheme, activePage }: NavbarProps
               </Link>
               {useUser() && (useUser()!.roleId === 2 || (useUser() as any)!.roleId === 2) && (
                 <Link
-                  className={`dr-nav-link ${activePage === 'users' ? 'active' : ''}`}
-                  href="/users"
+                  className={`dr-nav-link ${activePage === 'users' || activePage === 'admin' ? 'active' : ''}`}
+                  href="/admin"
                 >
                   Gestão
                 </Link>

@@ -10,6 +10,7 @@ import UsersTable from '#users/ui/components/users_table'
 import { userRoles } from '#users/ui/components/users_types'
 import UsersProvider from '#users/ui/context/users_context'
 import AreasAdminTable from '#app/dataset/ui/components/admin/areas-admin-table'
+import AuditsAdminTable from '#users/ui/components/audits_admin_table'
 import { useTranslation } from '#common/ui/hooks/use_translation'
 
 import type { InertiaProps } from '#core/ui/types'
@@ -42,7 +43,7 @@ export default function ListUsersPage({ users, q, selectedRoles }: PageProps) {
     }
     return 'light'
   })
-  const [adminTab, setAdminTab] = useState<'users' | 'areas'>('users')
+  const [adminTab, setAdminTab] = useState<'users' | 'areas' | 'audits'>('users')
 
   useEffect(() => {
     const root = document.documentElement
@@ -58,7 +59,7 @@ export default function ListUsersPage({ users, q, selectedRoles }: PageProps) {
       <PanelNav
         theme={theme}
         onToggleTheme={() => setTheme((p) => (p === 'dark' ? 'light' : 'dark'))}
-        active="users"
+        active="admin"
         hidePublishButton={true}
       />
 
@@ -75,7 +76,7 @@ export default function ListUsersPage({ users, q, selectedRoles }: PageProps) {
               </div>
               <h1 style={{ margin: 0 }}>Painel Administrativo</h1>
               <p className="page-sub">
-                Gerencie usuários, permissões e áreas de conhecimento da plataforma DataRural.
+                Gerencie usuários, permissões, áreas de conhecimento e logs de auditoria da plataforma DataRural.
               </p>
             </div>
             <div className="dr-page-head-actions">
@@ -136,6 +137,24 @@ export default function ListUsersPage({ users, q, selectedRoles }: PageProps) {
           >
             <Ic.Grid size={16} /> Áreas do Conhecimento
           </button>
+          <button
+            onClick={() => setAdminTab('audits')}
+            style={{
+              padding: '10px 18px',
+              fontSize: '14px',
+              fontWeight: adminTab === 'audits' ? 700 : 500,
+              background: 'none',
+              border: 'none',
+              borderBottom: adminTab === 'audits' ? '3px solid var(--brand-green)' : '3px solid transparent',
+              color: adminTab === 'audits' ? 'var(--foreground)' : 'var(--muted-foreground)',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+            }}
+          >
+            <Ic.Activity size={16} /> Logs de Auditoria
+          </button>
         </div>
 
         {adminTab === 'users' ? (
@@ -146,9 +165,13 @@ export default function ListUsersPage({ users, q, selectedRoles }: PageProps) {
 
             <UsersDialogs roles={roles} />
           </UsersProvider>
-        ) : (
+        ) : adminTab === 'areas' ? (
           <div className="dr-panel" style={{ padding: '24px 28px' }}>
             <AreasAdminTable />
+          </div>
+        ) : (
+          <div className="dr-panel" style={{ padding: '24px 28px' }}>
+            <AuditsAdminTable />
           </div>
         )}
       </div>

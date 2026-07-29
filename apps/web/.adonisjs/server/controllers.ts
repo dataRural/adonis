@@ -13,9 +13,9 @@ export const controllers = {
     Social: () => import('#app/auth/controllers/social_controller'),
   },
   dataset: {
+    Areas: () => import('#app/dataset/controllers/areas_controller'),
     Datasets: () => import('#app/dataset/controllers/datasets_controller'),
     Licenses: () => import('#app/dataset/controllers/licenses_controller'),
-    Areas: () => import('#app/dataset/controllers/areas_controller'),
   },
   groups: {
     GroupDatasets: () => import('#app/groups/controllers/group_datasets_controller'),
@@ -32,5 +32,6 @@ export const controllers = {
     Profile: () => import('#app/users/controllers/profile_controller'),
     Tokens: () => import('#app/users/controllers/tokens_controller'),
     Users: () => import('#app/users/controllers/users_controller'),
+    Audits: () => import('#app/users/controllers/audits_controller'),
   },
 }

@@ -154,7 +154,7 @@ export default class UsersController {
 
     await user.save()
 
-    return response.redirect().toRoute('users.index')
+    return response.redirect().toRoute('admin.index')
   }
 
   public async update({ bouncer, params, request, response }: HttpContext) {
@@ -170,7 +170,7 @@ export default class UsersController {
 
     await user.save()
 
-    return response.redirect().toRoute('users.index')
+    return response.redirect().toRoute('admin.index')
   }
 
   public async destroy({ bouncer, params, response }: HttpContext) {
@@ -180,7 +180,7 @@ export default class UsersController {
 
     await user.delete()
 
-    return response.redirect().toRoute('users.index')
+    return response.redirect().toRoute('admin.index')
   }
 
   public async search({ auth, request, response }: HttpContext) {

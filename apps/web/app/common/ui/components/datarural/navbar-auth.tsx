@@ -174,8 +174,8 @@ export default function PanelNav({ theme, onToggleTheme, onPublish, active, user
           </Link>
           {loggedInUser && (loggedInUser.roleId === 2 || (loggedInUser as any).roleId === 2) && (
             <Link
-              className={'dr-nav-link' + (active === 'users' ? ' active' : '')}
-              href="/users"
+              className={'dr-nav-link' + (active === 'users' || active === 'admin' ? ' active' : '')}
+              href="/admin"
             >
               Gestão
             </Link>

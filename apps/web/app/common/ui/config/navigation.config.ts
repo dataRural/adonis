@@ -43,7 +43,7 @@ export function getNavMain(t: SimpleTFunction): NavMainItem[] {
       items: [
         {
           title: t('common.layout.navMain.users'),
-          url: '/users',
+          url: '/admin',
           icon: Users,
           subject: 'user',
         },

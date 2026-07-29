@@ -10,6 +10,42 @@ export interface ApiDefinition {
   marketing: {
     show: typeof routes['marketing.show']
   }
+  admin: {
+    index: typeof routes['admin.index']
+    store: typeof routes['admin.store']
+    update: typeof routes['admin.update']
+    destroy: typeof routes['admin.destroy']
+    audits: typeof routes['admin.audits']
+  }
+  users: {
+    invite: {
+      handle: typeof routes['users.invite.handle']
+    }
+    impersonate: {
+      handle: typeof routes['users.impersonate.handle']
+    }
+    search: typeof routes['users.search']
+    publicProfile: typeof routes['users.public_profile']
+  }
+  user: {
+    profile: typeof routes['user.profile']
+  }
+  settings: {
+    index: typeof routes['settings.index']
+  }
+  profile: {
+    update: typeof routes['profile.update']
+    show: typeof routes['profile.show']
+  }
+  tokens: {
+    index: typeof routes['tokens.index']
+    destroy: typeof routes['tokens.destroy']
+    store: typeof routes['tokens.store']
+  }
+  password: {
+    update: typeof routes['password.update']
+    show: typeof routes['password.show']
+  }
   areas: {
     list: typeof routes['areas.list']
   }
@@ -49,6 +85,22 @@ export interface ApiDefinition {
     show: typeof routes['dashboard.show']
     publish: typeof routes['dashboard.publish']
   }
+  groups: {
+    index: typeof routes['groups.index']
+    store: typeof routes['groups.store']
+    show: typeof routes['groups.show']
+    update: typeof routes['groups.update']
+    destroy: typeof routes['groups.destroy']
+    members: {
+      store: typeof routes['groups.members.store']
+      update: typeof routes['groups.members.update']
+      destroy: typeof routes['groups.members.destroy']
+    }
+    datasets: {
+      store: typeof routes['groups.datasets.store']
+      destroy: typeof routes['groups.datasets.destroy']
+    }
+  }
   auth: {
     signIn: {
       show: typeof routes['auth.sign_in.show']
@@ -76,54 +128,5 @@ export interface ApiDefinition {
   }
   locale: {
     switch: typeof routes['locale.switch']
-  }
-  users: {
-    index: typeof routes['users.index']
-    store: typeof routes['users.store']
-    update: typeof routes['users.update']
-    destroy: typeof routes['users.destroy']
-    invite: {
-      handle: typeof routes['users.invite.handle']
-    }
-    impersonate: {
-      handle: typeof routes['users.impersonate.handle']
-    }
-    search: typeof routes['users.search']
-    publicProfile: typeof routes['users.public_profile']
-  }
-  user: {
-    profile: typeof routes['user.profile']
-  }
-  settings: {
-    index: typeof routes['settings.index']
-  }
-  profile: {
-    update: typeof routes['profile.update']
-    show: typeof routes['profile.show']
-  }
-  tokens: {
-    index: typeof routes['tokens.index']
-    destroy: typeof routes['tokens.destroy']
-    store: typeof routes['tokens.store']
-  }
-  password: {
-    update: typeof routes['password.update']
-    show: typeof routes['password.show']
-  }
-  groups: {
-    index: typeof routes['groups.index']
-    store: typeof routes['groups.store']
-    show: typeof routes['groups.show']
-    update: typeof routes['groups.update']
-    destroy: typeof routes['groups.destroy']
-    members: {
-      store: typeof routes['groups.members.store']
-      update: typeof routes['groups.members.update']
-      destroy: typeof routes['groups.members.destroy']
-    }
-    datasets: {
-      store: typeof routes['groups.datasets.store']
-      destroy: typeof routes['groups.datasets.destroy']
-    }
   }
 }

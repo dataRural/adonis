@@ -1,12 +1,16 @@
 import { belongsTo, column, hasMany, manyToMany } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relations'
 
+import { compose } from '@adonisjs/core/helpers'
+import { Auditable } from '@filipebraida/adonis-auditing'
+
 import BaseModel from '#common/models/base_model'
 import User from '#users/models/user'
 import GroupMember from '#app/groups/models/group_member'
 import Dataset from '#app/dataset/models/dataset'
 
-export default class Group extends BaseModel {
+export default class Group extends compose(BaseModel, Auditable) {
+  static auditableName = 'group'
   @column({ isPrimary: true })
   declare id: number
 

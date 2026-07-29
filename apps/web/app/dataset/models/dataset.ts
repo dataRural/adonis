@@ -1,6 +1,9 @@
 import { belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 
+import { compose } from '@adonisjs/core/helpers'
+import { Auditable } from '@filipebraida/adonis-auditing'
+
 import BaseModel from '#common/models/base_model'
 import User from '#users/models/user'
 import Group from '#app/groups/models/group'
@@ -9,7 +12,9 @@ import License from './license.js'
 import DatasetLike from './dataset_like.js'
 import DatasetFavorite from './dataset_favorite.js'
 
-export default class Dataset extends BaseModel {
+export default class Dataset extends compose(BaseModel, Auditable) {
+  static auditableName = 'dataset'
+  static auditExclude = ['path']
   @column({ isPrimary: true })
   declare id: number
 

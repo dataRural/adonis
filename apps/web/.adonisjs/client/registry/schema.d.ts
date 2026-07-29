@@ -31,6 +31,222 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#marketing/controllers/marketing_controller').default['handle']>>>
     }
   }
+  'admin.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: ExtractQueryForGet<InferInput<(typeof import('#users/validators').listUserValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'admin.store': {
+    methods: ["POST"]
+    pattern: '/admin'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#users/validators').createUserValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#users/validators').createUserValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'admin.update': {
+    methods: ["PUT","PATCH"]
+    pattern: '/admin/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#users/validators').editUserValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#users/validators').editUserValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'admin.destroy': {
+    methods: ["DELETE"]
+    pattern: '/admin/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['destroy']>>>
+    }
+  }
+  'admin.audits': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/admin/audits'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/audits_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/audits_controller').default['index']>>>
+    }
+  }
+  'users.invite.handle': {
+    methods: ["POST"]
+    pattern: '/users/invite'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#users/validators').inviteUserValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#users/validators').inviteUserValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/invite_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/invite_controller').default['handle']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'users.impersonate.handle': {
+    methods: ["POST"]
+    pattern: '/users/impersonate/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/impersonates_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/impersonates_controller').default['store']>>>
+    }
+  }
+  'users.search': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/users/search'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['search']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['search']>>>
+    }
+  }
+  'user.profile': {
+    methods: ["GET","HEAD"]
+    pattern: '/profile'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['publicProfile']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['publicProfile']>>>
+    }
+  }
+  'users.public_profile': {
+    methods: ["GET","HEAD"]
+    pattern: '/u/:username'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { username: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['publicProfile']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['publicProfile']>>>
+    }
+  }
+  'settings.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/settings'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'profile.update': {
+    methods: ["POST"]
+    pattern: '/settings/profile'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#users/validators').updateProfileValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#users/validators').updateProfileValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/profile_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/profile_controller').default['handle']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'profile.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/settings/profile'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/profile_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/profile_controller').default['show']>>>
+    }
+  }
+  'tokens.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/settings/tokens'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/tokens_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/tokens_controller').default['index']>>>
+    }
+  }
+  'tokens.destroy': {
+    methods: ["DELETE"]
+    pattern: '/settings/tokens/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/tokens_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/tokens_controller').default['destroy']>>>
+    }
+  }
+  'tokens.store': {
+    methods: ["POST"]
+    pattern: '/api/tokens'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#users/validators').createTokenValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#users/validators').createTokenValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/tokens_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/tokens_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'password.update': {
+    methods: ["PUT"]
+    pattern: '/settings/password'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#users/validators').updatePasswordValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#users/validators').updatePasswordValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/password_controller').default['handle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/password_controller').default['handle']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'password.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/settings/password'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/password_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/password_controller').default['show']>>>
+    }
+  }
   'areas.list': {
     methods: ["GET","HEAD"]
     pattern: '/api/areas'
@@ -283,6 +499,126 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['publish']>>>
     }
   }
+  'groups.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/groups'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['index']>>>
+    }
+  }
+  'groups.store': {
+    methods: ["POST"]
+    pattern: '/groups'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#app/groups/validators').createGroupValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#app/groups/validators').createGroupValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'groups.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/groups/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['show']>>>
+    }
+  }
+  'groups.update': {
+    methods: ["PUT","PATCH"]
+    pattern: '/groups/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#app/groups/validators').updateGroupValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#app/groups/validators').updateGroupValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'groups.destroy': {
+    methods: ["DELETE"]
+    pattern: '/groups/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['destroy']>>>
+    }
+  }
+  'groups.members.store': {
+    methods: ["POST"]
+    pattern: '/groups/:id/members'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#app/groups/validators').addGroupMemberValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#app/groups/validators').addGroupMemberValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/group_members_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/group_members_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'groups.members.update': {
+    methods: ["PUT"]
+    pattern: '/groups/:id/members/:memberId'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#app/groups/validators').updateGroupMemberValidator)>>
+      paramsTuple: [ParamValue, ParamValue]
+      params: { id: ParamValue; memberId: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#app/groups/validators').updateGroupMemberValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/group_members_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/group_members_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'groups.members.destroy': {
+    methods: ["DELETE"]
+    pattern: '/groups/:id/members/:memberId'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { id: ParamValue; memberId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/group_members_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/group_members_controller').default['destroy']>>>
+    }
+  }
+  'groups.datasets.store': {
+    methods: ["POST"]
+    pattern: '/groups/:id/datasets'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#app/groups/validators').assignDatasetToGroupValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#app/groups/validators').assignDatasetToGroupValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/group_datasets_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/group_datasets_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'groups.datasets.destroy': {
+    methods: ["DELETE"]
+    pattern: '/groups/:id/datasets/:datasetId'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { id: ParamValue; datasetId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/group_datasets_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/group_datasets_controller').default['destroy']>>>
+    }
+  }
   'auth.sign_in.show': {
     methods: ["GET","HEAD"]
     pattern: '/login'
@@ -425,330 +761,6 @@ export interface Registry {
       query: {}
       response: unknown
       errorResponse: unknown
-    }
-  }
-  'users.index': {
-    methods: ["GET","HEAD"]
-    pattern: '/users'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: ExtractQueryForGet<InferInput<(typeof import('#users/validators').listUserValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['index']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['index']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'users.store': {
-    methods: ["POST"]
-    pattern: '/users'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#users/validators').createUserValidator)>>
-      paramsTuple: []
-      params: {}
-      query: ExtractQuery<InferInput<(typeof import('#users/validators').createUserValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'users.update': {
-    methods: ["PUT","PATCH"]
-    pattern: '/users/:id'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#users/validators').editUserValidator)>>
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#users/validators').editUserValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['update']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'users.destroy': {
-    methods: ["DELETE"]
-    pattern: '/users/:id'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['destroy']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['destroy']>>>
-    }
-  }
-  'users.invite.handle': {
-    methods: ["POST"]
-    pattern: '/users/invite'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#users/validators').inviteUserValidator)>>
-      paramsTuple: []
-      params: {}
-      query: ExtractQuery<InferInput<(typeof import('#users/validators').inviteUserValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/invite_controller').default['handle']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/invite_controller').default['handle']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'users.impersonate.handle': {
-    methods: ["POST"]
-    pattern: '/users/impersonate/:id'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/impersonates_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/impersonates_controller').default['store']>>>
-    }
-  }
-  'users.search': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/users/search'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['search']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['search']>>>
-    }
-  }
-  'user.profile': {
-    methods: ["GET","HEAD"]
-    pattern: '/profile'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['publicProfile']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['publicProfile']>>>
-    }
-  }
-  'users.public_profile': {
-    methods: ["GET","HEAD"]
-    pattern: '/u/:username'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { username: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['publicProfile']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/users_controller').default['publicProfile']>>>
-    }
-  }
-  'settings.index': {
-    methods: ["GET","HEAD"]
-    pattern: '/settings'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: unknown
-      errorResponse: unknown
-    }
-  }
-  'profile.update': {
-    methods: ["POST"]
-    pattern: '/settings/profile'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#users/validators').updateProfileValidator)>>
-      paramsTuple: []
-      params: {}
-      query: ExtractQuery<InferInput<(typeof import('#users/validators').updateProfileValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/profile_controller').default['handle']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/profile_controller').default['handle']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'profile.show': {
-    methods: ["GET","HEAD"]
-    pattern: '/settings/profile'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/profile_controller').default['show']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/profile_controller').default['show']>>>
-    }
-  }
-  'tokens.index': {
-    methods: ["GET","HEAD"]
-    pattern: '/settings/tokens'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/tokens_controller').default['index']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/tokens_controller').default['index']>>>
-    }
-  }
-  'tokens.destroy': {
-    methods: ["DELETE"]
-    pattern: '/settings/tokens/:id'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/tokens_controller').default['destroy']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/tokens_controller').default['destroy']>>>
-    }
-  }
-  'tokens.store': {
-    methods: ["POST"]
-    pattern: '/api/tokens'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#users/validators').createTokenValidator)>>
-      paramsTuple: []
-      params: {}
-      query: ExtractQuery<InferInput<(typeof import('#users/validators').createTokenValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/tokens_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/tokens_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'password.update': {
-    methods: ["PUT"]
-    pattern: '/settings/password'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#users/validators').updatePasswordValidator)>>
-      paramsTuple: []
-      params: {}
-      query: ExtractQuery<InferInput<(typeof import('#users/validators').updatePasswordValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/password_controller').default['handle']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/password_controller').default['handle']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'password.show': {
-    methods: ["GET","HEAD"]
-    pattern: '/settings/password'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/password_controller').default['show']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/password_controller').default['show']>>>
-    }
-  }
-  'groups.index': {
-    methods: ["GET","HEAD"]
-    pattern: '/groups'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['index']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['index']>>>
-    }
-  }
-  'groups.store': {
-    methods: ["POST"]
-    pattern: '/groups'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#app/groups/validators').createGroupValidator)>>
-      paramsTuple: []
-      params: {}
-      query: ExtractQuery<InferInput<(typeof import('#app/groups/validators').createGroupValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'groups.show': {
-    methods: ["GET","HEAD"]
-    pattern: '/groups/:id'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['show']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['show']>>>
-    }
-  }
-  'groups.update': {
-    methods: ["PUT","PATCH"]
-    pattern: '/groups/:id'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#app/groups/validators').updateGroupValidator)>>
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#app/groups/validators').updateGroupValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['update']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'groups.destroy': {
-    methods: ["DELETE"]
-    pattern: '/groups/:id'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['destroy']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/groups_controller').default['destroy']>>>
-    }
-  }
-  'groups.members.store': {
-    methods: ["POST"]
-    pattern: '/groups/:id/members'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#app/groups/validators').addGroupMemberValidator)>>
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#app/groups/validators').addGroupMemberValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/group_members_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/group_members_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'groups.members.update': {
-    methods: ["PUT"]
-    pattern: '/groups/:id/members/:memberId'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#app/groups/validators').updateGroupMemberValidator)>>
-      paramsTuple: [ParamValue, ParamValue]
-      params: { id: ParamValue; memberId: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#app/groups/validators').updateGroupMemberValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/group_members_controller').default['update']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/group_members_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'groups.members.destroy': {
-    methods: ["DELETE"]
-    pattern: '/groups/:id/members/:memberId'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue, ParamValue]
-      params: { id: ParamValue; memberId: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/group_members_controller').default['destroy']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/group_members_controller').default['destroy']>>>
-    }
-  }
-  'groups.datasets.store': {
-    methods: ["POST"]
-    pattern: '/groups/:id/datasets'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#app/groups/validators').assignDatasetToGroupValidator)>>
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#app/groups/validators').assignDatasetToGroupValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/group_datasets_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/group_datasets_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'groups.datasets.destroy': {
-    methods: ["DELETE"]
-    pattern: '/groups/:id/datasets/:datasetId'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue, ParamValue]
-      params: { id: ParamValue; datasetId: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/groups/controllers/group_datasets_controller').default['destroy']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/groups/controllers/group_datasets_controller').default['destroy']>>>
     }
   }
 }

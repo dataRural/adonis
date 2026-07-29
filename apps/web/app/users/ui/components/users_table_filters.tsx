@@ -35,7 +35,7 @@ export default function UsersTableFilters({
         perPage: perPage,
       }
 
-      router.get('/users', data, {
+      router.get('/admin', data, {
         preserveScroll: true,
         preserveState: true,
         replace: true,

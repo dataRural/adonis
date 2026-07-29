@@ -514,3 +514,7 @@ export const Logout = createIcon('logout', (
     <path d="M5 12h11" />
   </>
 ))
+
+export const Activity = createIcon('activity', (
+  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+))
