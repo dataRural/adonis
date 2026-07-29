@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { Head, Link } from '@inertiajs/react'
 import Navbar from '#common/ui/components/datarural/navbar'
-import Categories from '#common/ui/components/datarural/categories'
+import Categories, { CategoryItem } from '#common/ui/components/datarural/categories'
 import DatasetCard, { DatasetItem } from '#common/ui/components/datarural/dataset-card'
 import Footer from '#common/ui/components/datarural/footer'
 import * as Ic from '#common/ui/components/datarural/icons'
@@ -9,12 +9,14 @@ import type { InertiaProps } from '#core/ui/types'
 
 type PageProps = InertiaProps<{
   datasets?: DatasetItem[]
+  categories?: CategoryItem[]
   initialSearch?: string
   initialArea?: string
 }>
 
 export default function DatasetsExplorePage({
   datasets = [],
+  categories,
   initialSearch = '',
   initialArea = '',
 }: PageProps) {
@@ -221,7 +223,7 @@ export default function DatasetsExplorePage({
                   transition: 'all 0.2s ease',
                 }}
               >
-                <Categories active={activeCat} onPick={setActiveCat} />
+                <Categories active={activeCat} onPick={setActiveCat} categories={categories} />
               </div>
             )}
           </div>

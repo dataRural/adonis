@@ -62,7 +62,7 @@ export default function PublishWizard({ editDataset, userGroups = [] }: PageProp
     area: editDataset ? editDataset.area : 'clima',
     period: editDataset ? editDataset.period : '',
     region: editDataset ? editDataset.region : '',
-    tags: editDataset ? editDataset.tags : ['clima', 'séries temporais'],
+    tags: editDataset ? editDataset.tags : [],
     schema: CSV_COLUMNS.map((c) => ({ ...c })),
     license: editDataset ? editDataset.license : 'ccby',
     visibility: editDataset ? editDataset.visibility : 'public',

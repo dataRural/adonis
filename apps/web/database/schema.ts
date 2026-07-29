@@ -32,6 +32,27 @@ export class AuthAccessTokenSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class DatasetAreaSchema extends BaseModel {
+  static $columns = ['code', 'color', 'createdAt', 'description', 'icon', 'id', 'name', 'updatedAt'] as const
+  $columns = DatasetAreaSchema.$columns
+  @column()
+  declare code: string
+  @column()
+  declare color: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string | null
+  @column()
+  declare icon: string
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare name: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class DatasetFavoriteSchema extends BaseModel {
   static $columns = ['createdAt', 'datasetId', 'id', 'updatedAt', 'userId'] as const
   $columns = DatasetFavoriteSchema.$columns

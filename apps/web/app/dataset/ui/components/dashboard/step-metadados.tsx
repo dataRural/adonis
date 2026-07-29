@@ -1,6 +1,6 @@
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import * as Ic from '#common/ui/components/datarural/icons'
-import { UNITS, AREAS, SUGGESTED_TAGS } from './panel-data'
+import { UNITS, AREAS } from './panel-data'
 
 interface Step2Props {
   data: any
@@ -9,6 +9,18 @@ interface Step2Props {
 
 export default function StepMetadados({ data, set }: Step2Props) {
   const tagInputRef = useRef<HTMLInputElement>(null)
+  const [areaOptions, setAreaOptions] = useState<{ id: string; name: string }[]>(AREAS)
+
+  useEffect(() => {
+    fetch('/api/areas')
+      .then((res) => res.json())
+      .then((list) => {
+        if (Array.isArray(list) && list.length > 0) {
+          setAreaOptions(list.map((a: any) => ({ id: a.code, name: a.name })))
+        }
+      })
+      .catch(() => { })
+  }, [])
 
   const addTag = (t: string) => {
     t = t.trim()
@@ -21,7 +33,6 @@ export default function StepMetadados({ data, set }: Step2Props) {
     set({ tags: data.tags.filter((x: string) => x !== t) })
   }
 
-  const remaining = SUGGESTED_TAGS.filter((t) => !data.tags.includes(t))
 
   return (
     <div className="dr-fgrid">
@@ -33,7 +44,7 @@ export default function StepMetadados({ data, set }: Step2Props) {
           className="dr-input"
           value={data.title}
           onChange={(e) => set({ title: e.target.value })}
-          placeholder="Ex.: Dados Meteorológicos — Estação Seropédica (2010–2024)"
+          placeholder="Ex.: Dados Meteorológicos (2010-2024)"
         />
         <span className="dr-field-hint">Seja específico: inclua local e período cobertos.</span>
       </div>
@@ -78,7 +89,7 @@ export default function StepMetadados({ data, set }: Step2Props) {
           value={data.area}
           onChange={(e) => set({ area: e.target.value })}
         >
-          {AREAS.map((a) => (
+          {areaOptions.map((a) => (
             <option key={a.id} value={a.id}>
               {a.name}
             </option>
@@ -109,13 +120,13 @@ export default function StepMetadados({ data, set }: Step2Props) {
           className="dr-input"
           value={data.region}
           onChange={(e) => set({ region: e.target.value })}
-          placeholder="Seropédica, RJ"
+          placeholder="No va Iguaçu, RJ"
         />
       </div>
 
       <div className="dr-field dr-field-full">
         <label className="dr-field-label">
-          Tags <span className="opt">ajudam na busca</span>
+          Tags
         </label>
         <div
           className="dr-tag-box"
@@ -149,23 +160,6 @@ export default function StepMetadados({ data, set }: Step2Props) {
             }}
           />
         </div>
-        {remaining.length > 0 && (
-          <div className="dr-suggest-row">
-            <span className="sl">
-              <Ic.Spark size={13} style={{ display: 'inline', marginRight: 4 }} /> Sugeridas:
-            </span>
-            {remaining.map((t) => (
-              <button
-                type="button"
-                key={t}
-                className="dr-suggest-chip"
-                onClick={() => addTag(t)}
-              >
-                <Ic.Plus size={12} style={{ display: 'inline', marginRight: 4 }} /> {t}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   )

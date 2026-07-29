@@ -15,6 +15,7 @@ export const controllers = {
   dataset: {
     Datasets: () => import('#app/dataset/controllers/datasets_controller'),
     Licenses: () => import('#app/dataset/controllers/licenses_controller'),
+    Areas: () => import('#app/dataset/controllers/areas_controller'),
   },
   groups: {
     GroupDatasets: () => import('#app/groups/controllers/group_datasets_controller'),

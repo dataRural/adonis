@@ -11,6 +11,15 @@ import router from '@adonisjs/core/services/router'
 
 const DatasetsController = () => import('#app/dataset/controllers/datasets_controller')
 const LicensesController = () => import('#app/dataset/controllers/licenses_controller')
+const AreasController = () => import('#app/dataset/controllers/areas_controller')
+
+router.get('/api/areas', [AreasController, 'list']).as('areas.list')
+
+router
+  .resource('/admin/areas', AreasController)
+  .only(['index', 'store', 'update', 'destroy'])
+  .middleware('*', middleware.auth())
+  .as('admin.areas')
 
 router
   .get('/datasets/view', [DatasetsController, 'viewer'])

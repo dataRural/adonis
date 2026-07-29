@@ -88,7 +88,7 @@ export default class UsersController {
 
     const userObject = new UserTransformer(targetUser).toObject()
 
-    return inertia.render('users/public_profile', {
+    return inertia.render('users/public_profile' as any, {
       userProfile: {
         ...userObject,
         createdAt: targetUser.createdAt ? targetUser.createdAt.toISO() : new Date().toISOString(),

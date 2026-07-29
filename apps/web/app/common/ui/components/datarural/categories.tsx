@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import * as Ic from './icons'
 
 export interface CategoryItem {
@@ -12,6 +13,7 @@ interface CategoriesProps {
   active: string | null
   onPick: (id: string | null) => void
   categories?: CategoryItem[]
+  limit?: number
 }
 
 export const BASE_CATEGORIES: CategoryItem[] = [
@@ -27,7 +29,17 @@ export const BASE_CATEGORIES: CategoryItem[] = [
   { id: 'econ', name: 'Economia & Gestão', count: 0, icon: 'chart', color: 'var(--brand-indigo)' },
 ]
 
-export default function Categories({ active, onPick, categories = BASE_CATEGORIES }: CategoriesProps) {
+export default function Categories({
+  active,
+  onPick,
+  categories = BASE_CATEGORIES,
+  limit = 10,
+}: CategoriesProps) {
+  const [expanded, setExpanded] = useState(false)
+
+  const hasMore = Boolean(limit && categories.length > limit)
+  const visibleCategories = hasMore && !expanded ? categories.slice(0, limit) : categories
+
   return (
     <section className="dr-section" id="categorias">
       <div className="dr-container">
@@ -38,8 +50,8 @@ export default function Categories({ active, onPick, categories = BASE_CATEGORIE
           </div>
         </div>
         <div className="dr-cat-grid">
-          {categories.map((c) => {
-            const iconKey = c.icon.charAt(0).toUpperCase() + c.icon.slice(1)
+          {visibleCategories.map((c) => {
+            const iconKey = c.icon ? c.icon.charAt(0).toUpperCase() + c.icon.slice(1) : 'Database'
             const Icon = (Ic as any)[iconKey] || Ic.Database
             const isActive = active === c.id
 
@@ -62,6 +74,43 @@ export default function Categories({ active, onPick, categories = BASE_CATEGORIE
             )
           })}
         </div>
+
+        {hasMore && (
+          <div style={{ textAlign: 'center', marginTop: 20 }}>
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="dr-btn dr-btn-secondary"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '8px 24px',
+                fontSize: 14,
+                fontWeight: 600,
+                borderRadius: 20,
+                cursor: 'pointer',
+              }}
+            >
+              {expanded ? (
+                <>
+                  Ver menos áreas{' '}
+                  <Ic.Chevd
+                    size={16}
+                    style={{ transform: 'rotate(180deg)', transition: 'transform 0.2s ease' }}
+                  />
+                </>
+              ) : (
+                <>
+                  Ver mais áreas{' '}
+                  <Ic.Chevd
+                    size={16}
+                    style={{ transform: 'rotate(0deg)', transition: 'transform 0.2s ease' }}
+                  />
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </div>
     </section>
   )

@@ -10,6 +10,39 @@ export interface ApiDefinition {
   marketing: {
     show: typeof routes['marketing.show']
   }
+  users: {
+    index: typeof routes['users.index']
+    store: typeof routes['users.store']
+    update: typeof routes['users.update']
+    destroy: typeof routes['users.destroy']
+    invite: {
+      handle: typeof routes['users.invite.handle']
+    }
+    impersonate: {
+      handle: typeof routes['users.impersonate.handle']
+    }
+    search: typeof routes['users.search']
+    publicProfile: typeof routes['users.public_profile']
+  }
+  user: {
+    profile: typeof routes['user.profile']
+  }
+  settings: {
+    index: typeof routes['settings.index']
+  }
+  profile: {
+    update: typeof routes['profile.update']
+    show: typeof routes['profile.show']
+  }
+  tokens: {
+    index: typeof routes['tokens.index']
+    destroy: typeof routes['tokens.destroy']
+    store: typeof routes['tokens.store']
+  }
+  password: {
+    update: typeof routes['password.update']
+    show: typeof routes['password.show']
+  }
   auth: {
     signIn: {
       show: typeof routes['auth.sign_in.show']
@@ -37,6 +70,15 @@ export interface ApiDefinition {
   }
   locale: {
     switch: typeof routes['locale.switch']
+  }
+  areas: {
+    list: typeof routes['areas.list']
+  }
+  adminAreas: {
+    index: typeof routes['admin_areas.index']
+    store: typeof routes['admin_areas.store']
+    update: typeof routes['admin_areas.update']
+    destroy: typeof routes['admin_areas.destroy']
   }
   datasets: {
     viewer: typeof routes['datasets.viewer']
@@ -83,38 +125,5 @@ export interface ApiDefinition {
       store: typeof routes['groups.datasets.store']
       destroy: typeof routes['groups.datasets.destroy']
     }
-  }
-  users: {
-    index: typeof routes['users.index']
-    store: typeof routes['users.store']
-    update: typeof routes['users.update']
-    destroy: typeof routes['users.destroy']
-    invite: {
-      handle: typeof routes['users.invite.handle']
-    }
-    impersonate: {
-      handle: typeof routes['users.impersonate.handle']
-    }
-    search: typeof routes['users.search']
-    publicProfile: typeof routes['users.public_profile']
-  }
-  user: {
-    profile: typeof routes['user.profile']
-  }
-  settings: {
-    index: typeof routes['settings.index']
-  }
-  profile: {
-    update: typeof routes['profile.update']
-    show: typeof routes['profile.show']
-  }
-  tokens: {
-    index: typeof routes['tokens.index']
-    destroy: typeof routes['tokens.destroy']
-    store: typeof routes['tokens.store']
-  }
-  password: {
-    update: typeof routes['password.update']
-    show: typeof routes['password.show']
   }
 }

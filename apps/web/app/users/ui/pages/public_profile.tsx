@@ -554,7 +554,7 @@ export default function PublicProfilePage({
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     {filteredDatasets.map((ds) => (
-                      <div key={ds.id} className="dr-panel" style={{ padding: 20 }}>
+                      <div key={ds.id} className="dr-panel" style={{ margin: 0, padding: 20 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
                           <Link href={`/datasets/${ds.id}`} style={{ fontSize: 16, fontWeight: 700, color: 'var(--brand-green)', textDecoration: 'none' }}>
                             {ds.title}
@@ -591,7 +591,7 @@ export default function PublicProfilePage({
                 ) : (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
                     {groups.map((grp) => (
-                      <div key={grp.id} className="dr-panel" style={{ padding: 20 }}>
+                      <div key={grp.id} className="dr-panel" style={{ margin: 0, padding: 20 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
                           <div style={{ width: 44, height: 44, borderRadius: 8, background: 'var(--brand-green)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 18 }}>
                             {grp.name[0]}
@@ -620,7 +620,7 @@ export default function PublicProfilePage({
                 <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px' }}>Histórico de Atividade</h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   {datasets.map((ds) => (
-                    <div key={ds.id} className="dr-panel" style={{ padding: 20, display: 'flex', gap: 16 }}>
+                    <div key={ds.id} className="dr-panel" style={{ margin: 0, padding: 20, display: 'flex', gap: 16 }}>
                       <Ic.History size={20} style={{ color: 'var(--brand-green)', marginTop: 2 }} />
                       <div>
                         <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>

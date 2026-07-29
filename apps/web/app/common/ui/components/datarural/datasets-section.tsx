@@ -29,10 +29,6 @@ export default function DatasetsSection({
         <div className="dr-section-head">
           <div>
             <h2>Datasets</h2>
-            <p>
-              {list.length} {list.length === 1 ? 'conjunto' : 'conjuntos'} de dados{' '}
-              {activeCat ? 'nesta área' : 'disponíveis'}.
-            </p>
           </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <div className="dr-tabs">

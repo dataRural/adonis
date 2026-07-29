@@ -132,7 +132,7 @@ export default function Page({ datasets = [], stats, categories }: PageProps) {
       <StatsStrip stats={stats} />
       <Categories active={activeCat} onPick={handlePickCategory} categories={categories} />
       <DatasetsSection
-        list={list}
+        list={list.slice(0, 6)}
         tab={tab}
         onTab={setTab}
         view={view}

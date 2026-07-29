@@ -180,7 +180,7 @@ export default function PanelNav({ theme, onToggleTheme, onPublish, active, user
               className={'dr-nav-link' + (active === 'users' ? ' active' : '')}
               href="/users"
             >
-              Usuários
+              Gestão
             </Link>
           )}
         </nav>

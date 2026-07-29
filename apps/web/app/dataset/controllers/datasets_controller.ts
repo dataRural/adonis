@@ -9,6 +9,7 @@ import Dataset from '../models/dataset.js'
 import DatasetVersion from '../models/dataset_version.js'
 import DatasetLike from '../models/dataset_like.js'
 import DatasetFavorite from '../models/dataset_favorite.js'
+import DatasetArea from '../models/dataset_area.js'
 import { addDatasetVersionValidator, createDatasetValidator, updateDatasetValidator } from '#app/dataset/validators'
 import { attachmentManager } from '@jrmc/adonis-attachment'
 import { marked } from 'marked'
@@ -198,7 +199,7 @@ function getNextVersionName(versionNames: string[]) {
 
 export default class DatasetsController {
   public async index({ inertia }: HttpContext) {
-    return inertia.render('dataset/index', {})
+    return inertia.render('dataset/index' as any, {})
   }
 
   public async explore({ inertia, request, auth }: HttpContext) {
@@ -224,6 +225,12 @@ export default class DatasetsController {
 
     const publicDatasets = await query
 
+    const dbAreas = await DatasetArea.query().orderBy('name', 'asc')
+    const AREA_COLORS: Record<string, string> = {}
+    dbAreas.forEach((a) => {
+      AREA_COLORS[a.code] = a.color
+    })
+
     const datasetsPayload = await Promise.all(
       publicDatasets.map(async (d, index) => {
         const latestVersion = d.versions[d.versions.length - 1]
@@ -242,19 +249,6 @@ export default class DatasetsController {
               size = `${(fileBytes / 1024).toFixed(1)} KB`
             }
           }
-        }
-
-        const AREA_COLORS: Record<string, string> = {
-          agro: 'var(--brand-green)',
-          vet: 'var(--brand-orange)',
-          clima: 'var(--brand-sky)',
-          bio: 'var(--brand-lightgreen)',
-          flor: 'var(--brand-teal)',
-          exatas: 'var(--brand-blue)',
-          quim: 'var(--brand-purple)',
-          zoo: 'var(--brand-amber)',
-          soc: 'var(--brand-rose)',
-          econ: 'var(--brand-indigo)',
         }
 
         const usability = d.usabilityScore !== null && d.usabilityScore !== undefined ? String(d.usabilityScore) : '8.5'
@@ -293,8 +287,24 @@ export default class DatasetsController {
     const initialSearch = request.input('search') || ''
     const initialArea = request.input('area') || ''
 
-    return inertia.render('dataset/index', {
+    const areaCountsMap: Record<string, number> = {}
+    publicDatasets.forEach((d) => {
+      if (d.area) {
+        areaCountsMap[d.area] = (areaCountsMap[d.area] || 0) + 1
+      }
+    })
+
+    const categoriesPayload = dbAreas.map((a) => ({
+      id: a.code,
+      name: a.name,
+      count: areaCountsMap[a.code] || 0,
+      icon: a.icon || 'database',
+      color: a.color || 'var(--brand-blue)',
+    }))
+
+    return inertia.render('dataset/index' as any, {
       datasets: datasetsPayload,
+      categories: categoriesPayload,
       initialSearch,
       initialArea,
     })
@@ -907,18 +917,11 @@ export default class DatasetsController {
       }
     })
 
-    const areaNames: Record<string, string> = {
-      clima: 'Clima & Meteorologia',
-      agro: 'Agronomia',
-      vet: 'Veterinária',
-      bio: 'Ciências Biológicas',
-      flor: 'Florestas',
-      exatas: 'Ciências Exatas',
-      quim: 'Química',
-      zoo: 'Zootecnia',
-      soc: 'Ciências Sociais',
-      econ: 'Economia & Gestão',
-    }
+    const dbAreas = await DatasetArea.query()
+    const areaNames: Record<string, string> = {}
+    dbAreas.forEach((a) => {
+      areaNames[a.code] = a.name
+    })
 
     const publisherName = dataset.user?.fullName || dataset.user?.email || 'Usuário UFRRJ'
     const publisherInitials = publisherName.split(/\s+/).filter(w => w.length > 0).map(w => w[0].toUpperCase()).join('').slice(0, 2)
@@ -1229,7 +1232,7 @@ export default class DatasetsController {
       createdAt: v.createdAt ? v.createdAt.toISO() : null,
     }))
 
-    return inertia.render('dataset/new_version', {
+    return inertia.render('dataset/new_version' as any, {
       dataset: {
         id: dataset.id,
         name: dataset.name,
@@ -1563,7 +1566,7 @@ export default class DatasetsController {
       }
     })
 
-    return inertia.render('dataset/favorites', {
+    return inertia.render('dataset/favorites' as any, {
       datasets: datasetsPayload,
     })
   }
