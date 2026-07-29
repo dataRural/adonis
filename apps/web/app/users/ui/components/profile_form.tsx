@@ -22,8 +22,12 @@ export function ProfileForm({ user }: Props) {
   const { t } = useTranslation()
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
-  const { data, setData, errors, put, progress } = useForm({
+  const { data, setData, errors, post, progress } = useForm({
     fullName: user.fullName ?? '',
+    username: (user as any).username ?? user.email.split('@')[0],
+    bio: (user as any).bio ?? '',
+    institution: (user as any).institution ?? '',
+    location: (user as any).location ?? '',
     avatar: null as File | null,
   })
 
@@ -42,7 +46,7 @@ export function ProfileForm({ user }: Props) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    put(urlFor('profile.update'), {
+    post(urlFor('profile.update'), {
       preserveScroll: true,
       onSuccess: () => {
         setPreviewUrl(null)
@@ -96,6 +100,56 @@ export function ProfileForm({ user }: Props) {
               className={errors?.fullName ? 'border-destructive' : ''}
             />
             <FieldErrorBag errors={errors} field="fullName" />
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="username">Nome de usuário (Username)</FieldLabel>
+            <Input
+              id="username"
+              placeholder="Ex: rafael_vasconcelos"
+              value={data.username}
+              onChange={(e) => setData('username', e.target.value)}
+              className={errors?.username ? 'border-destructive' : ''}
+            />
+            <p className="text-xs text-muted-foreground mt-1">Seu perfil público estará disponível em datarural.ufrrj.br/u/{data.username || 'username'}</p>
+            <FieldErrorBag errors={errors} field="username" />
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="bio">Biografia</FieldLabel>
+            <textarea
+              id="bio"
+              rows={3}
+              placeholder="Escreva uma breve biografia para o seu perfil público..."
+              value={data.bio}
+              onChange={(e) => setData('bio', e.target.value)}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            />
+            <FieldErrorBag errors={errors} field="bio" />
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="institution">Instituição / Unidade</FieldLabel>
+            <Input
+              id="institution"
+              placeholder="Ex: Instituto de Ciências Exatas — UFRRJ"
+              value={data.institution}
+              onChange={(e) => setData('institution', e.target.value)}
+              className={errors?.institution ? 'border-destructive' : ''}
+            />
+            <FieldErrorBag errors={errors} field="institution" />
+          </Field>
+
+          <Field>
+            <FieldLabel htmlFor="location">Localização</FieldLabel>
+            <Input
+              id="location"
+              placeholder="Ex: Seropédica, Rio de Janeiro"
+              value={data.location}
+              onChange={(e) => setData('location', e.target.value)}
+              className={errors?.location ? 'border-destructive' : ''}
+            />
+            <FieldErrorBag errors={errors} field="location" />
           </Field>
 
           <Field>

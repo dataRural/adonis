@@ -16,7 +16,8 @@ export const updateGroupValidator = vine.compile(
 
 export const addGroupMemberValidator = vine.compile(
   vine.object({
-    userId: vine.number(),
+    username: vine.string().trim().optional(),
+    userId: vine.number().optional(),
     role: vine.enum(['admin', 'editor', 'viewer']),
   })
 )

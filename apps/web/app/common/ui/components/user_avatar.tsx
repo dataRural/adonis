@@ -11,10 +11,12 @@ export interface NavUserProps {
   className?: string
 }
 
-function generateFallbackText(user: { name?: string; email: string }): string {
-  if (user.name) {
-    const initials = user.name
+function generateFallbackText(user: { name?: string; fullName?: string | null; email: string }): string {
+  const name = user.fullName || user.name
+  if (name) {
+    const initials = name
       .split(' ')
+      .filter((word) => word.length > 0)
       .map((word) => word[0])
       .join('')
       .slice(0, 2)

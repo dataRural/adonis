@@ -30,6 +30,7 @@ export default class extends BaseSchema {
       table.jsonb('tags').nullable()
       table.decimal('usability_score', 3, 1).nullable().defaultTo(8.5)
       table.string('status', 50).notNullable().defaultTo('unpublished')
+      table.text('description').nullable()
 
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').nullable()

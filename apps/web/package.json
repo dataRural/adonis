@@ -22,7 +22,6 @@
     "#auth/*": "./app/auth/*.js",
     "#users/*": "./app/users/*.js",
     "#marketing/*": "./app/marketing/*.js",
-    "#analytics/*": "./app/analytics/*.js",
     "#providers/*": "./providers/*.js",
     "#tests/*": "./tests/*.js",
     "#generated/*": "./.adonisjs/server/*.js"

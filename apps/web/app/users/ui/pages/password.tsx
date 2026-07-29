@@ -1,28 +1,19 @@
-import AppLayout from '#common/ui/components/app_layout'
-import HeadingSmall from '#common/ui/components/heading_small'
 import { PasswordForm } from '#users/ui/components/password_form'
 import SettingsLayout from '#users/ui/components/settings_layout'
 
-import { useTranslation } from '#common/ui/hooks/use_translation'
-
 export default function PasswordPage() {
-  const { t } = useTranslation()
   const currentPath = '/settings/password'
 
   return (
-    <AppLayout breadcrumbs={[{ label: t('users.password.breadcrumbs.settings') }]}>
-      <SettingsLayout currentPath={currentPath}>
-        <div className="flex h-full w-full flex-1 flex-col overflow-y-auto p-6">
-          <div className="mx-auto w-full max-w-4xl space-y-6">
-            <HeadingSmall
-              title={t('users.password.title')}
-              description={t('users.password.description')}
-            />
+    <SettingsLayout currentPath={currentPath}>
+      <div style={{ maxWidth: 640 }}>
+        <h2 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 4px' }}>Alterar Senha</h2>
+        <p style={{ color: 'var(--muted-foreground)', fontSize: '13.5px', margin: '0 0 24px' }}>
+          Certifique-se de que sua conta esteja usando uma senha longa e aleatória para se manter segura.
+        </p>
 
-            <PasswordForm />
-          </div>
-        </div>
-      </SettingsLayout>
-    </AppLayout>
+        <PasswordForm />
+      </div>
+    </SettingsLayout>
   )
 }

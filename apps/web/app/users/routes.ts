@@ -32,6 +32,20 @@ router
   .as('users.impersonate.handle')
 
 router
+  .get('/api/users/search', [UsersController, 'search'])
+  .middleware(middleware.auth())
+  .as('users.search')
+
+router
+  .get('/profile', [UsersController, 'publicProfile'])
+  .middleware(middleware.auth())
+  .as('user.profile')
+
+router
+  .get('/u/:username', [UsersController, 'publicProfile'])
+  .as('users.public_profile')
+
+router
   .get('/settings', ({ response }) => {
     return response.redirect().toRoute('profile.show')
   })
@@ -39,7 +53,7 @@ router
   .as('settings.index')
 
 router
-  .put('/settings/profile', [ProfileController])
+  .post('/settings/profile', [ProfileController])
   .middleware(middleware.auth())
   .as('profile.update')
 router
@@ -66,9 +80,3 @@ router
   .get('/settings/password', [PasswordController, 'show'])
   .middleware(middleware.auth())
   .as('password.show')
-router
-  .get('/settings/appearance', ({ inertia }) => {
-    return inertia.render('users/appearance', {})
-  })
-  .middleware(middleware.auth())
-  .as('appearance.show')

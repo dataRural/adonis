@@ -34,10 +34,10 @@ export default function StepLicenca({ data, set }: Step4Props) {
               </div>
               <div className="lc-desc">{l.desc}</div>
               <div className="lc-perms">
-                <span className={l.commercial ? 'yes' : 'no'}>
+                <span className={l.commercial ? 'yes' : 'no'} style={{ display: l.id === 'custom' ? 'none' : undefined }}>
                   {l.commercial ? <Ic.Check size={13} /> : <Ic.X size={13} />} Uso comercial
                 </span>
-                <span className={l.derivatives ? 'yes' : 'no'}>
+                <span className={l.derivatives ? 'yes' : 'no'} style={{ display: l.id === 'custom' ? 'none' : undefined }}>
                   {l.derivatives ? <Ic.Check size={13} /> : <Ic.X size={13} />} Derivações
                 </span>
               </div>
@@ -107,17 +107,6 @@ export default function StepLicenca({ data, set }: Step4Props) {
           </div>
         </>
       )}
-
-      <div className="dr-wiz-cite-box">
-        <div className="ch">
-          <Ic.Quote size={14} style={{ display: 'inline', marginRight: 4 }} /> Como será citado
-        </div>
-        <div className="ctext">
-          {data.unit ? ME.name + ' (' + year + '). ' : ''}
-          <em>{data.title || 'Título do dataset'}</em> ({lic.name}). DataRural — UFRRJ.{' '}
-          <span className="doi">https://doi.org/10.5281/datarural.{randomDoiSuffix}</span>
-        </div>
-      </div>
     </div>
   )
 }

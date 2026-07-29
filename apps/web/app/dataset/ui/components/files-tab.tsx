@@ -4,10 +4,8 @@ import { DatasetDetail } from './detail-data'
 export default function FilesTab({ ds, versions }: { ds: DatasetDetail; versions?: any[] }) {
   const finalDs = ds
   const finalVersions = versions && versions.length > 0 ? versions : []
-
   const latest = finalVersions[0]
 
-  // Build files list
   const filesList = latest
     ? [
         {
@@ -28,20 +26,6 @@ export default function FilesTab({ ds, versions }: { ds: DatasetDetail; versions
         },
       ]
     : []
-
-  // Build versions history list
-  const versionsList =
-    finalVersions.length > 0
-      ? finalVersions.map((v) => ({
-          v: v.name,
-          date: `Publicado ${v.createdAt}`,
-          note: v.isLatest
-            ? 'Versão inicial ou atualizações gerais dos dados.'
-            : 'Versão anterior arquivada.',
-          current: v.isLatest,
-          id: v.id,
-        }))
-      : []
 
   const handleDownload = (versionId: number | null, fileName: string) => {
     if (versionId !== null) {
@@ -101,57 +85,6 @@ export default function FilesTab({ ds, versions }: { ds: DatasetDetail; versions
               </button>
             </div>
           ))}
-        </div>
-      </div>
-
-      <div className="dr-panel">
-        <div className="dr-panel-head">
-          <h3>
-            <Ic.History size={17} className="ic" style={{ marginRight: 6 }} /> Histórico de versões
-          </h3>
-        </div>
-        <div className="dr-panel-body">
-          <div className="dr-timeline">
-            {versionsList.map((v) => (
-              <div className={'dr-tl-item' + (v.current ? ' cur' : '')} key={v.v}>
-                <div className="dr-tl-rail">
-                  <span className="dr-tl-dot"></span>
-                  <span className="dr-tl-line"></span>
-                </div>
-                <div className="dr-tl-body">
-                  <div className="dr-tl-head" style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                    <span className="dr-tl-v">{v.v}</span>
-                    {v.current && <span className="dr-tl-cur-badge">atual</span>}
-                    <span className="dr-tl-date" style={{ marginLeft: 8 }}>
-                      {v.date}
-                    </span>
-                    <button
-                      className="dr-btn dr-btn-icon"
-                      onClick={() => handleDownload(v.id || null, v.v)}
-                      title="Download desta versão"
-                      style={{
-                        marginLeft: 'auto',
-                        background: 'none',
-                        border: 'none',
-                        color: 'var(--muted-foreground)',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '32px',
-                        height: '32px',
-                      }}
-                    >
-                      <Ic.Download size={14} />
-                    </button>
-                  </div>
-                  <p className="dr-tl-note" style={{ margin: '8px 0 0' }}>
-                    {v.note}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </div>

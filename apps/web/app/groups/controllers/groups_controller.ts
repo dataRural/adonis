@@ -4,6 +4,8 @@ import Group from '#app/groups/models/group'
 import GroupMember from '#app/groups/models/group_member'
 import GroupMemberRole from '#app/groups/enums/group_member_role'
 import GroupPolicy from '#app/groups/policies/group_policy'
+import User from '#users/models/user'
+import UserTransformer from '#users/transformers/user_transformer'
 import { createGroupValidator, updateGroupValidator } from '#app/groups/validators'
 
 export default class GroupsController {
@@ -45,26 +47,36 @@ export default class GroupsController {
       })
     )
 
-    return inertia.render('groups/index', { groups: groupsPayload })
+    return inertia.render('groups/index' as any, { groups: groupsPayload })
   }
 
   /**
    * Show a single group with members and datasets.
    */
-  public async show({ auth, params, inertia, response }: HttpContext) {
-    const user = auth.user!
-    const group = await Group.findOrFail(params.id)
-
-    const policy = new GroupPolicy()
-    if (!(await policy.view(user, group))) {
-      return response.forbidden('Você não tem acesso a este grupo.')
+  public async show({ params, auth, inertia, response }: HttpContext) {
+    const user = auth.user
+    if (!user) {
+      return response.redirect().toPath('/login')
     }
 
-    // Get current user's membership to know their role
-    const currentMembership = await GroupMember.query()
+    const groupId = Number(params.id)
+    const group = await Group.find(groupId)
+
+    if (!group) {
+      return response.notFound({ error: 'Grupo não encontrado' })
+    }
+
+    // Check membership
+    const membership = await GroupMember.query()
       .where('groupId', group.id)
       .where('userId', user.id)
       .first()
+
+    if (!membership) {
+      return response.forbidden({ error: 'Você não é membro deste grupo' })
+    }
+
+    await group.load('owner')
 
     // Load members
     const memberships = await GroupMember.query()
@@ -72,14 +84,20 @@ export default class GroupsController {
       .preload('user')
       .orderBy('createdAt', 'asc')
 
-    const membersPayload = memberships.map((m) => ({
-      id: m.id,
-      userId: m.userId,
-      fullName: m.user?.fullName || m.user?.email || 'Desconhecido',
-      email: m.user?.email || '',
-      role: m.role,
-      joinedAt: m.createdAt.toRelative() || 'recentemente',
-    }))
+    await Promise.all(memberships.map((m) => m.user && User.preComputeUrls(m.user)))
+
+    const membersPayload = memberships.map((m) => {
+      const transformedUser = m.user ? new UserTransformer(m.user).toObject() : null
+      return {
+        id: m.id,
+        userId: m.userId,
+        fullName: transformedUser?.fullName || m.user?.fullName || m.user?.email || 'Desconhecido',
+        email: m.user?.email || '',
+        role: m.role,
+        avatarUrl: transformedUser?.avatarUrl || null,
+        joinedAt: m.createdAt ? m.createdAt.toRelative() || 'recentemente' : 'recentemente',
+      }
+    })
 
     // Load group datasets
     const datasets = await group.related('datasets').query()
@@ -102,7 +120,7 @@ export default class GroupsController {
 
     await group.load('owner')
 
-    return inertia.render('groups/show', {
+    return inertia.render('groups/show' as any, {
       group: {
         id: group.id,
         name: group.name,
@@ -110,7 +128,7 @@ export default class GroupsController {
         ownerName: group.owner?.fullName || group.owner?.email || 'Desconhecido',
         createdAt: group.createdAt.toRelative() || 'recentemente',
       },
-      currentUserRole: currentMembership?.role || null,
+      currentUserRole: membership?.role || null,
       members: membersPayload,
       datasets: datasetsPayload,
     })

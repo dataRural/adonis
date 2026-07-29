@@ -11,6 +11,15 @@ import router from '@adonisjs/core/services/router'
 
 const DatasetsController = () => import('#app/dataset/controllers/datasets_controller')
 const LicensesController = () => import('#app/dataset/controllers/licenses_controller')
+const AreasController = () => import('#app/dataset/controllers/areas_controller')
+
+router.get('/api/areas', [AreasController, 'list']).as('areas.list')
+
+router
+  .resource('/admin/areas', AreasController)
+  .only(['index', 'store', 'update', 'destroy'])
+  .middleware('*', middleware.auth())
+  .as('admin.areas')
 
 router
   .get('/datasets/view', [DatasetsController, 'viewer'])
@@ -30,19 +39,47 @@ router
   .as('datasets.like.toggle');
 
 router
+  .post('/datasets/:id/favorite', [DatasetsController, 'toggleFavorite'])
+  .middleware(middleware.auth())
+  .as('datasets.favorite.toggle');
+
+router
+  .get('/favorites', [DatasetsController, 'favorites'])
+  .middleware(middleware.auth())
+  .as('favorites.index');
+
+router
+  .get('/datasets/:id/version/new', [DatasetsController, 'newVersion'])
+  .middleware(middleware.auth())
+  .as('datasets.version.new');
+
+router
   .post('/datasets/:id/version', [DatasetsController, 'addVersion'])
   .middleware(middleware.auth())
   .as('datasets.version.store');
+
+router
+  .post('/datasets/:id/version/:versionId/restore', [DatasetsController, 'restoreVersion'])
+  .middleware(middleware.auth())
+  .as('datasets.version.restore');
+
+router
+  .post('/datasets/:id/version/:versionId/delete', [DatasetsController, 'deleteVersion'])
+  .middleware(middleware.auth())
+  .as('datasets.version.delete');
 
 router
   .get('/datasets/:datasetId/version/:versionId/download', [DatasetsController, 'downloadVersion'])
   .as('datasets.version.download')
 
 router
-  .resource('/datasets', DatasetsController)
-  .only(['index', 'store'])
-  .use('*', middleware.auth())
-  .as('datasets')
+  .get('/datasets', [DatasetsController, 'explore'])
+  .as('datasets.explore')
+
+router
+  .post('/datasets', [DatasetsController, 'store'])
+  .middleware(middleware.auth())
+  .as('datasets.store')
 
 router
   .get('/datasets/:id', [DatasetsController, 'show'])

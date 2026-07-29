@@ -10,12 +10,12 @@ interface DatasetHeaderProps {
 }
 
 export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProps) {
-  const [saved, setSaved] = useState(false)
   const [shareOpen, setShareOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const [licenseModalOpen, setLicenseModalOpen] = useState(false)
   const shareRef = useRef<HTMLDivElement>(null)
   const isLiked = !!(ds as any).isLiked
+  const isSaved = !!(ds as any).isSaved
   const isOwner = !!(ds as any).isOwner
   const votes = ds.votes || 0
   const publisherName = (ds as any).publisherName || ds.unit || 'UFRRJ'
@@ -35,6 +35,11 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
   const handleLike = (e: React.MouseEvent) => {
     e.preventDefault()
     router.post(`/datasets/${ds.id}/like`, {}, { preserveScroll: true })
+  }
+
+  const handleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault()
+    router.post(`/datasets/${ds.id}/favorite`, {}, { preserveScroll: true })
   }
 
   const handleDownload = (e: React.MouseEvent) => {
@@ -83,16 +88,54 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
       </div>
       <div className="dr-container dr-ds-header-inner">
         <nav className="dr-breadcrumb" aria-label="Trilha">
-          <a href="/#datasets">Datasets</a>
+          <a href="/datasets">Datasets</a>
           <span className="sep">
             <Ic.Chevr size={13} />
           </span>
-          <a href={`/#categorias?cat=${ds.cat}`}>{ds.catName}</a>
           <span className="sep">
             <Ic.Chevr size={13} />
           </span>
           <span className="here">{publisherName}</span>
         </nav>
+
+        {(ds as any).isLatestVersionSelected === false && (
+          <div style={{
+            background: 'color-mix(in srgb, var(--brand-sky) 15%, transparent)',
+            border: '1px solid var(--brand-sky)',
+            color: 'var(--foreground)',
+            padding: '12px 18px',
+            borderRadius: 'var(--radius)',
+            marginBottom: 20,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 12,
+            fontSize: 13.5,
+            flexWrap: 'wrap',
+          }}>
+            <span>
+              <Ic.Clock size={16} style={{ display: 'inline', marginRight: 6, color: 'var(--brand-sky)' }} />
+              Você está visualizando a versão arquivada <strong>{(ds as any).selectedVersionName || ds.version}</strong>.
+            </span>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              {isOwner && (
+                <button
+                  className="dr-btn dr-btn-primary dr-btn-sm"
+                  onClick={() => {
+                    if (confirm(`Deseja restaurar a versão ${(ds as any).selectedVersionName || ds.version} como a mais recente?`)) {
+                      router.post(`/datasets/${ds.id}/version/${(ds as any).selectedVersionId}/restore`)
+                    }
+                  }}
+                >
+                  <Ic.Rotate size={14} style={{ marginRight: 4 }} /> Restaurar esta versão
+                </button>
+              )}
+              <a href={`/datasets/${ds.id}`} className="dr-btn dr-btn-outline dr-btn-sm">
+                Ir para a versão mais recente
+              </a>
+            </div>
+          </div>
+        )}
 
         <div className="dr-ds-head-top">
           <div className="dr-ds-head-main">
@@ -141,7 +184,7 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
                 <a className="dr-btn dr-btn-outline" href={`/dashboard/publish?id=${ds.id}`}>
                   <Ic.Edit size={16} /> Editar
                 </a>
-                <a className="dr-btn dr-btn-outline" href={`/dashboard/publish?id=${ds.id}`}>
+                <a className="dr-btn dr-btn-outline" href={`/datasets/${ds.id}/version/new`}>
                   <Ic.Plus size={16} /> Nova versão
                 </a>
               </div>
@@ -157,13 +200,13 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
                 <span className="n">{votes}</span>
               </button>
               <button
-                className={`dr-btn-count ${saved ? 'on' : ''}`}
-                onClick={() => setSaved(!saved)}
-                title="Salvar"
+                className={`dr-btn-count ${isSaved ? 'on' : ''}`}
+                onClick={handleFavorite}
+                title={isSaved ? 'Remover dos favoritos' : 'Salvar nos favoritos'}
                 style={{ flex: 1 }}
               >
-                <Ic.Bookmark size={15} className="ic" style={{ marginRight: 6 }} />{' '}
-                {saved ? 'Salvo' : 'Salvar'}
+                <Ic.Bookmark size={15} className="ic" style={{ marginRight: 6, color: isSaved ? 'var(--brand-green)' : undefined, fill: isSaved ? 'var(--brand-green)' : 'none' }} />{' '}
+                {isSaved ? 'Salvo' : 'Salvar'}
               </button>
               <div ref={shareRef} style={{ position: 'relative' }}>
                 <button

@@ -7,7 +7,7 @@ interface DatasetsSectionProps {
   onTab: (tab: string) => void
   view: 'grid' | 'list'
   onView: (view: 'grid' | 'list') => void
-  activeCat: string | null
+  activeCat?: string | null
 }
 
 export default function DatasetsSection({
@@ -16,7 +16,6 @@ export default function DatasetsSection({
   onTab,
   view,
   onView,
-  activeCat,
 }: DatasetsSectionProps) {
   const tabs = [
     { id: 'recent', label: 'Recentes' },
@@ -29,10 +28,6 @@ export default function DatasetsSection({
         <div className="dr-section-head">
           <div>
             <h2>Datasets</h2>
-            <p>
-              {list.length} {list.length === 1 ? 'conjunto' : 'conjuntos'} de dados{' '}
-              {activeCat ? 'nesta área' : 'disponíveis'}.
-            </p>
           </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <div className="dr-tabs">

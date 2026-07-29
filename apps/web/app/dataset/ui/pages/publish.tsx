@@ -8,7 +8,7 @@ import StepMetadados from '../components/dashboard/step-metadados'
 import StepEsquema from '../components/dashboard/step-esquema'
 import StepLicenca from '../components/dashboard/step-licenca'
 import StepRevisao from '../components/dashboard/step-revisao'
-import PublishSuccess from '../components/dashboard/publish-success'
+import SubmissionErrorAlert, { SubmissionErrorItem } from '../components/dashboard/submission-error-alert'
 import * as Ic from '#common/ui/components/datarural/icons'
 import { UNITS, CSV_COLUMNS } from '../components/dashboard/panel-data'
 
@@ -35,6 +35,9 @@ type PageProps = InertiaProps<{
 }>
 
 export default function PublishWizard({ editDataset, userGroups = [] }: PageProps) {
+  const isEditing = !!editDataset
+  const maxStepIndex = isEditing ? 3 : 4
+
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -42,8 +45,10 @@ export default function PublishWizard({ editDataset, userGroups = [] }: PageProp
     return 'light'
   })
   const [step, setStep] = useState(0)
-  const [maxReached, setMaxReached] = useState(editDataset ? 4 : 0) // allow jumping to review step if editing!
-  const [published, setPublished] = useState(false)
+  const [maxReached, setMaxReached] = useState(isEditing ? 3 : 0)
+  const [saving, setSaving] = useState(false)
+  const [submissionErrors, setSubmissionErrors] = useState<SubmissionErrorItem[]>([])
+
   const [data, setData] = useState({
     file: null as File | null,
     uploaded: editDataset ? true : false,
@@ -57,7 +62,7 @@ export default function PublishWizard({ editDataset, userGroups = [] }: PageProp
     area: editDataset ? editDataset.area : 'clima',
     period: editDataset ? editDataset.period : '',
     region: editDataset ? editDataset.region : '',
-    tags: editDataset ? editDataset.tags : ['clima', 'séries temporais'],
+    tags: editDataset ? editDataset.tags : [],
     schema: CSV_COLUMNS.map((c) => ({ ...c })),
     license: editDataset ? editDataset.license : 'ccby',
     visibility: editDataset ? editDataset.visibility : 'public',
@@ -76,19 +81,96 @@ export default function PublishWizard({ editDataset, userGroups = [] }: PageProp
     localStorage.setItem('dr-theme', theme)
   }, [theme])
 
-  const setPatch = (patch: any) => setData((d) => ({ ...d, ...patch }))
+  const setPatch = (patch: any) => {
+    setSubmissionErrors([])
+    setData((d) => ({ ...d, ...patch }))
+  }
 
   const goto = (n: number) => {
-    const clamped = Math.max(0, Math.min(4, n))
+    const clamped = Math.max(0, Math.min(maxStepIndex, n))
     setStep(clamped)
     setMaxReached((m) => Math.max(m, clamped))
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  const validateForm = (): SubmissionErrorItem[] => {
+    const errs: SubmissionErrorItem[] = []
+
+    if (!isEditing && !data.uploaded) {
+      errs.push({
+        id: 'file',
+        stepIndex: 0,
+        stepName: 'Passo 1: Arquivo',
+        message: 'Você precisa selecionar e enviar um arquivo de dados CSV.',
+      })
+    }
+
+    if (!data.title.trim()) {
+      errs.push({
+        id: 'title',
+        stepIndex: 1,
+        stepName: 'Passo 2: Metadados',
+        message: 'O título do dataset é obrigatório.',
+      })
+    } else if (data.title.trim().length < 3) {
+      errs.push({
+        id: 'title_length',
+        stepIndex: 1,
+        stepName: 'Passo 2: Metadados',
+        message: 'O título deve conter pelo menos 3 caracteres.',
+      })
+    }
+
+    if (!data.desc.trim()) {
+      errs.push({
+        id: 'desc',
+        stepIndex: 1,
+        stepName: 'Passo 2: Metadados',
+        message: 'A descrição do dataset é obrigatória.',
+      })
+    } else if (data.desc.trim().length < 10) {
+      errs.push({
+        id: 'desc_length',
+        stepIndex: 1,
+        stepName: 'Passo 2: Metadados',
+        message: 'A descrição deve ter pelo menos 10 caracteres explicativos.',
+      })
+    }
+
+    if (!data.unit || !data.unit.trim()) {
+      errs.push({
+        id: 'unit',
+        stepIndex: 1,
+        stepName: 'Passo 2: Metadados',
+        message: 'Selecione a Unidade ou Instituto responsável.',
+      })
+    }
+
+    if (!data.area || !data.area.trim()) {
+      errs.push({
+        id: 'area',
+        stepIndex: 1,
+        stepName: 'Passo 2: Metadados',
+        message: 'Selecione a Área de Conhecimento do conjunto.',
+      })
+    }
+
+    if (!isEditing && !data.confirm) {
+      errs.push({
+        id: 'confirm',
+        stepIndex: 4,
+        stepName: 'Passo 5: Revisão',
+        message: 'Você precisa confirmar a declaração de autoria e termos antes de publicar.',
+      })
+    }
+
+    return errs
+  }
+
   const canNext = (() => {
     if (step === 0) return data.uploaded
-    if (step === 1) return data.title.trim() && data.desc.trim()
-    if (step === 4) return data.confirm
+    if (step === 1) return Boolean(data.title.trim() && data.desc.trim())
+    if (step === 4 && !isEditing) return data.confirm
     return true
   })()
 
@@ -120,67 +202,21 @@ export default function PublishWizard({ editDataset, userGroups = [] }: PageProp
   }
 
   const handleExit = () => {
-    const isEditing = !!editDataset
-    const hasActiveFile = data.file || (isEditing && data.uploaded)
-
-    if (data.uploaded && hasActiveFile && data.title.trim().length >= 3) {
-      let licenseId: number | null = 1
-      if (data.license === 'ccbysa') licenseId = 2
-      else if (data.license === 'ccbync') licenseId = 3
-      else if (data.license === 'odbl') licenseId = 4
-      else if (data.license === 'cc0') licenseId = 5
-      else if (data.license === 'custom') licenseId = null
-
-      const formData = new FormData()
-      if (isEditing) {
-        formData.append('id', String(editDataset.id))
-      }
-      formData.append('name', data.title)
-      formData.append('version', 'V1')
-      formData.append('description', data.desc || '')
-      formData.append('isPublic', 'false')
-      formData.append('status', 'draft')
-      if (licenseId !== null) {
-        formData.append('licenseId', String(licenseId))
-      }
-      formData.append('unit', data.unit)
-      formData.append('area', data.area)
-      if (data.period) {
-        formData.append('period', data.period)
-      }
-      if (data.region) {
-        formData.append('region', data.region)
-      }
-      if (data.tags && data.tags.length > 0) {
-        data.tags.forEach((tag) => {
-          formData.append('tags[]', tag)
-        })
-      }
-      if (data.usabilityScore !== undefined && data.usabilityScore !== null) {
-        formData.append('usabilityScore', String(data.usabilityScore))
-      }
-      if (data.file) {
-        formData.append('file', data.file)
-      }
-      if (data.groupId) {
-        formData.append('groupId', String(data.groupId))
-      }
-
-      router.post('/datasets', formData, {
-        onSuccess: () => {
-          router.visit('/dashboard')
-        },
-        onError: (errs) => {
-          console.error('Draft save errors:', errs)
-          router.visit('/dashboard')
-        }
-      })
+    if (editDataset) {
+      router.visit(`/datasets/${editDataset.id}`)
     } else {
       router.visit('/dashboard')
     }
   }
 
-  const handlePublishSubmit = () => {
+  const handleSaveSubmit = () => {
+    const clientErrs = validateForm()
+    if (clientErrs.length > 0) {
+      setSubmissionErrors(clientErrs)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+
     let licenseId: number | null = 1
     if (data.license === 'ccbysa') licenseId = 2
     else if (data.license === 'ccbync') licenseId = 3
@@ -222,49 +258,84 @@ export default function PublishWizard({ editDataset, userGroups = [] }: PageProp
       formData.append('groupId', String(data.groupId))
     }
 
+    setSaving(true)
+    setSubmissionErrors([])
+
     router.post('/datasets', formData, {
       onSuccess: () => {
-        setPublished(true)
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+        setSaving(false)
       },
       onError: (errs) => {
-        console.error('Publish errors:', errs)
-        alert('Erro ao publicar dataset. Por favor, verifique os campos obrigatórios.')
-      }
-    })
-  }
+        setSaving(false)
+        console.error('Save errors:', errs)
+        const mapped: SubmissionErrorItem[] = []
 
-  if (published) {
-    return (
-      <div className="dr-app dr-panel-wrap">
-        <SimplePageHead onExit={handleExit} />
-        <div className="dr-container">
-          <div className="dr-wizard">
-            <div style={{ maxWidth: 720, margin: '0 auto' }}>
-              <PublishSuccess data={data} onDashboard={handleExit} />
-            </div>
-          </div>
-        </div>
-        <PanelFooter />
-      </div>
-    )
+        if (typeof errs === 'object' && errs !== null) {
+          const fieldNames: Record<string, string> = {
+            name: 'Título do dataset',
+            description: 'Descrição',
+            file: 'Arquivo de dados',
+            unit: 'Unidade / Instituto',
+            area: 'Área de conhecimento',
+            licenseId: 'Licença',
+            groupId: 'Grupo de pesquisa',
+          }
+
+          Object.entries(errs).forEach(([key, val], idx) => {
+            const label = fieldNames[key] || key
+            const msg = Array.isArray(val) ? val.join(', ') : String(val)
+            let stepIdx = 1
+            if (key === 'file') stepIdx = 0
+            if (key === 'licenseId') stepIdx = 3
+
+            mapped.push({
+              id: `server_${key}_${idx}`,
+              stepIndex: stepIdx,
+              stepName: `Passo ${stepIdx + 1}`,
+              message: `${label}: ${msg}`,
+            })
+          })
+        }
+
+        if (mapped.length === 0) {
+          mapped.push({
+            id: 'server_generic',
+            message: 'Ocorreu um erro no servidor ao salvar o dataset. Verifique os campos preenchidos e tente novamente.',
+          })
+        }
+
+        setSubmissionErrors(mapped)
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      },
+    })
   }
 
   return (
     <div className="dr-app dr-panel-wrap">
-      <Head title={editDataset ? "Editar Dataset" : "Publicar Dataset"} />
+      <Head title={isEditing ? "Editar Dataset" : "Publicar Dataset"} />
       <PanelNav
         theme={theme}
         onToggleTheme={handleToggleTheme}
         active=""
         hidePublishButton={true}
       />
-      <SimplePageHead onExit={handleExit} />
+      <SimplePageHead
+        onExit={handleExit}
+        isEditing={isEditing}
+        onSave={handleSaveSubmit}
+        saving={saving}
+        canSave={Boolean(data.title.trim() && data.desc.trim())}
+      />
       <div className="dr-container">
         <div className="dr-wizard">
           <div className="dr-wizard-grid">
-            <WizardStepper step={step} onJump={goto} maxReached={maxReached} />
+            <WizardStepper step={step} onJump={goto} maxReached={maxReached} isEditing={isEditing} />
             <div className="dr-wpanel">
+              <SubmissionErrorAlert
+                errors={submissionErrors}
+                onDismiss={() => setSubmissionErrors([])}
+                onJumpToStep={goto}
+              />
               <div className="dr-wpanel-head">
                 <h2 style={{ margin: 0 }}>{heads[step].h}</h2>
                 <p style={{ margin: '7px 0 0' }}>{heads[step].p}</p>
@@ -274,7 +345,7 @@ export default function PublishWizard({ editDataset, userGroups = [] }: PageProp
                 {step === 1 && <StepMetadados data={data} set={setPatch} />}
                 {step === 2 && <StepEsquema data={data} set={setPatch} />}
                 {step === 3 && <StepLicenca data={data} set={setPatch} />}
-                {step === 4 && <StepRevisao data={data} set={setPatch} onJump={goto} />}
+                {step === 4 && !isEditing && <StepRevisao data={data} set={setPatch} onJump={goto} />}
               </div>
               <div className="dr-wpanel-foot">
                 {step === 0 ? (
@@ -290,30 +361,52 @@ export default function PublishWizard({ editDataset, userGroups = [] }: PageProp
                     Voltar
                   </button>
                 )}
-                <span className="save-note">
-                  <Ic.Check size={14} style={{ display: 'inline', marginRight: 4 }} /> Rascunho
-                  salvo automaticamente
-                </span>
-                <div className="dr-foot-right">
-                  {step < 4 ? (
-                    <button
-                      className="dr-btn dr-btn-primary"
-                      disabled={!canNext}
-                      onClick={() => goto(step + 1)}
-                      style={!canNext ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
-                    >
-                      Continuar <Ic.Arrow size={16} style={{ display: 'inline', marginLeft: 4 }} />
-                    </button>
+                <div className="dr-foot-right" style={{ display: 'flex', gap: 10 }}>
+                  {isEditing ? (
+                    <>
+                      {step < 3 && (
+                        <button
+                          className="dr-btn dr-btn-outline"
+                          disabled={!canNext}
+                          onClick={() => goto(step + 1)}
+                          style={!canNext ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+                        >
+                          Continuar <Ic.Arrow size={16} style={{ display: 'inline', marginLeft: 4 }} />
+                        </button>
+                      )}
+                      <button
+                        className="dr-btn dr-btn-primary dr-btn-lg"
+                        disabled={!canNext || saving}
+                        onClick={handleSaveSubmit}
+                        style={!canNext || saving ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+                      >
+                        <Ic.Check size={18} style={{ display: 'inline', marginRight: 6 }} />{' '}
+                        {saving ? 'Salvando…' : 'Salvar alterações'}
+                      </button>
+                    </>
                   ) : (
-                    <button
-                      className="dr-btn dr-btn-yellow dr-btn-lg"
-                      disabled={!canNext}
-                      onClick={handlePublishSubmit}
-                      style={!canNext ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
-                    >
-                      <Ic.Send size={18} style={{ display: 'inline', marginRight: 6 }} /> Publicar
-                      dataset
-                    </button>
+                    <>
+                      {step < 4 ? (
+                        <button
+                          className="dr-btn dr-btn-primary"
+                          disabled={!canNext}
+                          onClick={() => goto(step + 1)}
+                          style={!canNext ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+                        >
+                          Continuar <Ic.Arrow size={16} style={{ display: 'inline', marginLeft: 4 }} />
+                        </button>
+                      ) : (
+                        <button
+                          className="dr-btn dr-btn-yellow dr-btn-lg"
+                          disabled={!canNext}
+                          onClick={handleSaveSubmit}
+                          style={!canNext ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+                        >
+                          <Ic.Send size={18} style={{ display: 'inline', marginRight: 6 }} /> Publicar
+                          dataset
+                        </button>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -326,7 +419,19 @@ export default function PublishWizard({ editDataset, userGroups = [] }: PageProp
   )
 }
 
-function SimplePageHead({ onExit }: { onExit: () => void }) {
+function SimplePageHead({
+  onExit,
+  isEditing,
+  onSave,
+  saving,
+  canSave = true,
+}: {
+  onExit: () => void
+  isEditing?: boolean
+  onSave?: () => void
+  saving?: boolean
+  canSave?: boolean
+}) {
   return (
     <div className="dr-page-head">
       <div className="dr-container">
@@ -349,16 +454,29 @@ function SimplePageHead({ onExit }: { onExit: () => void }) {
               <span className="sep">
                 <Ic.Chevr size={13} style={{ display: 'inline', margin: '0 4px' }} />
               </span>
-              <span>Publicar</span>
+              <span>{isEditing ? 'Editar' : 'Publicar'}</span>
             </div>
-            <h1 style={{ margin: 0 }}>Publicar dataset</h1>
+            <h1 style={{ margin: 0 }}>{isEditing ? 'Editar dataset' : 'Publicar dataset'}</h1>
             <p className="page-sub">
-              Em 5 etapas seu conjunto fica documentado, versionado e pronto para a comunidade.
+              {isEditing
+                ? 'Atualize as informações, metadados, esquema e licença do seu dataset.'
+                : 'Em 5 etapas seu conjunto fica documentado, versionado e pronto para a comunidade.'}
             </p>
           </div>
-          <div className="dr-page-head-actions">
+          <div className="dr-page-head-actions" style={{ display: 'flex', gap: 10 }}>
+            {isEditing && onSave && (
+              <button
+                className="dr-btn dr-btn-primary dr-btn-lg"
+                onClick={onSave}
+                disabled={!canSave || saving}
+                style={!canSave || saving ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+              >
+                <Ic.Check size={18} style={{ display: 'inline', marginRight: 6 }} />{' '}
+                {saving ? 'Salvando…' : 'Salvar alterações'}
+              </button>
+            )}
             <button className="dr-btn dr-btn-outline dr-btn-lg" onClick={onExit}>
-              <Ic.X size={18} /> Sair do envio
+              <Ic.X size={18} /> {isEditing ? 'Cancelar' : 'Sair do envio'}
             </button>
           </div>
         </div>

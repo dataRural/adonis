@@ -22,17 +22,27 @@ export default class GroupMembersController {
 
     const payload = await request.validateUsing(addGroupMemberValidator)
 
-    // Check the target user exists
-    const targetUser = await User.find(payload.userId)
+    let targetUser: User | null = null
+
+    if (payload.username) {
+      const cleanUsername = payload.username.startsWith('@') ? payload.username.slice(1) : payload.username
+      targetUser = await User.query().where('username', cleanUsername).first()
+      if (!targetUser) {
+        targetUser = await User.query().where('email', cleanUsername).first()
+      }
+    } else if (payload.userId) {
+      targetUser = await User.find(payload.userId)
+    }
+
     if (!targetUser) {
-      session.flash('error', 'Usuário não encontrado.')
+      session.flash('error', 'Usuário não encontrado com este nome de usuário.')
       return response.redirect().back()
     }
 
     // Check if already a member
     const existing = await GroupMember.query()
       .where('groupId', group.id)
-      .where('userId', payload.userId)
+      .where('userId', targetUser.id)
       .first()
 
     if (existing) {
@@ -47,7 +57,7 @@ export default class GroupMembersController {
 
     await GroupMember.create({
       groupId: group.id,
-      userId: payload.userId,
+      userId: targetUser.id,
       role: payload.role as GroupMemberRole,
     })
 

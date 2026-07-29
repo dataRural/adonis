@@ -4,9 +4,6 @@
  */
 
 export const controllers = {
-  analytics: {
-    Dashboard: () => import('#app/analytics/controllers/dashboard_controller'),
-  },
   auth: {
     ForgotPassword: () => import('#app/auth/controllers/forgot_password_controller'),
     ResetPassword: () => import('#app/auth/controllers/reset_password_controller'),
@@ -18,6 +15,7 @@ export const controllers = {
   dataset: {
     Datasets: () => import('#app/dataset/controllers/datasets_controller'),
     Licenses: () => import('#app/dataset/controllers/licenses_controller'),
+    Areas: () => import('#app/dataset/controllers/areas_controller'),
   },
   groups: {
     GroupDatasets: () => import('#app/groups/controllers/group_datasets_controller'),

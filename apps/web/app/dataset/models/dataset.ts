@@ -7,6 +7,7 @@ import Group from '#app/groups/models/group'
 import DatasetVersion from './dataset_version.js'
 import License from './license.js'
 import DatasetLike from './dataset_like.js'
+import DatasetFavorite from './dataset_favorite.js'
 
 export default class Dataset extends BaseModel {
   @column({ isPrimary: true })
@@ -59,6 +60,9 @@ export default class Dataset extends BaseModel {
   declare status: string
 
   @column()
+  declare description: string | null
+
+  @column()
   licenseId: number | null = null
 
   @column()
@@ -78,4 +82,7 @@ export default class Dataset extends BaseModel {
 
   @hasMany(() => DatasetLike)
   declare likes: HasMany<typeof DatasetLike>
+
+  @hasMany(() => DatasetFavorite)
+  declare favorites: HasMany<typeof DatasetFavorite>
 }

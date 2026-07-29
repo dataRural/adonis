@@ -1,12 +1,10 @@
 import { belongsTo, column } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
-
 import BaseModel from '#common/models/base_model'
-import Dataset from '#app/dataset/models/dataset'
-import { attachment } from '@jrmc/adonis-attachment'
-import type { Attachment } from '@jrmc/adonis-attachment/types/attachment'
+import User from '#users/models/user'
+import Dataset from './dataset.js'
 
-export default class DatasetVersion extends BaseModel {
+export default class DatasetFavorite extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
@@ -14,14 +12,11 @@ export default class DatasetVersion extends BaseModel {
   declare datasetId: number
 
   @column()
-  declare name: string
-
-  @column()
-  declare isDeleted: boolean
-
-  @attachment()
-  declare path: Attachment
+  declare userId: number
 
   @belongsTo(() => Dataset)
   declare dataset: BelongsTo<typeof Dataset>
+
+  @belongsTo(() => User)
+  declare user: BelongsTo<typeof User>
 }

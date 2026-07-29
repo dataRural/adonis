@@ -14,6 +14,7 @@ import Role from '#users/models/role'
 import Roles from '#users/enums/role'
 import ResetPasswordToken from '#users/models/reset_password_token'
 import GroupMember from '#app/groups/models/group_member'
+import DatasetFavorite from '#app/dataset/models/dataset_favorite'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -31,6 +32,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare fullName: string | null
 
   @column()
+  declare username: string | null
+
+  @column()
   declare email: string
 
   @column({ serializeAs: null })
@@ -42,11 +46,23 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare avatarUrl: string | null
 
+  @column()
+  declare bio: string | null
+
+  @column()
+  declare institution: string | null
+
+  @column()
+  declare location: string | null
+
   @belongsTo(() => Role)
   declare role: BelongsTo<typeof Role>
 
   @hasMany(() => ResetPasswordToken)
   declare resetPasswordTokens: HasMany<typeof ResetPasswordToken>
+
+  @hasMany(() => DatasetFavorite)
+  declare favorites: HasMany<typeof DatasetFavorite>
 
   @hasMany(() => GroupMember)
   declare groupMemberships: HasMany<typeof GroupMember>
@@ -65,6 +81,8 @@ export default class User extends compose(BaseModel, AuthFinder) {
     if (!models.avatar) {
       return
     }
+
+    await attachmentManager.computeUrl(models.avatar)
 
     const thumbnail = models.avatar.getVariant('thumbnail')
 

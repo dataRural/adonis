@@ -251,4 +251,3 @@ export const AREAS: AreaItem[] = [
   { id: 'econ', name: 'Economia & Gestão' },
 ]
 
-export const SUGGESTED_TAGS = ['clima', 'séries temporais', 'meteorologia', 'temperatura', 'Seropédica', 'estação automática']

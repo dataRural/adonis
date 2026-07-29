@@ -100,8 +100,6 @@ export default defineConfig({
     //groups
     () => import('#app/groups/routes'),
 
-    //analytics
-    () => import('#analytics/routes'),
   ],
 
   /*

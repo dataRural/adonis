@@ -26,15 +26,9 @@ export default function Navbar({ theme, onToggleTheme, activePage }: NavbarProps
         <nav className="dr-nav-links">
           <Link
             className={`dr-nav-link ${activePage === 'datasets' ? 'active' : ''}`}
-            href="/#datasets"
+            href="/datasets"
           >
             Datasets
-          </Link>
-          <Link
-            className={`dr-nav-link ${activePage === 'categorias' ? 'active' : ''}`}
-            href="/#categorias"
-          >
-            Áreas
           </Link>
           {useUser() && (
             <>
@@ -45,11 +39,25 @@ export default function Navbar({ theme, onToggleTheme, activePage }: NavbarProps
                 Meus datasets
               </Link>
               <Link
+                className={`dr-nav-link ${activePage === 'favorites' ? 'active' : ''}`}
+                href="/favorites"
+              >
+                Favoritos
+              </Link>
+              <Link
                 className={`dr-nav-link ${activePage === 'groups' ? 'active' : ''}`}
                 href="/groups"
               >
                 Grupos
               </Link>
+              {useUser() && (useUser()!.roleId === 2 || (useUser() as any)!.roleId === 2) && (
+                <Link
+                  className={`dr-nav-link ${activePage === 'users' ? 'active' : ''}`}
+                  href="/users"
+                >
+                  Gestão
+                </Link>
+              )}
             </>
           )}
         </nav>

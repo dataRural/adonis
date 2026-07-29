@@ -9,6 +9,7 @@ interface UserProps {
   email?: string
   short?: string
   unit?: string
+  avatarUrl?: string
 }
 
 interface PanelNavProps {
@@ -25,6 +26,7 @@ const DEFAULT_ME = {
   short: 'HV',
   email: 'h.vasconcelos@ufrrj.br',
   unit: 'Instituto de Ciências Exatas',
+  avatarUrl: undefined as string | undefined,
 }
 
 export function NavUser({ user }: { user?: UserProps | null }) {
@@ -34,11 +36,12 @@ export function NavUser({ user }: { user?: UserProps | null }) {
   const loggedInUser = useUser()
   const me = loggedInUser
     ? {
-        name: loggedInUser.fullName || 'Usuário UFRRJ',
-        email: loggedInUser.email,
-        short: (loggedInUser.fullName || 'U').split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase(),
-        unit: 'Instituto de Ciências Exatas',
-      }
+      name: loggedInUser.fullName || 'Usuário UFRRJ',
+      email: loggedInUser.email,
+      short: (loggedInUser.fullName || 'U').split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase(),
+      unit: 'Instituto de Ciências Exatas',
+      avatarUrl: loggedInUser.avatarUrl,
+    }
     : (user || DEFAULT_ME)
 
   const shortName = me.short || (me.name || 'U').split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase()
@@ -76,10 +79,13 @@ export function NavUser({ user }: { user?: UserProps | null }) {
         aria-expanded={open}
         title="Conta"
       >
-        <span className="dr-nav-avatar">{shortName}</span>
+        {me.avatarUrl ? (
+          <img src={me.avatarUrl} alt={me.name} className="dr-nav-avatar" style={{ objectFit: 'cover' }} />
+        ) : (
+          <span className="dr-nav-avatar">{shortName}</span>
+        )}
         <span className="nu-text">
-          <span className="nu-name">{displayFirstName}</span>
-          <span className="nu-role">Pesquisadora</span>
+          <span className="nu-name">{displayFirstName.split(' ')[0]}</span>
         </span>
         <Ic.Chevd size={15} className="nu-chev" style={{ color: 'var(--muted-foreground)', marginRight: 2 }} />
       </button>
@@ -87,7 +93,11 @@ export function NavUser({ user }: { user?: UserProps | null }) {
       {open && (
         <div className="dr-user-menu" role="menu">
           <div className="dr-user-menu-head">
-            <span className="dr-nav-avatar lg">{shortName}</span>
+            {me.avatarUrl ? (
+              <img src={me.avatarUrl} alt={me.name} className="dr-nav-avatar lg" style={{ objectFit: 'cover' }} />
+            ) : (
+              <span className="dr-nav-avatar lg">{shortName}</span>
+            )}
             <span className="umh-text">
               <span className="umh-name">{me.name}</span>
               <span className="umh-mail">{me.email || 'usuario@ufrrj.br'}</span>
@@ -98,21 +108,21 @@ export function NavUser({ user }: { user?: UserProps | null }) {
             </span>
           </div>
           <div className="sep"></div>
-          <button role="menuitem">
-            <Ic.User size={16} /> Meu perfil público
-          </button>
+          <Link role="menuitem" href="/profile">
+            <Ic.User size={16} /> Meu perfil
+          </Link>
           <Link role="menuitem" href="/dashboard">
             <Ic.Database size={16} /> Meus datasets
           </Link>
           <Link role="menuitem" href="/groups">
             <Ic.Users size={16} /> Meus grupos
           </Link>
-          <button role="menuitem">
-            <Ic.Bookmark size={16} /> Salvos
-          </button>
-          <button role="menuitem">
+          <Link role="menuitem" href="/favorites">
+            <Ic.Bookmark size={16} /> Favoritos
+          </Link>
+          <Link role="menuitem" href="/settings/profile">
             <Ic.Settings size={16} /> Configurações da conta
-          </button>
+          </Link>
           <div className="sep"></div>
           <button className="danger" role="menuitem" onClick={handleLogout}>
             <Ic.Logout size={16} /> Sair
@@ -124,6 +134,7 @@ export function NavUser({ user }: { user?: UserProps | null }) {
 }
 
 export default function PanelNav({ theme, onToggleTheme, onPublish, active, user, hidePublishButton }: PanelNavProps) {
+  const loggedInUser = useUser()
   return (
     <header className="dr-nav">
       <div className="dr-container dr-nav-inner">
@@ -137,11 +148,11 @@ export default function PanelNav({ theme, onToggleTheme, onPublish, active, user
           </span>
         </Link>
         <nav className="dr-nav-links">
-          <Link className="dr-nav-link" href="/#datasets">
+          <Link
+            className={'dr-nav-link' + (active === 'datasets' ? ' active' : '')}
+            href="/datasets"
+          >
             Datasets
-          </Link>
-          <Link className="dr-nav-link" href="/#categorias">
-            Áreas
           </Link>
           <Link
             className={'dr-nav-link' + (active === 'dashboard' ? ' active' : '')}
@@ -150,11 +161,25 @@ export default function PanelNav({ theme, onToggleTheme, onPublish, active, user
             Meus datasets
           </Link>
           <Link
+            className={'dr-nav-link' + (active === 'favorites' ? ' active' : '')}
+            href="/favorites"
+          >
+            Favoritos
+          </Link>
+          <Link
             className={'dr-nav-link' + (active === 'groups' ? ' active' : '')}
             href="/groups"
           >
             Grupos
           </Link>
+          {loggedInUser && (loggedInUser.roleId === 2 || (loggedInUser as any).roleId === 2) && (
+            <Link
+              className={'dr-nav-link' + (active === 'users' ? ' active' : '')}
+              href="/users"
+            >
+              Gestão
+            </Link>
+          )}
         </nav>
         <div className="dr-nav-right">
           <button

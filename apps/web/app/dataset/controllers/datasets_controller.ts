@@ -8,11 +8,16 @@ import { dirname, join } from 'node:path'
 import Dataset from '../models/dataset.js'
 import DatasetVersion from '../models/dataset_version.js'
 import DatasetLike from '../models/dataset_like.js'
+import DatasetFavorite from '../models/dataset_favorite.js'
+import DatasetArea from '../models/dataset_area.js'
 import { addDatasetVersionValidator, createDatasetValidator, updateDatasetValidator } from '#app/dataset/validators'
 import { attachmentManager } from '@jrmc/adonis-attachment'
 import { marked } from 'marked'
 import GroupMember from '#app/groups/models/group_member'
 import GroupMemberRole from '#app/groups/enums/group_member_role'
+import User from '#users/models/user'
+import UserTransformer from '#users/transformers/user_transformer'
+import { DateTime } from 'luxon'
 
 function sanitizePathSegment(value: string) {
   return value
@@ -194,7 +199,115 @@ function getNextVersionName(versionNames: string[]) {
 
 export default class DatasetsController {
   public async index({ inertia }: HttpContext) {
-    return inertia.render('dataset/index', {})
+    return inertia.render('dataset/index' as any, {})
+  }
+
+  public async explore({ inertia, request, auth }: HttpContext) {
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
+
+    let query = Dataset.query().preload('versions').preload('license').preload('likes').preload('favorites').orderBy('updatedAt', 'desc')
+
+    if (currentUserId) {
+      const userGroupIds = (
+        await GroupMember.query().where('userId', currentUserId).select('groupId')
+      ).map((m) => m.groupId)
+
+      query = query.where((q) => {
+        q.where('is_public', true).orWhere('user_id', currentUserId)
+        if (userGroupIds.length > 0) {
+          q.orWhereIn('group_id', userGroupIds)
+        }
+      })
+    } else {
+      query = query.where('is_public', true)
+    }
+
+    const publicDatasets = await query
+
+    const dbAreas = await DatasetArea.query().orderBy('name', 'asc')
+    const AREA_COLORS: Record<string, string> = {}
+    dbAreas.forEach((a) => {
+      AREA_COLORS[a.code] = a.color
+    })
+
+    const datasetsPayload = await Promise.all(
+      publicDatasets.map(async (d, index) => {
+        const latestVersion = d.versions[d.versions.length - 1]
+
+        let format = 'CSV'
+        let size = '0 B'
+        if (latestVersion && latestVersion.path) {
+          const fileExt = latestVersion.path.name?.split('.').pop()?.toUpperCase()
+          if (fileExt) format = fileExt
+
+          const fileBytes = latestVersion.path.size
+          if (fileBytes) {
+            if (fileBytes > 1024 * 1024) {
+              size = `${(fileBytes / (1024 * 1024)).toFixed(1)} MB`
+            } else {
+              size = `${(fileBytes / 1024).toFixed(1)} KB`
+            }
+          }
+        }
+
+        const usability = d.usabilityScore !== null && d.usabilityScore !== undefined ? String(d.usabilityScore) : '8.5'
+        const tint = (d.area && AREA_COLORS[d.area]) ? AREA_COLORS[d.area] : 'var(--brand-blue)'
+
+        const likesCount = d.likes ? d.likes.length : 0
+        const isLiked = currentUserId ? d.likes.some((l) => Number(l.userId) === Number(currentUserId)) : false
+        const isSaved = currentUserId ? d.favorites && d.favorites.some((f) => Number(f.userId) === Number(currentUserId)) : false
+
+        return {
+          id: d.id,
+          title: d.name,
+          unit: d.unit,
+          desc: d.description || 'Nenhuma descrição fornecida.',
+          tags: d.tags || [],
+          cat: d.area,
+          format,
+          tint,
+          size,
+          rows: '---',
+          downloads: likesCount,
+          dl: String(likesCount),
+          likesCount,
+          isLiked,
+          isSaved,
+          updated: d.updatedAt ? d.updatedAt.toRelative() || 'recentemente' : 'recentemente',
+          license: d.license ? d.license.name : 'CC BY 4.0',
+          usability,
+          featured: true,
+          recent: index < 3,
+          order: index + 1,
+        }
+      })
+    )
+
+    const initialSearch = request.input('search') || ''
+    const initialArea = request.input('area') || ''
+
+    const areaCountsMap: Record<string, number> = {}
+    publicDatasets.forEach((d) => {
+      if (d.area) {
+        areaCountsMap[d.area] = (areaCountsMap[d.area] || 0) + 1
+      }
+    })
+
+    const categoriesPayload = dbAreas.map((a) => ({
+      id: a.code,
+      name: a.name,
+      count: areaCountsMap[a.code] || 0,
+      icon: a.icon || 'database',
+      color: a.color || 'var(--brand-blue)',
+    }))
+
+    return inertia.render('dataset/index' as any, {
+      datasets: datasetsPayload,
+      categories: categoriesPayload,
+      initialSearch,
+      initialArea,
+    })
   }
 
   public async viewer({ inertia, request, auth }: HttpContext) {
@@ -299,10 +412,10 @@ export default class DatasetsController {
         tags: dataset.tags,
         license: dataset.license
           ? {
-              id: dataset.license.id,
-              name: dataset.license.name,
-              description: dataset.license.description,
-            }
+            id: dataset.license.id,
+            name: dataset.license.name,
+            description: dataset.license.description,
+          }
           : null,
         versions: await Promise.all(
           dataset.versions.map(async (version) => ({
@@ -393,8 +506,17 @@ export default class DatasetsController {
         path: attachment,
       })
 
-      session.flash('success', `Version ${versionName} saved successfully.`)
-      return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}&versionId=${version.id}`)
+      if (payload.description !== undefined && payload.description !== null) {
+        dataset.description = payload.description
+      }
+      if (payload.usabilityScore !== undefined && payload.usabilityScore !== null) {
+        dataset.usabilityScore = payload.usabilityScore
+      }
+      dataset.updatedAt = DateTime.now()
+      await dataset.save()
+
+      session.flash('success', `Versão ${versionName} adicionada com sucesso.`)
+      return response.redirect().toPath(`/datasets/${dataset.id}?versionId=${version.id}`)
     } catch (err) {
       console.error('Error saving dataset version (addVersion):', err)
       session.flash('error', `Unable to save the dataset version. ${err && (err as any).message ? (err as any).message : ''}`)
@@ -534,6 +656,7 @@ export default class DatasetsController {
         await Database.transaction(async (trx) => {
           dataset.merge({
             name: payload.name,
+            description: payload.description || null,
             isPublic: payload.isPublic ? true : false,
             licenseId,
             unit: payload.unit,
@@ -598,8 +721,8 @@ export default class DatasetsController {
           }
         })
 
-        session.flash('success', 'Dataset updated successfully')
-        return response.redirect().toPath('/dashboard')
+        session.flash('success', 'Dataset atualizado com sucesso')
+        return response.redirect().toPath(`/datasets/${dataset.id}`)
       } catch (err) {
         console.error('Error updating dataset (store):', err)
         session.flash('error', `Unable to update the dataset. ${err && (err as any).message ? (err as any).message : ''}`)
@@ -632,6 +755,8 @@ export default class DatasetsController {
     const versionName = sanitizePathSegment(payload.version || 'V1')
     const licenseId = typeof payload.licenseId === 'number' ? payload.licenseId : null
 
+    let newDatasetId: number | null = null
+
     try {
       const attachment = await attachmentManager.createFromFile(datasetFile)
 
@@ -653,6 +778,7 @@ export default class DatasetsController {
         const dataset = await Dataset.create(
           {
             name: payload.name,
+            description: payload.description || null,
             path: datasetPath,
             isPublic: payload.isPublic ? true : false,
             userId: auth.user!.id,
@@ -669,6 +795,8 @@ export default class DatasetsController {
           { client: trx }
         )
 
+        newDatasetId = dataset.id
+
         await DatasetVersion.create(
           {
             datasetId: dataset.id,
@@ -679,8 +807,8 @@ export default class DatasetsController {
         )
       })
 
-      session.flash('success', 'Dataset saved successfully')
-      return response.redirect().back()
+      session.flash('success', 'Dataset criado com sucesso')
+      return response.redirect().toPath(`/datasets/${newDatasetId}`)
     } catch (err) {
       console.error('Error saving dataset (store):', err)
       session.flash('error', `Unable to save the dataset. ${err && (err as any).message ? (err as any).message : ''}`)
@@ -688,7 +816,7 @@ export default class DatasetsController {
     }
   }
 
-  public async show({ params, inertia, auth, response, session }: HttpContext) {
+  public async show({ params, request, inertia, auth, response, session }: HttpContext) {
     const datasetId = Number(params.id)
     if (Number.isNaN(datasetId)) {
       return response.redirect().toPath('/dashboard')
@@ -697,10 +825,11 @@ export default class DatasetsController {
     const dataset = await Dataset.query()
       .where('id', datasetId)
       .preload('versions', (query) => {
-        query.orderBy('id', 'desc')
+        query.where('is_deleted', false).orderBy('id', 'desc')
       })
       .preload('license')
       .preload('likes')
+      .preload('favorites')
       .preload('user')
       .preload('group')
       .first()
@@ -713,6 +842,7 @@ export default class DatasetsController {
     const currentUserId = auth.user?.id ?? null
     const votesCount = dataset.likes ? dataset.likes.length : 0
     const isLiked = currentUserId ? dataset.likes.some(l => Number(l.userId) === Number(currentUserId)) : false
+    const isSaved = currentUserId ? dataset.favorites && dataset.favorites.some(f => Number(f.userId) === Number(currentUserId)) : false
     if (!dataset.isPublic && Number(currentUserId) !== Number(dataset.userId)) {
       // Check if user is a member of the dataset's group
       let hasGroupAccess = false
@@ -729,24 +859,21 @@ export default class DatasetsController {
       }
     }
 
-    const latestVersion = dataset.versions[0]
-
+    const requestedVersionId = request.input('versionId')
+    let selectedVersion = dataset.versions[0]
+    if (requestedVersionId) {
+      const found = dataset.versions.find((v) => Number(v.id) === Number(requestedVersionId))
+      if (found) {
+        selectedVersion = found
+      }
+    }
     let description = '<p>Nenhuma descrição fornecida.</p>'
-    if (latestVersion && dataset.path) {
+    if (dataset.description) {
       try {
-        const readmePath = join(dataset.path, latestVersion.name, 'README.md')
-        const readmeContent = await readFile(readmePath, 'utf8')
-        const lines = readmeContent.split('\n').map(l => l.trim()).filter(l => l.length > 0)
-        let markdownText = ''
-        if (lines.length > 1) {
-          markdownText = lines.slice(1).join('\n')
-        } else if (lines.length === 1 && !lines[0].startsWith('#')) {
-          markdownText = lines[0]
-        }
-        if (markdownText) {
-          description = await marked.parse(markdownText)
-        }
-      } catch {}
+        description = await marked.parse(dataset.description)
+      } catch {
+        description = `<p>${dataset.description}</p>`
+      }
     }
 
     let previewHeaders: string[] = []
@@ -755,9 +882,9 @@ export default class DatasetsController {
     let sizeStr = '0 B'
     let totalRowCount = 0
 
-    if (latestVersion && latestVersion.path) {
+    if (selectedVersion && selectedVersion.path) {
       try {
-        const buffer = await latestVersion.path.getBuffer()
+        const buffer = await selectedVersion.path.getBuffer()
         const csvContent = buffer.toString('utf8')
         const preview = parseCsvPreview(csvContent, 100)
         previewHeaders = preview.headers
@@ -767,7 +894,7 @@ export default class DatasetsController {
         const allLines = csvContent.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0)
         totalRowCount = Math.max(0, allLines.length - 1) // subtract header
 
-        const fileBytes = latestVersion.path.size
+        const fileBytes = selectedVersion.path.size
         if (fileBytes) {
           if (fileBytes > 1024 * 1024) {
             sizeStr = `${(fileBytes / (1024 * 1024)).toFixed(1)} MB`
@@ -776,7 +903,7 @@ export default class DatasetsController {
           }
         }
 
-        const fileExt = latestVersion.path.name?.split('.').pop()?.toUpperCase()
+        const fileExt = selectedVersion.path.name?.split('.').pop()?.toUpperCase()
         if (fileExt) format = fileExt
       } catch (err) {
         console.error('Error reading csv preview in show action:', err)
@@ -794,31 +921,67 @@ export default class DatasetsController {
       }
     })
 
-    const areaNames: Record<string, string> = {
-      clima: 'Clima & Meteorologia',
-      agro: 'Agronomia',
-      vet: 'Veterinária',
-      bio: 'Ciências Biológicas',
-      flor: 'Florestas',
-      exatas: 'Ciências Exatas',
-      quim: 'Química',
-      zoo: 'Zootecnia',
-      soc: 'Ciências Sociais',
-      econ: 'Economia & Gestão',
-    }
+    const dbAreas = await DatasetArea.query()
+    const areaNames: Record<string, string> = {}
+    dbAreas.forEach((a) => {
+      areaNames[a.code] = a.name
+    })
 
     const publisherName = dataset.user?.fullName || dataset.user?.email || 'Usuário UFRRJ'
     const publisherInitials = publisherName.split(/\s+/).filter(w => w.length > 0).map(w => w[0].toUpperCase()).join('').slice(0, 2)
     const isOwner = currentUserId ? Number(currentUserId) === Number(dataset.userId) : false
 
     let maintainerName = publisherName
-    let maintainerRole = 'Publicador'
-    let maintainerInitials = publisherInitials
-
     if (dataset.group) {
       maintainerName = dataset.group.name
-      maintainerRole = 'Grupo'
-      maintainerInitials = dataset.group.name.split(/\s+/).filter(w => w.length > 0).map(w => w[0].toUpperCase()).join('').slice(0, 2)
+    }
+
+    let authors: any[] = []
+
+    if (dataset.groupId) {
+      const groupMemberships = await GroupMember.query()
+        .where('groupId', dataset.groupId)
+        .preload('user')
+
+      if (groupMemberships.length > 0) {
+        await Promise.all(groupMemberships.map((m) => User.preComputeUrls(m.user)))
+
+        authors = groupMemberships.map((m) => {
+          const transformed = m.user ? new UserTransformer(m.user).toObject() : null
+          const uName = transformed?.fullName || m.user.fullName || m.user.email
+          const uInitials = uName.split(/\s+/).filter((w) => w.length > 0).map((w) => w[0].toUpperCase()).join('').slice(0, 2)
+          const roleLabel = m.role === 'owner' ? 'Dono do Grupo' : m.role === 'admin' ? 'Admin' : 'Membro'
+          return {
+            userId: m.user.id,
+            name: uName,
+            role: roleLabel,
+            inst: dataset.unit || 'UFRRJ',
+            color: 'var(--brand-sky)',
+            initials: uInitials,
+            profileUrl: `/u/${m.user.username || m.user.email.split('@')[0]}`,
+            avatarUrl: transformed?.avatarUrl || null,
+          }
+        })
+      }
+    }
+
+    if (authors.length === 0) {
+      if (dataset.user) {
+        await User.preComputeUrls(dataset.user)
+      }
+      const transformedOwner = dataset.user ? new UserTransformer(dataset.user).toObject() : null
+      authors = [
+        {
+          userId: dataset.userId,
+          name: publisherName,
+          role: 'Publicador',
+          inst: dataset.unit || 'UFRRJ',
+          color: 'var(--brand-sky)',
+          initials: publisherInitials,
+          profileUrl: `/u/${dataset.user?.username || dataset.user?.email?.split('@')[0] || 'user'}`,
+          avatarUrl: transformedOwner?.avatarUrl || null,
+        },
+      ]
     }
 
     const datasetPayload = {
@@ -835,7 +998,10 @@ export default class DatasetsController {
       licenseUrl: '#',
       usability: dataset.usabilityScore !== null && dataset.usabilityScore !== undefined ? String(dataset.usabilityScore) : '8.5',
       doi: '10.5281/datarural.local',
-      version: latestVersion?.name || 'V1',
+      version: selectedVersion?.name || 'V1',
+      selectedVersionId: selectedVersion?.id,
+      selectedVersionName: selectedVersion?.name || 'V1',
+      isLatestVersionSelected: selectedVersion?.id === dataset.versions[0]?.id,
       updated: dataset.updatedAt ? dataset.updatedAt.toRelative() || 'Recém atualizado' : 'Recém atualizado',
       published: dataset.createdAt ? dataset.createdAt.toRelative() || 'Recentemente' : 'Recentemente',
       size: sizeStr,
@@ -846,6 +1012,7 @@ export default class DatasetsController {
       views: '0',
       votes: votesCount,
       isLiked,
+      isSaved,
       isOwner,
       watchers: 0,
       freq: 'Mensal',
@@ -854,9 +1021,7 @@ export default class DatasetsController {
       collection: 'Leituras coletadas pelo sistema local.',
       tags: dataset.tags || [],
       publisherName: maintainerName,
-      authors: [
-        { name: maintainerName, role: maintainerRole, inst: dataset.unit || 'UFRRJ', color: 'var(--brand-sky)', initials: maintainerInitials }
-      ],
+      authors,
       description,
     }
 
@@ -878,6 +1043,7 @@ export default class DatasetsController {
         size: sizeStr,
         createdAt: v.createdAt ? v.createdAt.toRelative() || 'recentemente' : 'recentemente',
         isLatest: index === 0,
+        isSelected: v.id === selectedVersion?.id,
       }
     })
 
@@ -1038,6 +1204,140 @@ export default class DatasetsController {
     return inertia.render('dataset/dashboard', { datasets: datasetsPayload, userGroups, totalLikesCount })
   }
 
+  public async newVersion({ params, inertia, auth, response, session }: HttpContext) {
+    const dataset = await Dataset.query()
+      .where('id', params.id)
+      .preload('versions', (query) => {
+        query.orderBy('id', 'desc')
+      })
+      .firstOrFail()
+
+    let canAddVersion = Number(auth.user!.id) === Number(dataset.userId)
+    if (!canAddVersion && dataset.groupId) {
+      const membership = await GroupMember.query()
+        .where('groupId', dataset.groupId)
+        .where('userId', auth.user!.id)
+        .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN, GroupMemberRole.EDITOR])
+        .first()
+      canAddVersion = !!membership
+    }
+
+    if (!canAddVersion) {
+      session.flash('error', 'Você não tem permissão para adicionar versões a este dataset.')
+      return response.redirect().toPath(`/datasets/${dataset.id}`)
+    }
+
+    const suggestedVersion = getNextVersionName(dataset.versions.map((v) => v.name))
+    const currentVersion = dataset.versions.length > 0 ? dataset.versions[0].name : 'V1'
+
+    const versions = dataset.versions.map((v) => ({
+      id: v.id,
+      name: v.name,
+      createdAt: v.createdAt ? v.createdAt.toISO() : null,
+    }))
+
+    return inertia.render('dataset/new_version' as any, {
+      dataset: {
+        id: dataset.id,
+        name: dataset.name,
+        description: dataset.description || '',
+        currentVersion,
+        suggestedVersion,
+      },
+      versions,
+    })
+  }
+
+  public async restoreVersion({ params, response, session, auth }: HttpContext) {
+    const dataset = await Dataset.query().where('id', params.id).preload('versions').firstOrFail()
+
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
+    let canRestore = currentUserId ? Number(currentUserId) === Number(dataset.userId) : false
+
+    if (!canRestore && currentUserId && dataset.groupId) {
+      const membership = await GroupMember.query()
+        .where('groupId', dataset.groupId)
+        .where('userId', currentUserId)
+        .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN, GroupMemberRole.EDITOR])
+        .first()
+      canRestore = !!membership
+    }
+
+    if (!canRestore) {
+      session.flash('error', 'Você não tem permissão para restaurar versões deste dataset.')
+      return response.redirect().toPath(`/datasets/${dataset.id}`)
+    }
+
+    const versionToRestore = await DatasetVersion.query()
+      .where('datasetId', dataset.id)
+      .where('id', params.versionId)
+      .firstOrFail()
+
+    const restoredVersionName = `${versionToRestore.name} - Restaurada`
+
+    try {
+      const newVersion = await DatasetVersion.create({
+        datasetId: dataset.id,
+        name: restoredVersionName,
+        path: versionToRestore.path,
+      })
+
+      if (dataset.path) {
+        try {
+          const oldReadmePath = join(dataset.path, sanitizePathSegment(versionToRestore.name), 'README.md')
+          const newVersionPath = join(dataset.path, sanitizePathSegment(restoredVersionName))
+          await mkdir(newVersionPath, { recursive: true })
+          const readmeContent = await readFile(oldReadmePath, 'utf8')
+          await writeFile(join(newVersionPath, 'README.md'), readmeContent, 'utf8')
+        } catch { }
+      }
+
+      dataset.updatedAt = DateTime.now()
+      await dataset.save()
+
+      session.flash('success', `Versão ${versionToRestore.name} restaurada com sucesso como "${restoredVersionName}"!`)
+      return response.redirect().toPath(`/datasets/${dataset.id}?versionId=${newVersion.id}`)
+    } catch (err) {
+      console.error('Error restoring version:', err)
+      session.flash('error', 'Não foi possível restaurar a versão.')
+      return response.redirect().toPath(`/datasets/${dataset.id}`)
+    }
+  }
+
+  public async deleteVersion({ params, response, session, auth }: HttpContext) {
+    const dataset = await Dataset.query().where('id', params.id).preload('versions').firstOrFail()
+
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
+    let canDelete = currentUserId ? Number(currentUserId) === Number(dataset.userId) : false
+
+    if (!canDelete && currentUserId && dataset.groupId) {
+      const membership = await GroupMember.query()
+        .where('groupId', dataset.groupId)
+        .where('userId', currentUserId)
+        .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN])
+        .first()
+      canDelete = !!membership
+    }
+
+    if (!canDelete) {
+      session.flash('error', 'Você não tem permissão para excluir versões deste dataset.')
+      return response.redirect().toPath(`/datasets/${dataset.id}`)
+    }
+
+    const versionToDelete = await DatasetVersion.query()
+      .where('datasetId', dataset.id)
+      .where('id', params.versionId)
+      .firstOrFail()
+
+    versionToDelete.isDeleted = true
+    await versionToDelete.save()
+
+    session.flash('success', `Versão ${versionToDelete.name} excluída com sucesso.`)
+    return response.redirect().toPath(`/datasets/${dataset.id}`)
+  }
+
   public async publish({ inertia, request, auth, response, session }: HttpContext) {
     const datasetId = request.input('id')
     let editDataset: any = null
@@ -1066,20 +1366,7 @@ export default class DatasetsController {
           session.flash('error', 'You are not authorized to edit this dataset.')
           return response.redirect().toPath('/dashboard')
         }
-        let description = ''
-        const latestVersion = dataset.versions[0]
-        if (latestVersion && dataset.path) {
-          try {
-            const readmePath = join(dataset.path, latestVersion.name, 'README.md')
-            const readmeContent = await readFile(readmePath, 'utf8')
-            const lines = readmeContent.split('\n').map(l => l.trim()).filter(l => l.length > 0)
-            if (lines.length > 1) {
-              description = lines.slice(1).join('\n')
-            } else if (lines.length === 1 && !lines[0].startsWith('#')) {
-              description = lines[0]
-            }
-          } catch {}
-        }
+        let description = dataset.description || ''
 
         let licenseKey = 'custom'
         if (dataset.licenseId === 1) licenseKey = 'cc0'
@@ -1088,6 +1375,7 @@ export default class DatasetsController {
 
         let fileName = ''
         let fileSize = '0 MB'
+        const latestVersion = dataset.versions[0]
         if (latestVersion && latestVersion.path) {
           fileName = latestVersion.path.originalName || latestVersion.path.name || ''
           const sizeBytes = latestVersion.path.size || 0
@@ -1163,5 +1451,127 @@ export default class DatasetsController {
     }
 
     return response.redirect().back()
+  }
+
+  public async toggleFavorite({ request, response, params, auth }: HttpContext) {
+    const user = auth.user
+    if (!user) {
+      return response.redirect().toPath('/login')
+    }
+
+    const datasetId = Number(params.id)
+    const dataset = await Dataset.find(datasetId)
+    if (!dataset) {
+      return response.notFound({ error: 'Dataset não encontrado' })
+    }
+
+    const existingFavorite = await DatasetFavorite.query()
+      .where('datasetId', dataset.id)
+      .where('userId', user.id)
+      .first()
+
+    if (existingFavorite) {
+      await existingFavorite.delete()
+    } else {
+      await DatasetFavorite.create({
+        datasetId: dataset.id,
+        userId: user.id,
+      })
+    }
+
+    const isJson = !request.header('x-inertia') && (request.accepts(['html', 'json']) === 'json' || request.ajax())
+    if (isJson) {
+      const favsRes = await DatasetFavorite.query().where('datasetId', dataset.id).count('* as total')
+      const count = Number((favsRes[0] as any)?.$extras?.total || 0)
+      return response.ok({ saved: !existingFavorite, count })
+    }
+
+    return response.redirect().back()
+  }
+
+  public async favorites({ inertia, auth, response }: HttpContext) {
+    const user = auth.user
+    if (!user) {
+      return response.redirect().toPath('/login')
+    }
+
+    const userFavorites = await DatasetFavorite.query()
+      .where('userId', user.id)
+      .preload('dataset', (q) => {
+        q.preload('versions', (v) => v.orderBy('id', 'desc'))
+          .preload('license')
+          .preload('likes')
+          .preload('favorites')
+      })
+      .orderBy('createdAt', 'desc')
+
+    const favoritedDatasets = userFavorites
+      .map((fav) => fav.dataset)
+      .filter((d) => d && d.id)
+
+    const AREA_COLORS: Record<string, string> = {
+      agro: 'var(--brand-green)',
+      vet: 'var(--brand-orange)',
+      clima: 'var(--brand-sky)',
+      bio: 'var(--brand-lightgreen)',
+      flor: 'var(--brand-teal)',
+      exatas: 'var(--brand-blue)',
+      quim: 'var(--brand-purple)',
+      zoo: 'var(--brand-amber)',
+      soc: 'var(--brand-rose)',
+      econ: 'var(--brand-indigo)',
+    }
+
+    const datasetsPayload = favoritedDatasets.map((d, index) => {
+      const latestVersion = d.versions && d.versions.length > 0 ? d.versions[0] : null
+      let format = 'CSV'
+      let size = '0 B'
+      if (latestVersion && latestVersion.path) {
+        const fileExt = latestVersion.path.name?.split('.').pop()?.toUpperCase()
+        if (fileExt) format = fileExt
+
+        const fileBytes = latestVersion.path.size
+        if (fileBytes) {
+          if (fileBytes > 1024 * 1024) {
+            size = `${(fileBytes / (1024 * 1024)).toFixed(1)} MB`
+          } else {
+            size = `${(fileBytes / 1024).toFixed(1)} KB`
+          }
+        }
+      }
+
+      const usability = d.usabilityScore !== null && d.usabilityScore !== undefined ? String(d.usabilityScore) : '8.5'
+      const tint = (d.area && AREA_COLORS[d.area]) ? AREA_COLORS[d.area] : 'var(--brand-blue)'
+      const likesCount = d.likes ? d.likes.length : 0
+      const isLiked = d.likes ? d.likes.some((l) => Number(l.userId) === Number(user.id)) : false
+
+      return {
+        id: d.id,
+        title: d.name,
+        unit: d.unit,
+        desc: d.description || 'Nenhuma descrição fornecida.',
+        tags: d.tags || [],
+        cat: d.area,
+        format,
+        tint,
+        size,
+        rows: '---',
+        downloads: likesCount,
+        dl: String(likesCount),
+        likesCount,
+        isLiked,
+        isSaved: true,
+        updated: d.updatedAt ? d.updatedAt.toRelative() || 'recentemente' : 'recentemente',
+        license: d.license ? d.license.name : 'CC BY 4.0',
+        usability,
+        featured: true,
+        recent: index < 3,
+        order: index + 1,
+      }
+    })
+
+    return inertia.render('dataset/favorites' as any, {
+      datasets: datasetsPayload,
+    })
   }
 }
