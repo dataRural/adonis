@@ -88,11 +88,10 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
       </div>
       <div className="dr-container dr-ds-header-inner">
         <nav className="dr-breadcrumb" aria-label="Trilha">
-          <a href="/#datasets">Datasets</a>
+          <a href="/datasets">Datasets</a>
           <span className="sep">
             <Ic.Chevr size={13} />
           </span>
-          <a href={`/#categorias?cat=${ds.cat}`}>{ds.catName}</a>
           <span className="sep">
             <Ic.Chevr size={13} />
           </span>

@@ -3,6 +3,7 @@ import { router, Head } from '@inertiajs/react'
 import PanelNav from '#common/ui/components/datarural/navbar-auth'
 import PanelFooter from '#common/ui/components/datarural/footer-simple'
 import StepArquivo from '../components/dashboard/step-arquivo'
+import SubmissionErrorAlert, { SubmissionErrorItem } from '../components/dashboard/submission-error-alert'
 import * as Ic from '#common/ui/components/datarural/icons'
 import { CSV_COLUMNS } from '../components/dashboard/panel-data'
 
@@ -34,6 +35,8 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
   })
   const [step, setStep] = useState(0)
   const [submitting, setSubmitting] = useState(false)
+  const [submissionErrors, setSubmissionErrors] = useState<SubmissionErrorItem[]>([])
+
   const [data, setData] = useState({
     file: null as File | null,
     uploaded: false,
@@ -55,7 +58,10 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
     localStorage.setItem('dr-theme', theme)
   }, [theme])
 
-  const setPatch = (patch: any) => setData((d) => ({ ...d, ...patch }))
+  const setPatch = (patch: any) => {
+    setSubmissionErrors([])
+    setData((d) => ({ ...d, ...patch }))
+  }
 
   const handleToggleTheme = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))
@@ -65,12 +71,43 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
     router.visit(`/datasets/${dataset.id}`)
   }
 
+  const validateForm = (): SubmissionErrorItem[] => {
+    const errs: SubmissionErrorItem[] = []
+
+    if (!data.uploaded || !data.file) {
+      errs.push({
+        id: 'file',
+        stepIndex: 0,
+        stepName: 'Passo 1: Upload do Arquivo',
+        message: 'Você precisa selecionar e fazer o upload do novo arquivo CSV.',
+      })
+    }
+
+    if (!data.version.trim()) {
+      errs.push({
+        id: 'version',
+        stepIndex: 1,
+        stepName: 'Passo 2: Metadados da Versão',
+        message: 'O identificador da versão (ex: V2) é obrigatório.',
+      })
+    }
+
+    return errs
+  }
+
   const handleSubmit = () => {
-    if (!data.file || !data.version.trim()) return
+    const clientErrs = validateForm()
+    if (clientErrs.length > 0) {
+      setSubmissionErrors(clientErrs)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+
     setSubmitting(true)
+    setSubmissionErrors([])
 
     const formData = new FormData()
-    formData.append('file', data.file)
+    formData.append('file', data.file!)
     formData.append('version', data.version.trim())
     if (data.description.trim()) {
       formData.append('description', data.description.trim())
@@ -86,7 +123,29 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
       onError: (errs) => {
         console.error('Version upload errors:', errs)
         setSubmitting(false)
-        alert('Erro ao enviar nova versão. Verifique o arquivo e tente novamente.')
+
+        const mapped: SubmissionErrorItem[] = []
+        if (typeof errs === 'object' && errs !== null) {
+          Object.entries(errs).forEach(([key, val], idx) => {
+            const msg = Array.isArray(val) ? val.join(', ') : String(val)
+            mapped.push({
+              id: `server_${key}_${idx}`,
+              stepIndex: key === 'file' ? 0 : 1,
+              stepName: key === 'file' ? 'Passo 1' : 'Passo 2',
+              message: `${key}: ${msg}`,
+            })
+          })
+        }
+
+        if (mapped.length === 0) {
+          mapped.push({
+            id: 'server_generic',
+            message: 'Erro ao enviar nova versão. Verifique o arquivo enviado e as informações fornecidas.',
+          })
+        }
+
+        setSubmissionErrors(mapped)
+        window.scrollTo({ top: 0, behavior: 'smooth' })
       },
     })
   }
@@ -137,6 +196,11 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
       <div className="dr-container">
         <div className="dr-wizard">
           <div style={{ maxWidth: 860, margin: '0 auto' }}>
+            <SubmissionErrorAlert
+              errors={submissionErrors}
+              onDismiss={() => setSubmissionErrors([])}
+              onJumpToStep={(s) => setStep(s)}
+            />
 
             {/* Step Indicators */}
             <div style={{ display: 'flex', gap: 8, marginBottom: 32 }}>

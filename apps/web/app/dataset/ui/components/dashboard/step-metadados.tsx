@@ -95,13 +95,6 @@ export default function StepMetadados({ data, set }: Step2Props) {
             </option>
           ))}
         </select>
-        <span className="dr-field-hint" style={{ color: 'var(--brand-green)', fontWeight: 700 }}>
-          <Ic.Spark
-            size={12}
-            style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }}
-          />
-          Sugerido automaticamente a partir das colunas detectadas.
-        </span>
       </div>
 
       <div className="dr-field">

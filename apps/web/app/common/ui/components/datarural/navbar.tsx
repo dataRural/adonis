@@ -55,7 +55,7 @@ export default function Navbar({ theme, onToggleTheme, activePage }: NavbarProps
                   className={`dr-nav-link ${activePage === 'users' ? 'active' : ''}`}
                   href="/users"
                 >
-                  Usuários
+                  Gestão
                 </Link>
               )}
             </>

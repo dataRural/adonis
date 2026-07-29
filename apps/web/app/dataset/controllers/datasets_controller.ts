@@ -721,8 +721,8 @@ export default class DatasetsController {
           }
         })
 
-        session.flash('success', 'Dataset updated successfully')
-        return response.redirect().toPath('/dashboard')
+        session.flash('success', 'Dataset atualizado com sucesso')
+        return response.redirect().toPath(`/datasets/${dataset.id}`)
       } catch (err) {
         console.error('Error updating dataset (store):', err)
         session.flash('error', `Unable to update the dataset. ${err && (err as any).message ? (err as any).message : ''}`)
@@ -754,6 +754,8 @@ export default class DatasetsController {
     const datasetName = sanitizePathSegment(payload.name)
     const versionName = sanitizePathSegment(payload.version || 'V1')
     const licenseId = typeof payload.licenseId === 'number' ? payload.licenseId : null
+
+    let newDatasetId: number | null = null
 
     try {
       const attachment = await attachmentManager.createFromFile(datasetFile)
@@ -793,6 +795,8 @@ export default class DatasetsController {
           { client: trx }
         )
 
+        newDatasetId = dataset.id
+
         await DatasetVersion.create(
           {
             datasetId: dataset.id,
@@ -803,8 +807,8 @@ export default class DatasetsController {
         )
       })
 
-      session.flash('success', 'Dataset saved successfully')
-      return response.redirect().back()
+      session.flash('success', 'Dataset criado com sucesso')
+      return response.redirect().toPath(`/datasets/${newDatasetId}`)
     } catch (err) {
       console.error('Error saving dataset (store):', err)
       session.flash('error', `Unable to save the dataset. ${err && (err as any).message ? (err as any).message : ''}`)
