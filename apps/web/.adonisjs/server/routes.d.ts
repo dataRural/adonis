@@ -58,6 +58,7 @@ export type ScannedRoutes = {
     'datasets.explore': { paramsTuple?: []; params?: {} }
     'datasets.store': { paramsTuple?: []; params?: {} }
     'datasets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'datasets.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.show': { paramsTuple?: []; params?: {} }
     'dashboard.publish': { paramsTuple?: []; params?: {} }
     'groups.index': { paramsTuple?: []; params?: {} }
@@ -161,6 +162,7 @@ export type ScannedRoutes = {
     'datasets.version.restore': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'versionId': ParamValue} }
     'datasets.version.delete': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'versionId': ParamValue} }
     'datasets.store': { paramsTuple?: []; params?: {} }
+    'datasets.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'groups.store': { paramsTuple?: []; params?: {} }
     'groups.members.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'groups.datasets.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

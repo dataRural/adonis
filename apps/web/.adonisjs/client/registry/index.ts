@@ -330,6 +330,12 @@ const routes = {
     tokens: [{"old":"/datasets/:id","type":0,"val":"datasets","end":""},{"old":"/datasets/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['datasets.show']['types'],
   },
+  'datasets.destroy': {
+    methods: ["POST"],
+    pattern: '/datasets/:id/delete',
+    tokens: [{"old":"/datasets/:id/delete","type":0,"val":"datasets","end":""},{"old":"/datasets/:id/delete","type":1,"val":"id","end":""},{"old":"/datasets/:id/delete","type":0,"val":"delete","end":""}],
+    types: placeholder as Registry['datasets.destroy']['types'],
+  },
   'dashboard.show': {
     methods: ["GET","HEAD"],
     pattern: '/dashboard',

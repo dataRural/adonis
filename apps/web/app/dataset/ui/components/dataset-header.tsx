@@ -188,6 +188,18 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
                 <a className="dr-btn dr-btn-outline" href={`/datasets/${ds.id}/version/new`}>
                   <Ic.Plus size={16} /> Nova versão
                 </a>
+                <button
+                  className="dr-btn dr-btn-outline"
+                  style={{ color: 'var(--destructive)', borderColor: 'var(--destructive)' }}
+                  onClick={() => {
+                    if (confirm(`Tem certeza que deseja excluir o dataset "${ds.title}"? Esta ação não pode ser desfeita.`)) {
+                      router.post(`/datasets/${ds.id}/delete`)
+                    }
+                  }}
+                  title="Excluir dataset"
+                >
+                  <Ic.Trash size={16} /> Excluir
+                </button>
               </div>
             )}
             <div className="dr-ds-action-row">

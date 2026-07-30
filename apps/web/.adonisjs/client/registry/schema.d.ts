@@ -655,6 +655,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['show']>>>
     }
   }
+  'datasets.destroy': {
+    methods: ["POST"]
+    pattern: '/datasets/:id/delete'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['destroy']>>>
+    }
+  }
   'dashboard.show': {
     methods: ["GET","HEAD"]
     pattern: '/dashboard'

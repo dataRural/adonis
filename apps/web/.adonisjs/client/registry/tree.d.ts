@@ -109,6 +109,7 @@ export interface ApiDefinition {
     explore: typeof routes['datasets.explore']
     store: typeof routes['datasets.store']
     show: typeof routes['datasets.show']
+    destroy: typeof routes['datasets.destroy']
   }
   licenses: {
     index: typeof routes['licenses.index']

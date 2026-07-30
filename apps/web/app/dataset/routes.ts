@@ -98,6 +98,11 @@ router
   .as('datasets.show')
 
 router
+  .post('/datasets/:id/delete', [DatasetsController, 'destroy'])
+  .middleware(middleware.auth())
+  .as('datasets.destroy')
+
+router
   .get('/dashboard', [DatasetsController, 'dashboard'])
   .middleware(middleware.auth())
   .as('dashboard.show')

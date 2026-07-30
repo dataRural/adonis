@@ -596,6 +596,55 @@ export default class DatasetsController {
     }
   }
 
+  public async destroy({ auth, params, response, session }: HttpContext) {
+    const datasetId = Number(params.id)
+    const dataset = await Dataset.query().where('id', datasetId).first()
+
+    if (!dataset) {
+      session.flash('error', 'Dataset não encontrado.')
+      return response.redirect().toPath('/dashboard')
+    }
+
+    await auth.check()
+    const currentUser = auth.user!
+
+    let canDelete = dataset.userId === currentUser.id
+    if (!canDelete && dataset.groupId) {
+      const membership = await GroupMember.query()
+        .where('groupId', dataset.groupId)
+        .where('userId', currentUser.id)
+        .whereIn('role', [GroupMemberRole.OWNER, GroupMemberRole.ADMIN])
+        .first()
+      canDelete = !!membership
+    }
+
+    if (!canDelete) {
+      session.flash('error', 'Você não tem permissão para excluir este dataset.')
+      return response.redirect().back()
+    }
+
+    try {
+      const versions = await DatasetVersion.query().where('dataset_id', dataset.id)
+      const versionIds = versions.map((v) => v.id)
+
+      if (versionIds.length > 0) {
+        await DatasetVersionFile.query().whereIn('dataset_version_id', versionIds).delete()
+      }
+      await DatasetVersion.query().where('dataset_id', dataset.id).delete()
+      await DatasetLike.query().where('dataset_id', dataset.id).delete()
+      await DatasetFavorite.query().where('dataset_id', dataset.id).delete()
+
+      await dataset.delete()
+
+      session.flash('success', 'Dataset excluído com sucesso!')
+      return response.redirect().toPath('/dashboard')
+    } catch (err) {
+      console.error('Error deleting dataset:', err)
+      session.flash('error', 'Não foi possível excluir o dataset.')
+      return response.redirect().back()
+    }
+  }
+
   public async downloadVersion({ params, response, auth, session }: HttpContext) {
     const datasetId = Number(params.datasetId)
     const versionId = Number(params.versionId)

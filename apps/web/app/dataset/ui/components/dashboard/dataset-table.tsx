@@ -58,7 +58,9 @@ function RowMenu({
       <button
         className="danger"
         onClick={() => {
-          alert(`Excluir dataset ${d.title}`)
+          if (confirm(`Tem certeza que deseja excluir o dataset "${d.title}"? Esta ação não pode ser desfeita.`)) {
+            router.post(`/datasets/${d.id}/delete`)
+          }
           onClose()
         }}
       >
