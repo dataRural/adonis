@@ -3,6 +3,14 @@ import vine from '@vinejs/vine'
 export const signUpValidator = vine.compile(
   vine.object({
     fullName: vine.string().trim().minLength(3).maxLength(255),
+    username: vine
+      .string()
+      .trim()
+      .minLength(3)
+      .maxLength(50)
+      .regex(/^[a-zA-Z0-9_.-]+$/)
+      .toLowerCase()
+      .unique({ table: 'users', column: 'username' }),
     email: vine.string().email().toLowerCase().trim().unique({ table: 'users', column: 'email' }),
     password: vine.string().minLength(8).confirmed({ confirmationField: 'passwordConfirmation' }),
   })

@@ -43,6 +43,20 @@ export function RegistrationForm({ className }: { className?: string }) {
                 <FieldError />
               </Field>
 
+              <Field name="username">
+                <FieldLabel htmlFor="username">
+                  {t('auth.registration.form.username.label')}
+                </FieldLabel>
+                <Input
+                  id="username"
+                  name="username"
+                  type="text"
+                  placeholder={t('auth.registration.form.username.placeholder')}
+                  required
+                />
+                <FieldError />
+              </Field>
+
               <Field name="email">
                 <FieldLabel htmlFor="email">{t('auth.registration.form.email.label')}</FieldLabel>
                 <Input

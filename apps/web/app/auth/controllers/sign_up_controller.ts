@@ -11,9 +11,9 @@ export default class SignUpController {
   }
 
   async handle({ auth, request, response }: HttpContext) {
-    const { email, password, fullName } = await request.validateUsing(signUpValidator)
+    const { email, password, fullName, username } = await request.validateUsing(signUpValidator)
 
-    const user = await User.create({ fullName, email, password })
+    const user = await User.create({ fullName, username, email, password })
 
     await auth.use('web').login(user)
 
