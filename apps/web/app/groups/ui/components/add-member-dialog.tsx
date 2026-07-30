@@ -84,13 +84,19 @@ export default function AddMemberDialog({ groupId, open, onClose }: AddMemberDia
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const targetHandle = selectedUser?.username || query.trim()
-    if (!targetHandle) return
+    if (!selectedUser && !query.trim()) return
+
+    const payload: any = { role }
+    if (selectedUser) {
+      payload.userId = selectedUser.id
+    } else {
+      payload.username = query.trim()
+    }
 
     setSubmitting(true)
     router.post(
       `/groups/${groupId}/members`,
-      { username: targetHandle, role },
+      payload,
       {
         onSuccess: () => {
           setSelectedUser(null)

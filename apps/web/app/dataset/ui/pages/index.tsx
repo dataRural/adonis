@@ -22,7 +22,7 @@ export default function DatasetsExplorePage({
 }: PageProps) {
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('dr-theme') || 'light'
+      return localStorage.getItem('dr-theme') || (document.documentElement.classList.contains('dark') ? 'dark' : 'light')
     }
     return 'light'
   })

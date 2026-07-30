@@ -33,6 +33,19 @@
       DataRural — UFRRJ
     </title>
 
+    <script>
+      (function() {
+        try {
+          var t = localStorage.getItem('dr-theme');
+          if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
+
     @stack('dumper')
     @viteReactRefresh()
     @inertiaHead()

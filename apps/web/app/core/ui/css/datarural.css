@@ -70,7 +70,7 @@
   --popover: #0f2342;
   --popover-foreground: #e7eefc;
   --primary: #4a90d9;
-  --primary-foreground: #06182f;
+  --primary-foreground: #ffffff;
   --secondary: #16294a;
   --secondary-foreground: #d3deef;
   --muted: #13294a;
@@ -202,7 +202,9 @@ html, body {
   transition: background-color 0.16s, color 0.16s, border-color 0.16s, transform 0.08s, box-shadow 0.16s;
 }
 .dr-btn:active { transform: translateY(1px); }
-.dr-btn-primary { background: var(--primary); color: var(--primary-foreground); box-shadow: var(--shadow-sm); }
+.dr-btn-primary { background: var(--primary); color: #ffffff !important; box-shadow: var(--shadow-sm); }
+.dr-btn-primary, .dr-btn-primary:hover, .dr-btn-primary:visited, .dr-btn-primary:active, .dr-btn-primary:focus { color: #ffffff !important; }
+.dr-btn-primary svg { color: #ffffff !important; }
 .dr-btn-primary:hover { background: color-mix(in srgb, var(--primary) 88%, #000); box-shadow: var(--shadow-md); }
 .dark .dr-btn-primary:hover { background: color-mix(in srgb, var(--primary) 88%, #fff); }
 .dr-btn-ghost { background: transparent; color: var(--foreground); }

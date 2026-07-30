@@ -124,6 +124,27 @@ export class DatasetLikeSchema extends BaseModel {
   declare userId: number | null
 }
 
+export class DatasetVersionFileSchema extends BaseModel {
+  static $columns = ['createdAt', 'datasetVersionId', 'id', 'isPrimary', 'name', 'path', 'sortOrder', 'updatedAt'] as const
+  $columns = DatasetVersionFileSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare datasetVersionId: number
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isPrimary: boolean
+  @column()
+  declare name: string
+  @column()
+  declare path: any
+  @column()
+  declare sortOrder: number
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class DatasetVersionSchema extends BaseModel {
   static $columns = ['createdAt', 'datasetId', 'id', 'isDeleted', 'name', 'path', 'updatedAt'] as const
   $columns = DatasetVersionSchema.$columns

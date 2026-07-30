@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { router } from '@inertiajs/react'
 import * as Ic from '#common/ui/components/datarural/icons'
 import ColumnStats from './column-stats'
 
@@ -164,15 +165,23 @@ function DataTable({ hot, onHot, columns, rows }: DataTableProps & { columns: an
 }
 
 export default function ViewerTab({
+  datasetId,
+  selectedVersionId,
+  selectedFileId,
   columns,
   rows,
   filename,
   sizeStr,
+  filesList,
 }: {
+  datasetId?: number
+  selectedVersionId?: number
+  selectedFileId?: number | null
   columns?: any[]
   rows?: any[][]
   filename?: string
   sizeStr?: string
+  filesList?: any[]
 }) {
   const [mode, setMode] = useState<'table' | 'columns'>('table')
   const [hot, setHot] = useState<string | null>(null)
@@ -181,18 +190,56 @@ export default function ViewerTab({
   const finalRows = rows && rows.length > 0 ? rows : []
   const finalFilename = filename || 'dados.csv'
   const finalSize = sizeStr || '—'
+  const availableFiles = filesList && filesList.length > 0 ? filesList : []
+
+  const handleSelectFile = (fileIdVal: string) => {
+    if (!datasetId) return
+    const url = `/datasets/${datasetId}?` + (selectedVersionId ? `versionId=${selectedVersionId}&` : '') + `fileId=${fileIdVal}`
+    router.visit(url, { preserveState: true, preserveScroll: true })
+  }
 
   return (
     <div className="dr-viewer">
       <div className="dr-viewer-toolbar">
-        <button className="dr-file-select" onClick={(e) => e.preventDefault()}>
-          <Ic.File size={15} className="ic" style={{ marginRight: 6 }} />
-          {finalFilename}
-          <span className="sz" style={{ marginLeft: 6 }}>
-            · {finalSize}
-          </span>
-          <Ic.Chevd size={14} style={{ color: 'var(--muted-foreground)', marginLeft: 6 }} />
-        </button>
+        {availableFiles.length > 1 ? (
+          <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+            <Ic.File size={15} className="ic" style={{ position: 'absolute', left: 10, pointerEvents: 'none', color: 'var(--brand-green)' }} />
+            <select
+              className="dr-file-select"
+              value={selectedFileId ?? availableFiles[0]?.id ?? ''}
+              onChange={(e) => handleSelectFile(e.target.value)}
+              style={{
+                paddingLeft: 30,
+                paddingRight: 28,
+                appearance: 'none',
+                WebkitAppearance: 'none',
+                cursor: 'pointer',
+                background: 'var(--card)',
+                color: 'var(--foreground)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius)',
+                height: 34,
+                fontSize: 13,
+                fontWeight: 600,
+              }}
+            >
+              {availableFiles.map((f, idx) => (
+                <option key={f.id || idx} value={f.id ?? ''}>
+                  {f.name} ({f.size}){f.isPrimary ? ' — Dataset Principal' : ''}
+                </option>
+              ))}
+            </select>
+            <Ic.Chevd size={14} style={{ position: 'absolute', right: 8, pointerEvents: 'none', color: 'var(--muted-foreground)' }} />
+          </div>
+        ) : (
+          <button className="dr-file-select" onClick={(e) => e.preventDefault()}>
+            <Ic.File size={15} className="ic" style={{ marginRight: 6 }} />
+            {finalFilename}
+            <span className="sz" style={{ marginLeft: 6 }}>
+              · {finalSize}
+            </span>
+          </button>
+        )}
         <span className="vt-info">
           <b>{finalRows.length}</b> linhas · <b>{finalColumns.length}</b> colunas
         </span>

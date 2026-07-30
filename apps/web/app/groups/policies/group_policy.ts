@@ -8,10 +8,18 @@ export default class GroupPolicy {
    * Get the membership record for a user in a specific group.
    */
   private async getMembership(user: User, group: Group): Promise<GroupMember | null> {
-    return GroupMember.query()
+    const membership = await GroupMember.query()
       .where('groupId', group.id)
       .where('userId', user.id)
       .first()
+
+    if (membership) return membership
+
+    if (group.ownerId === user.id) {
+      return { role: GroupMemberRole.OWNER } as GroupMember
+    }
+
+    return null
   }
 
   /**

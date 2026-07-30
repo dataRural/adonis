@@ -24,18 +24,29 @@ export default class GroupMembersController {
 
     let targetUser: User | null = null
 
-    if (payload.username) {
-      const cleanUsername = payload.username.startsWith('@') ? payload.username.slice(1) : payload.username
-      targetUser = await User.query().where('username', cleanUsername).first()
-      if (!targetUser) {
-        targetUser = await User.query().where('email', cleanUsername).first()
-      }
-    } else if (payload.userId) {
+    if (payload.userId) {
       targetUser = await User.find(payload.userId)
     }
 
+    if (!targetUser && payload.username) {
+      const cleanUsername = payload.username.startsWith('@') ? payload.username.slice(1) : payload.username
+      targetUser = await User.query()
+        .where('username', cleanUsername)
+        .orWhere('email', cleanUsername)
+        .orWhere('full_name', cleanUsername)
+        .first()
+
+      if (!targetUser) {
+        targetUser = await User.query()
+          .where('username', 'ilike', cleanUsername)
+          .orWhere('email', 'ilike', cleanUsername)
+          .orWhere('full_name', 'ilike', cleanUsername)
+          .first()
+      }
+    }
+
     if (!targetUser) {
-      session.flash('error', 'Usuário não encontrado com este nome de usuário.')
+      session.flash('error', 'Usuário não encontrado.')
       return response.redirect().back()
     }
 

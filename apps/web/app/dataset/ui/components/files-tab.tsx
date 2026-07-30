@@ -4,38 +4,77 @@ import { DatasetDetail } from './detail-data'
 export default function FilesTab({ ds, versions }: { ds: DatasetDetail; versions?: any[] }) {
   const finalDs = ds
   const finalVersions = versions && versions.length > 0 ? versions : []
-  const latest = finalVersions[0]
+  const selectedVersionId = (finalDs as any).selectedVersionId
+  const currentVersion = finalVersions.find((v) => v.id === selectedVersionId) || finalVersions[0]
 
-  const filesList = latest
+  const versionFiles: any[] = currentVersion?.files || []
+
+  const filesList = versionFiles.length > 0
     ? [
-        {
-          name: latest.filename,
-          size: latest.size,
-          rows: finalDs.rows || '—',
-          type: finalDs.format || 'CSV',
-          primary: true,
-          versionId: latest.id,
-        },
+        ...versionFiles.map((f) => ({
+          name: f.name,
+          size: f.size,
+          rows: f.isPrimary ? (finalDs.rows || '—') : '—',
+          type: f.name.split('.').pop()?.toUpperCase() || 'CSV',
+          primary: f.isPrimary,
+          versionId: currentVersion.id,
+          fileId: f.id,
+          isReadme: false,
+        })),
         {
           name: 'README.md',
           size: '1.2 KB',
           rows: '—',
           type: 'Markdown',
           primary: false,
-          versionId: null as number | null,
+          versionId: currentVersion?.id || null,
+          fileId: null,
+          isReadme: true,
         },
       ]
-    : []
+    : (currentVersion
+      ? [
+          {
+            name: currentVersion.filename || `${finalDs.title}.csv`,
+            size: currentVersion.size || finalDs.size,
+            rows: finalDs.rows || '—',
+            type: finalDs.format || 'CSV',
+            primary: true,
+            versionId: currentVersion.id,
+            fileId: null,
+            isReadme: false,
+          },
+          {
+            name: 'README.md',
+            size: '1.2 KB',
+            rows: '—',
+            type: 'Markdown',
+            primary: false,
+            versionId: currentVersion.id,
+            fileId: null,
+            isReadme: true,
+          },
+        ]
+      : [])
 
-  const handleDownload = (versionId: number | null, fileName: string) => {
-    if (versionId !== null) {
-      window.location.href = `/datasets/${finalDs.id}/version/${versionId}/download`
+  const handleDownload = (versionId: number | null, fileId: number | null, isReadme?: boolean) => {
+    if (!versionId && currentVersion) {
+      versionId = currentVersion.id
+    }
+    if (!versionId) return
+
+    if (isReadme) {
+      window.location.href = `/datasets/${finalDs.id}/version/${versionId}/readme/download`
+    } else if (fileId !== null && fileId !== undefined) {
+      window.location.href = `/datasets/${finalDs.id}/version/${versionId}/file/${fileId}/download`
     } else {
-      if (latest) {
-        window.location.href = `/datasets/${finalDs.id}/version/${latest.id}/download`
-      } else {
-        alert(`Iniciando download do arquivo: ${fileName}`)
-      }
+      window.location.href = `/datasets/${finalDs.id}/version/${versionId}/download`
+    }
+  }
+
+  const handleDownloadAll = () => {
+    if (currentVersion) {
+      window.location.href = `/datasets/${finalDs.id}/version/${currentVersion.id}/download-all`
     }
   }
 
@@ -44,26 +83,12 @@ export default function FilesTab({ ds, versions }: { ds: DatasetDetail; versions
       <div className="dr-panel">
         <div className="dr-panel-head">
           <h3>
-            <Ic.Folder size={17} className="ic" style={{ marginRight: 6 }} /> Arquivos
+            <Ic.Folder size={17} className="ic" style={{ marginRight: 6 }} /> Arquivos da versão ({currentVersion?.name || 'V1'})
           </h3>
-          <div className="right">
-            <button
-              className="dr-btn dr-btn-primary dr-btn-sm"
-              onClick={() => {
-                if (latest) {
-                  handleDownload(latest.id, latest.filename)
-                } else {
-                  handleDownload(null, 'all')
-                }
-              }}
-            >
-              <Ic.Download size={15} /> Baixar tudo ({finalDs.size})
-            </button>
-          </div>
         </div>
         <div className="dr-filelist">
-          {filesList.map((f) => (
-            <div className="dr-filerow" key={f.name}>
+          {filesList.map((f, idx) => (
+            <div className="dr-filerow" key={f.name + '_' + idx}>
               <span className="file-ic">
                 <Ic.File size={18} />
               </span>
@@ -78,8 +103,9 @@ export default function FilesTab({ ds, versions }: { ds: DatasetDetail; versions
               <span className="dr-file-badge">{f.type}</span>
               <button
                 className="dr-btn dr-btn-outline dr-btn-sm"
-                onClick={() => handleDownload(f.versionId, f.name)}
+                onClick={() => handleDownload(f.versionId, f.fileId, f.isReadme)}
                 style={{ marginLeft: 'auto' }}
+                title={`Baixar ${f.name}`}
               >
                 <Ic.Download size={15} />
               </button>

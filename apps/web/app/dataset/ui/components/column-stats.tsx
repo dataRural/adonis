@@ -45,8 +45,8 @@ export default function ColumnStats({ hot, onHot, columns }: ColumnStatsProps) {
                   {c.kind === 'number'
                     ? 'numérico'
                     : c.kind === 'datetime'
-                    ? 'data/hora'
-                    : 'categoria'}
+                      ? 'data/hora'
+                      : 'categoria'}
                   {c.unit ? ' · ' + c.unit : ''}
                 </span>
               </span>

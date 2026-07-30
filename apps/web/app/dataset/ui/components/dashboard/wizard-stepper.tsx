@@ -22,9 +22,14 @@ const WIZ_STEPS: StepMeta[] = [
   { id: 4, label: 'Etapa 5', title: 'Revisão', icon: 'Verified' },
 ]
 
+const EDIT_STEPS: StepMeta[] = [
+  { id: 1, label: 'Etapa 1', title: 'Metadados', icon: 'Info' },
+  { id: 2, label: 'Etapa 2', title: 'Esquema', icon: 'Columns' },
+  { id: 3, label: 'Etapa 3', title: 'Licença', icon: 'Scale' },
+]
 
 export default function WizardStepper({ step, onJump, maxReached, isEditing }: StepperProps) {
-  const stepsToRender = isEditing ? WIZ_STEPS.slice(0, 4) : WIZ_STEPS
+  const stepsToRender = isEditing ? EDIT_STEPS : WIZ_STEPS
 
   return (
     <aside className="dr-stepper">
@@ -43,7 +48,7 @@ export default function WizardStepper({ step, onJump, maxReached, isEditing }: S
             >
               {idx < stepsToRender.length - 1 && <span className="line"></span>}
               <span className="dr-step-num">
-                {s.id < step ? <Ic.Check size={16} /> : s.id + 1}
+                {s.id < step ? <Ic.Check size={16} /> : idx + 1}
               </span>
               <span className="dr-step-meta">
                 <span className="sl">{s.label}</span>

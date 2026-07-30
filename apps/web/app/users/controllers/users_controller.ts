@@ -21,16 +21,32 @@ export default class UsersController {
 
     if (username) {
       targetUser = await User.query().where('username', username).first()
+
+      if (!targetUser) {
+        targetUser = await User.query().where('email', username).first()
+      }
+
+      if (!targetUser && !isNaN(Number(username))) {
+        targetUser = await User.find(Number(username))
+      }
+
+      if (!targetUser) {
+        targetUser = await User.query().where('email', 'ilike', `${username}@%`).first()
+      }
+
+      if (!targetUser) {
+        targetUser = await User.query()
+          .where('username', 'ilike', username)
+          .orWhere('email', 'ilike', username)
+          .orWhere('full_name', 'ilike', username)
+          .first()
+      }
     } else if (auth.user) {
       targetUser = auth.user
     }
 
     if (!targetUser) {
       return response.redirect().toRoute('dashboard.show')
-    }
-
-    if (auth.user && targetUser.id === auth.user.id) {
-      return response.redirect().toPath('/profile')
     }
 
     await User.preComputeUrls(targetUser)

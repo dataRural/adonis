@@ -7,6 +7,7 @@ import { dirname, join } from 'node:path'
 
 import Dataset from '../models/dataset.js'
 import DatasetVersion from '../models/dataset_version.js'
+import DatasetVersionFile from '../models/dataset_version_file.js'
 import DatasetLike from '../models/dataset_like.js'
 import DatasetFavorite from '../models/dataset_favorite.js'
 import DatasetArea from '../models/dataset_area.js'
@@ -18,6 +19,7 @@ import GroupMemberRole from '#app/groups/enums/group_member_role'
 import User from '#users/models/user'
 import UserTransformer from '#users/transformers/user_transformer'
 import { DateTime } from 'luxon'
+import JSZip from 'jszip'
 
 function sanitizePathSegment(value: string) {
   return value
@@ -464,11 +466,13 @@ export default class DatasetsController {
     }
 
     const payload = await request.validateUsing(addDatasetVersionValidator)
-    const datasetFile = request.file('file')
+    const rawFiles = request.files('files')
+    const singleFile = request.file('file')
+    const uploadedFiles = rawFiles && rawFiles.length > 0 ? rawFiles : (singleFile ? [singleFile] : [])
 
-    if (!datasetFile) {
-      session.flash('error', 'Please select a CSV file to upload.')
-      return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
+    if (uploadedFiles.length === 0) {
+      session.flash('error', 'Por favor, selecione pelo menos um arquivo CSV para enviar.')
+      return response.redirect().toPath(`/datasets/${dataset.id}`)
     }
 
     const suggestedVersionName = getNextVersionName(dataset.versions.map((version) => version.name))
@@ -480,13 +484,11 @@ export default class DatasetsController {
       .first()
 
     if (existingVersion) {
-      session.flash('error', `Version ${versionName} already exists for this dataset.`)
-      return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
+      session.flash('error', `A versão ${versionName} já existe para este dataset.`)
+      return response.redirect().toPath(`/datasets/${dataset.id}`)
     }
 
     try {
-      const attachment = await attachmentManager.createFromFile(datasetFile)
-
       const rootPath = app.makePath('storage/datasets')
       const versionPath = join(dataset.path || rootPath, versionName)
       await mkdir(versionPath, { recursive: true })
@@ -495,32 +497,58 @@ export default class DatasetsController {
       const readmeLines = [
         `# ${dataset.name}`,
         '',
-        payload.description ? payload.description : 'No description provided.',
+        payload.description ? payload.description : 'Nenhuma descrição fornecida.',
       ]
-
       await writeFile(readmePath, `${readmeLines.join('\n')}\n`, 'utf8')
 
-      const version = await DatasetVersion.create({
-        datasetId: dataset.id,
-        name: versionName,
-        path: attachment,
+      let versionId: number = 0
+
+      await Database.transaction(async (trx) => {
+        const primaryAttachment = await attachmentManager.createFromFile(uploadedFiles[0])
+
+        const version = await DatasetVersion.create(
+          {
+            datasetId: dataset.id,
+            name: versionName,
+            path: primaryAttachment,
+          },
+          { client: trx }
+        )
+        versionId = version.id
+
+        for (let i = 0; i < uploadedFiles.length; i++) {
+          const file = uploadedFiles[i]
+          const attachment = i === 0 ? primaryAttachment : await attachmentManager.createFromFile(file)
+          const fileName = file.clientName || file.fileName || `data_${i + 1}.csv`
+
+          await DatasetVersionFile.create(
+            {
+              datasetVersionId: version.id,
+              name: fileName,
+              path: attachment,
+              isPrimary: i === 0,
+              sortOrder: i,
+            },
+            { client: trx }
+          )
+        }
+
+        if (payload.description !== undefined && payload.description !== null) {
+          dataset.description = payload.description
+        }
+        if (payload.usabilityScore !== undefined && payload.usabilityScore !== null) {
+          dataset.usabilityScore = payload.usabilityScore
+        }
+        dataset.updatedAt = DateTime.now()
+        await dataset.useTransaction(trx).save()
       })
 
-      if (payload.description !== undefined && payload.description !== null) {
-        dataset.description = payload.description
-      }
-      if (payload.usabilityScore !== undefined && payload.usabilityScore !== null) {
-        dataset.usabilityScore = payload.usabilityScore
-      }
-      dataset.updatedAt = DateTime.now()
-      await dataset.save()
-
       session.flash('success', `Versão ${versionName} adicionada com sucesso.`)
-      return response.redirect().toPath(`/datasets/${dataset.id}?versionId=${version.id}`)
+      return response.redirect().toPath(`/datasets/${dataset.id}?versionId=${versionId}`)
     } catch (err) {
       console.error('Error saving dataset version (addVersion):', err)
-      session.flash('error', `Unable to save the dataset version. ${err && (err as any).message ? (err as any).message : ''}`)
-      return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
+      session.flash('error', `Não foi possível salvar a nova versão. ${err && (err as any).message ? (err as any).message : ''}`)
+      return response.redirect().toPath(`/datasets/${dataset.id}`)
     }
   }
 
@@ -603,7 +631,172 @@ export default class DatasetsController {
       return response.send(buffer)
     } catch {
       session.flash('error', 'Unable to download file.')
-      return response.redirect().toPath(`/datasets/view?datasetId=${dataset.id}`)
+      return response.redirect().toPath(`/datasets/${dataset.id}`)
+    }
+  }
+
+  public async downloadFile({ params, response, auth, session }: HttpContext) {
+    const datasetId = Number(params.datasetId)
+    const versionId = Number(params.versionId)
+    const fileId = Number(params.fileId)
+
+    const dataset = await Dataset.query().where('id', datasetId).firstOrFail()
+    const versionFile = await DatasetVersionFile.query()
+      .where('id', fileId)
+      .where('dataset_version_id', versionId)
+      .firstOrFail()
+
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
+    if (!dataset.isPublic && Number(currentUserId) !== Number(dataset.userId)) {
+      let hasGroupAccess = false
+      if (currentUserId && dataset.groupId) {
+        const membership = await GroupMember.query()
+          .where('groupId', dataset.groupId)
+          .where('userId', currentUserId)
+          .first()
+        hasGroupAccess = !!membership
+      }
+      if (!hasGroupAccess) {
+        session.flash('error', 'Você não tem autorização para baixar este arquivo.')
+        return response.redirect().toPath(`/datasets/${dataset.id}`)
+      }
+    }
+
+    try {
+      const buffer = await versionFile.path.getBuffer()
+      const filename = versionFile.name || versionFile.path.originalName || `data.csv`
+
+      response.header('Content-Type', 'text/csv')
+      response.header('Content-Disposition', `attachment; filename="${filename.replace(/\"/g, '')}"`)
+      return response.send(buffer)
+    } catch {
+      session.flash('error', 'Não foi possível baixar o arquivo.')
+      return response.redirect().toPath(`/datasets/${dataset.id}`)
+    }
+  }
+
+  public async downloadReadme({ params, response, auth, session }: HttpContext) {
+    const datasetId = Number(params.datasetId)
+    const versionId = Number(params.versionId)
+
+    const dataset = await Dataset.query().where('id', datasetId).firstOrFail()
+    const version = await DatasetVersion.query().where('id', versionId).where('dataset_id', datasetId).firstOrFail()
+
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
+    if (!dataset.isPublic && Number(currentUserId) !== Number(dataset.userId)) {
+      let hasGroupAccess = false
+      if (currentUserId && dataset.groupId) {
+        const membership = await GroupMember.query()
+          .where('groupId', dataset.groupId)
+          .where('userId', currentUserId)
+          .first()
+        hasGroupAccess = !!membership
+      }
+      if (!hasGroupAccess) {
+        session.flash('error', 'Você não tem autorização para acessar este dataset.')
+        return response.redirect().toPath(`/datasets/${dataset.id}`)
+      }
+    }
+
+    try {
+      const datasetName = sanitizePathSegment(dataset.name)
+      const versionName = sanitizePathSegment(version.name)
+      const rootPath = app.makePath('storage/datasets')
+      const readmePath = join(dataset.path || join(rootPath, datasetName), versionName, 'README.md')
+
+      let readmeContent = ''
+      try {
+        readmeContent = await readFile(readmePath, 'utf8')
+      } catch {
+        readmeContent = `# ${dataset.name}\n\n${dataset.description || 'Nenhuma descrição fornecida.'}\n`
+      }
+
+      response.header('Content-Type', 'text/markdown; charset=utf-8')
+      response.header('Content-Disposition', 'attachment; filename="README.md"')
+      return response.send(Buffer.from(readmeContent, 'utf8'))
+    } catch {
+      session.flash('error', 'Não foi possível baixar o README.')
+      return response.redirect().toPath(`/datasets/${dataset.id}`)
+    }
+  }
+
+  public async downloadAll({ params, response, auth, session }: HttpContext) {
+    const datasetId = Number(params.datasetId)
+    const versionId = Number(params.versionId)
+
+    const dataset = await Dataset.query().where('id', datasetId).firstOrFail()
+    const version = await DatasetVersion.query()
+      .where('id', versionId)
+      .where('dataset_id', datasetId)
+      .preload('files')
+      .firstOrFail()
+
+    await auth.check()
+    const currentUserId = auth.user?.id ?? null
+    if (!dataset.isPublic && Number(currentUserId) !== Number(dataset.userId)) {
+      let hasGroupAccess = false
+      if (currentUserId && dataset.groupId) {
+        const membership = await GroupMember.query()
+          .where('groupId', dataset.groupId)
+          .where('userId', currentUserId)
+          .first()
+        hasGroupAccess = !!membership
+      }
+      if (!hasGroupAccess) {
+        session.flash('error', 'Você não tem autorização para baixar este dataset.')
+        return response.redirect().toPath(`/datasets/${dataset.id}`)
+      }
+    }
+
+    try {
+      const zip = new JSZip()
+
+      if (version.files && version.files.length > 0) {
+        for (const file of version.files) {
+          try {
+            const buf = await file.path.getBuffer()
+            zip.file(file.name, buf)
+          } catch (e) {
+            console.error(`Error reading buffer for ${file.name}:`, e)
+          }
+        }
+      } else if (version.path) {
+        try {
+          const buf = await version.path.getBuffer()
+          const fileName = version.path.originalName || `${dataset.name}.csv`
+          zip.file(fileName, buf)
+        } catch (e) {
+          console.error('Error reading main file buffer:', e)
+        }
+      }
+
+      // Add README.md
+      const datasetName = sanitizePathSegment(dataset.name)
+      const versionName = sanitizePathSegment(version.name)
+      const rootPath = app.makePath('storage/datasets')
+      const readmePath = join(dataset.path || join(rootPath, datasetName), versionName, 'README.md')
+
+      let readmeContent = ''
+      try {
+        readmeContent = await readFile(readmePath, 'utf8')
+      } catch {
+        readmeContent = `# ${dataset.name}\n\n${dataset.description || 'Nenhuma descrição fornecida.'}\n`
+      }
+
+      zip.file('README.md', readmeContent)
+
+      const zipBuffer = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' })
+      const safeZipName = sanitizePathSegment(`${dataset.name}_${version.name}`) + '.zip'
+
+      response.header('Content-Type', 'application/zip')
+      response.header('Content-Disposition', `attachment; filename="${safeZipName}"`)
+      return response.send(zipBuffer)
+    } catch (err) {
+      console.error('Error generating zip download:', err)
+      session.flash('error', 'Não foi possível gerar o arquivo ZIP.')
+      return response.redirect().toPath(`/datasets/${dataset.id}`)
     }
   }
 
@@ -648,7 +841,10 @@ export default class DatasetsController {
         }
       }
 
-      const datasetFile = request.file('file')
+      const rawFiles = request.files('files')
+      const singleFile = request.file('file')
+      const uploadedFiles = rawFiles && rawFiles.length > 0 ? rawFiles : (singleFile ? [singleFile] : [])
+
       const datasetName = sanitizePathSegment(payload.name)
       const licenseId = typeof payload.licenseId === 'number' ? payload.licenseId : null
 
@@ -670,11 +866,11 @@ export default class DatasetsController {
           })
           await dataset.useTransaction(trx).save()
 
-          if (datasetFile) {
-            const attachment = await attachmentManager.createFromFile(datasetFile)
+          if (uploadedFiles.length > 0) {
+            const primaryAttachment = await attachmentManager.createFromFile(uploadedFiles[0])
             const rootPath = app.makePath('storage/datasets')
             const datasetPath = join(rootPath, datasetName)
-            const latestVersion = dataset.versions[dataset.versions.length - 1]
+            let latestVersion = dataset.versions[dataset.versions.length - 1]
             const versionName = latestVersion ? latestVersion.name : 'V1'
             const versionPath = join(datasetPath, versionName)
             await mkdir(versionPath, { recursive: true })
@@ -688,16 +884,32 @@ export default class DatasetsController {
             await writeFile(readmePath, `${readmeLines.join('\n')}\n`, 'utf8')
 
             if (latestVersion) {
-              latestVersion.merge({
-                path: attachment,
-              })
+              latestVersion.merge({ path: primaryAttachment })
               await latestVersion.useTransaction(trx).save()
+              await DatasetVersionFile.query().where('datasetVersionId', latestVersion.id).delete()
             } else {
-              await DatasetVersion.create(
+              latestVersion = await DatasetVersion.create(
                 {
                   datasetId: dataset.id,
                   name: versionName,
+                  path: primaryAttachment,
+                },
+                { client: trx }
+              )
+            }
+
+            for (let i = 0; i < uploadedFiles.length; i++) {
+              const file = uploadedFiles[i]
+              const attachment = i === 0 ? primaryAttachment : await attachmentManager.createFromFile(file)
+              const fileName = file.clientName || file.fileName || `data_${i + 1}.csv`
+
+              await DatasetVersionFile.create(
+                {
+                  datasetVersionId: latestVersion.id,
+                  name: fileName,
                   path: attachment,
+                  isPrimary: i === 0,
+                  sortOrder: i,
                 },
                 { client: trx }
               )
@@ -731,7 +943,9 @@ export default class DatasetsController {
     }
 
     const payload = await request.validateUsing(createDatasetValidator)
-    const datasetFile = request.file('file')
+    const rawFiles = request.files('files')
+    const singleFile = request.file('file')
+    const uploadedFiles = rawFiles && rawFiles.length > 0 ? rawFiles : (singleFile ? [singleFile] : [])
 
     if (payload.groupId) {
       const groupMembership = await GroupMember.query()
@@ -746,8 +960,8 @@ export default class DatasetsController {
       }
     }
 
-    if (!datasetFile) {
-      session.flash('error', 'Please select a CSV file to upload.')
+    if (uploadedFiles.length === 0) {
+      session.flash('error', 'Por favor, selecione pelo menos um arquivo CSV para enviar.')
       return response.redirect().back()
     }
 
@@ -758,7 +972,7 @@ export default class DatasetsController {
     let newDatasetId: number | null = null
 
     try {
-      const attachment = await attachmentManager.createFromFile(datasetFile)
+      const primaryAttachment = await attachmentManager.createFromFile(uploadedFiles[0])
 
       const rootPath = app.makePath('storage/datasets')
       const datasetPath = join(rootPath, datasetName)
@@ -797,14 +1011,31 @@ export default class DatasetsController {
 
         newDatasetId = dataset.id
 
-        await DatasetVersion.create(
+        const version = await DatasetVersion.create(
           {
             datasetId: dataset.id,
             name: versionName,
-            path: attachment,
+            path: primaryAttachment,
           },
           { client: trx }
         )
+
+        for (let i = 0; i < uploadedFiles.length; i++) {
+          const file = uploadedFiles[i]
+          const attachment = i === 0 ? primaryAttachment : await attachmentManager.createFromFile(file)
+          const fileName = file.clientName || file.fileName || `data_${i + 1}.csv`
+
+          await DatasetVersionFile.create(
+            {
+              datasetVersionId: version.id,
+              name: fileName,
+              path: attachment,
+              isPrimary: i === 0,
+              sortOrder: i,
+            },
+            { client: trx }
+          )
+        }
       })
 
       session.flash('success', 'Dataset criado com sucesso')
@@ -825,7 +1056,7 @@ export default class DatasetsController {
     const dataset = await Dataset.query()
       .where('id', datasetId)
       .preload('versions', (query) => {
-        query.where('is_deleted', false).orderBy('id', 'desc')
+        query.where('is_deleted', false).orderBy('id', 'desc').preload('files', (fq) => fq.orderBy('sortOrder', 'asc'))
       })
       .preload('license')
       .preload('likes')
@@ -860,6 +1091,8 @@ export default class DatasetsController {
     }
 
     const requestedVersionId = request.input('versionId')
+    const requestedFileId = request.input('fileId')
+
     let selectedVersion = dataset.versions[0]
     if (requestedVersionId) {
       const found = dataset.versions.find((v) => Number(v.id) === Number(requestedVersionId))
@@ -867,6 +1100,20 @@ export default class DatasetsController {
         selectedVersion = found
       }
     }
+
+    let selectedFile: DatasetVersionFile | null = null
+    if (selectedVersion) {
+      if (requestedFileId && selectedVersion.files && selectedVersion.files.length > 0) {
+        const foundFile = selectedVersion.files.find((f) => Number(f.id) === Number(requestedFileId))
+        if (foundFile) {
+          selectedFile = foundFile
+        }
+      }
+      if (!selectedFile) {
+        selectedFile = selectedVersion.files?.find((f) => f.isPrimary) || selectedVersion.files?.[0] || null
+      }
+    }
+
     let description = '<p>Nenhuma descrição fornecida.</p>'
     if (dataset.description) {
       try {
@@ -881,32 +1128,55 @@ export default class DatasetsController {
     let format = 'CSV'
     let sizeStr = '0 B'
     let totalRowCount = 0
+    let selectedFileName = `${dataset.name}.csv`
+    let selectedFileSizeStr = '0 B'
 
-    if (selectedVersion && selectedVersion.path) {
-      try {
-        const buffer = await selectedVersion.path.getBuffer()
-        const csvContent = buffer.toString('utf8')
-        const preview = parseCsvPreview(csvContent, 100)
-        previewHeaders = preview.headers
-        previewRows = preview.rows
+    if (selectedVersion) {
+      const targetAttachment = selectedFile?.path || selectedVersion.path
+      if (selectedFile) {
+        selectedFileName = selectedFile.name
+      } else if (selectedVersion.path?.originalName || selectedVersion.path?.name) {
+        selectedFileName = selectedVersion.path.originalName || selectedVersion.path.name
+      }
 
-        // Count total lines in the CSV (excluding header and empty lines)
-        const allLines = csvContent.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0)
-        totalRowCount = Math.max(0, allLines.length - 1) // subtract header
+      if (targetAttachment) {
+        try {
+          const buffer = await targetAttachment.getBuffer()
+          const csvContent = buffer.toString('utf8')
+          const preview = parseCsvPreview(csvContent, 100)
+          previewHeaders = preview.headers
+          previewRows = preview.rows
 
-        const fileBytes = selectedVersion.path.size
-        if (fileBytes) {
-          if (fileBytes > 1024 * 1024) {
-            sizeStr = `${(fileBytes / (1024 * 1024)).toFixed(1)} MB`
-          } else {
-            sizeStr = `${(fileBytes / 1024).toFixed(1)} KB`
+          const allLines = csvContent.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0)
+          totalRowCount = Math.max(0, allLines.length - 1)
+
+          const singleBytes = targetAttachment.size || 0
+          if (singleBytes > 1024 * 1024) {
+            selectedFileSizeStr = `${(singleBytes / (1024 * 1024)).toFixed(1)} MB`
+          } else if (singleBytes > 0) {
+            selectedFileSizeStr = `${(singleBytes / 1024).toFixed(1)} KB`
           }
-        }
 
-        const fileExt = selectedVersion.path.name?.split('.').pop()?.toUpperCase()
-        if (fileExt) format = fileExt
-      } catch (err) {
-        console.error('Error reading csv preview in show action:', err)
+          let fileBytes = 0
+          if (selectedVersion.files && selectedVersion.files.length > 0) {
+            fileBytes = selectedVersion.files.reduce((sum, f) => sum + (f.path?.size || 0), 0)
+          } else {
+            fileBytes = selectedVersion.path?.size || 0
+          }
+
+          if (fileBytes) {
+            if (fileBytes > 1024 * 1024) {
+              sizeStr = `${(fileBytes / (1024 * 1024)).toFixed(1)} MB`
+            } else {
+              sizeStr = `${(fileBytes / 1024).toFixed(1)} KB`
+            }
+          }
+
+          const fileExt = targetAttachment.name?.split('.').pop()?.toUpperCase()
+          if (fileExt) format = fileExt
+        } catch (err) {
+          console.error('Error reading csv preview in show action:', err)
+        }
       }
     }
 
@@ -984,6 +1254,10 @@ export default class DatasetsController {
       ]
     }
 
+    const versionFilesCount = (selectedVersion?.files && selectedVersion.files.length > 0)
+      ? selectedVersion.files.length
+      : 1
+
     const datasetPayload = {
       id: dataset.id,
       title: dataset.name,
@@ -1001,13 +1275,17 @@ export default class DatasetsController {
       version: selectedVersion?.name || 'V1',
       selectedVersionId: selectedVersion?.id,
       selectedVersionName: selectedVersion?.name || 'V1',
+      selectedFileId: selectedFile?.id || null,
+      selectedFileName,
+      selectedFileSizeStr,
       isLatestVersionSelected: selectedVersion?.id === dataset.versions[0]?.id,
       updated: dataset.updatedAt ? dataset.updatedAt.toRelative() || 'Recém atualizado' : 'Recém atualizado',
       published: dataset.createdAt ? dataset.createdAt.toRelative() || 'Recentemente' : 'Recentemente',
       size: sizeStr,
       rows: String(totalRowCount),
       cols: previewHeaders.length,
-      files: dataset.versions.length,
+      files: versionFilesCount,
+      filesCount: versionFilesCount,
       downloads: '0',
       views: '0',
       votes: votesCount,
@@ -1026,21 +1304,43 @@ export default class DatasetsController {
     }
 
     const versionsPayload = dataset.versions.map((v, index) => {
-      let sizeStr = '0 B'
-      const fileBytes = v.path?.size
-      if (fileBytes) {
-        if (fileBytes > 1024 * 1024) {
-          sizeStr = `${(fileBytes / (1024 * 1024)).toFixed(1)} MB`
-        } else {
-          sizeStr = `${(fileBytes / 1024).toFixed(1)} KB`
-        }
+      let totalBytes = 0
+      const versionFiles = (v.files && v.files.length > 0)
+        ? v.files.map((f) => {
+            const bytes = f.path?.size || 0
+            totalBytes += bytes
+            let fSizeStr = '0 B'
+            if (bytes > 1024 * 1024) fSizeStr = `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+            else if (bytes > 0) fSizeStr = `${(bytes / 1024).toFixed(1)} KB`
+
+            return {
+              id: f.id,
+              name: f.name,
+              size: fSizeStr,
+              isPrimary: f.isPrimary,
+            }
+          })
+        : [{
+            id: null,
+            name: v.path?.originalName || v.path?.name || `${dataset.name}.csv`,
+            size: v.path?.size ? (v.path.size > 1024 * 1024 ? `${(v.path.size / (1024 * 1024)).toFixed(1)} MB` : `${(v.path.size / 1024).toFixed(1)} KB`) : '0 B',
+            isPrimary: true,
+          }]
+
+      if (totalBytes === 0 && v.path?.size) {
+        totalBytes = v.path.size
       }
+
+      let versionSizeStr = '0 B'
+      if (totalBytes > 1024 * 1024) versionSizeStr = `${(totalBytes / (1024 * 1024)).toFixed(1)} MB`
+      else if (totalBytes > 0) versionSizeStr = `${(totalBytes / 1024).toFixed(1)} KB`
 
       return {
         id: v.id,
         name: v.name,
-        filename: v.path?.originalName || v.path?.name || `${dataset.name}.csv`,
-        size: sizeStr,
+        filename: versionFiles[0]?.name || `${dataset.name}.csv`,
+        size: versionSizeStr,
+        files: versionFiles,
         createdAt: v.createdAt ? v.createdAt.toRelative() || 'recentemente' : 'recentemente',
         isLatest: index === 0,
         isSelected: v.id === selectedVersion?.id,

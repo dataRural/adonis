@@ -53,12 +53,15 @@ export default function DatasetShowPage({ dataset, previewColumns, previewRows, 
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))
   }
 
+  const currentVersionObj = versions?.find((v) => v.isSelected) || versions?.[0]
+  const versionFiles = currentVersionObj?.files || []
+
   return (
     <div className="dr-app">
       <Head title={ds.title || "Dataset"} />
       <Navbar theme={theme} onToggleTheme={handleToggleTheme} activePage="datasets" />
       <DatasetHeader ds={ds} latestVersionId={versions && versions[0]?.id} />
-      <TabBar tab={tab} onTab={setTab} versionsCount={versions?.length} />
+      <TabBar tab={tab} onTab={setTab} filesCount={(ds as any).filesCount || versionFiles.length} versionsCount={versions?.length} />
 
       <main className="dr-ds-page">
         <div className="dr-container">
@@ -67,10 +70,14 @@ export default function DatasetShowPage({ dataset, previewColumns, previewRows, 
               {tab === 'overview' && <OverviewTab ds={ds} columns={previewColumns} />}
               {tab === 'viewer' && (
                 <ViewerTab
+                  datasetId={ds.id}
+                  selectedVersionId={(ds as any).selectedVersionId}
+                  selectedFileId={(ds as any).selectedFileId}
                   columns={previewColumns}
                   rows={previewRows}
-                  filename={ds.title + '.' + (ds.format || 'csv').toLowerCase()}
-                  sizeStr={ds.size}
+                  filename={(ds as any).selectedFileName || (ds.title + '.' + (ds.format || 'csv').toLowerCase())}
+                  sizeStr={(ds as any).selectedFileSizeStr || ds.size}
+                  filesList={versionFiles}
                 />
               )}
               {tab === 'files' && <FilesTab ds={ds} versions={versions} />}

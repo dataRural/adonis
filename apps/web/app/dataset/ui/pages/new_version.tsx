@@ -107,7 +107,15 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
     setSubmissionErrors([])
 
     const formData = new FormData()
-    formData.append('file', data.file!)
+    if ((data as any).filesList && (data as any).filesList.length > 0) {
+      (data as any).filesList.forEach((fItem: any) => {
+        if (fItem.file) {
+          formData.append('files[]', fItem.file)
+        }
+      })
+    } else if (data.file) {
+      formData.append('file', data.file)
+    }
     formData.append('version', data.version.trim())
     if (data.description.trim()) {
       formData.append('description', data.description.trim())
@@ -356,27 +364,6 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
                             {data.fileSize} • {data.colCount} colunas • {data.rowCount} linhas
                           </div>
                         </div>
-                        <button
-                          className="dr-btn dr-btn-ghost"
-                          onClick={() => {
-                            setPatch({
-                              file: null,
-                              uploaded: false,
-                              uploading: false,
-                              progress: 0,
-                              fileName: '',
-                              fileSize: '',
-                              rowCount: 0,
-                              colCount: 0,
-                              qaChecks: [],
-                              schema: CSV_COLUMNS.map((c) => ({ ...c })),
-                            })
-                            setStep(0)
-                          }}
-                          style={{ fontSize: 13 }}
-                        >
-                          <Ic.X size={14} /> Trocar arquivo
-                        </button>
                       </div>
 
                       {/* Existing Versions */}

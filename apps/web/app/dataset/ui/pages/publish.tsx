@@ -44,7 +44,8 @@ export default function PublishWizard({ editDataset, userGroups = [] }: PageProp
     }
     return 'light'
   })
-  const [step, setStep] = useState(0)
+  const minStepIndex = isEditing ? 1 : 0
+  const [step, setStep] = useState(isEditing ? 1 : 0)
   const [maxReached, setMaxReached] = useState(isEditing ? 3 : 0)
   const [saving, setSaving] = useState(false)
   const [submissionErrors, setSubmissionErrors] = useState<SubmissionErrorItem[]>([])
@@ -87,7 +88,7 @@ export default function PublishWizard({ editDataset, userGroups = [] }: PageProp
   }
 
   const goto = (n: number) => {
-    const clamped = Math.max(0, Math.min(maxStepIndex, n))
+    const clamped = Math.max(minStepIndex, Math.min(maxStepIndex, n))
     setStep(clamped)
     setMaxReached((m) => Math.max(m, clamped))
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -251,7 +252,13 @@ export default function PublishWizard({ editDataset, userGroups = [] }: PageProp
     if (data.usabilityScore !== undefined && data.usabilityScore !== null) {
       formData.append('usabilityScore', String(data.usabilityScore))
     }
-    if (data.file) {
+    if ((data as any).filesList && (data as any).filesList.length > 0) {
+      (data as any).filesList.forEach((fItem: any) => {
+        if (fItem.file) {
+          formData.append('files[]', fItem.file)
+        }
+      })
+    } else if (data.file) {
       formData.append('file', data.file)
     }
     if (data.groupId) {
@@ -341,14 +348,14 @@ export default function PublishWizard({ editDataset, userGroups = [] }: PageProp
                 <p style={{ margin: '7px 0 0' }}>{heads[step].p}</p>
               </div>
               <div className="dr-wpanel-body">
-                {step === 0 && <StepArquivo data={data} set={setPatch} />}
+                {step === 0 && !isEditing && <StepArquivo data={data} set={setPatch} />}
                 {step === 1 && <StepMetadados data={data} set={setPatch} />}
                 {step === 2 && <StepEsquema data={data} set={setPatch} />}
                 {step === 3 && <StepLicenca data={data} set={setPatch} />}
                 {step === 4 && !isEditing && <StepRevisao data={data} set={setPatch} onJump={goto} />}
               </div>
               <div className="dr-wpanel-foot">
-                {step === 0 ? (
+                {step <= minStepIndex ? (
                   <button className="dr-btn dr-btn-ghost" onClick={handleExit}>
                     Cancelar
                   </button>
@@ -364,25 +371,26 @@ export default function PublishWizard({ editDataset, userGroups = [] }: PageProp
                 <div className="dr-foot-right" style={{ display: 'flex', gap: 10 }}>
                   {isEditing ? (
                     <>
-                      {step < 3 && (
+                      {step < 3 ? (
                         <button
-                          className="dr-btn dr-btn-outline"
+                          className="dr-btn dr-btn-primary"
                           disabled={!canNext}
                           onClick={() => goto(step + 1)}
                           style={!canNext ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
                         >
                           Continuar <Ic.Arrow size={16} style={{ display: 'inline', marginLeft: 4 }} />
                         </button>
+                      ) : (
+                        <button
+                          className="dr-btn dr-btn-yellow dr-btn-lg"
+                          disabled={!canNext || saving}
+                          onClick={handleSaveSubmit}
+                          style={!canNext || saving ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+                        >
+                          <Ic.Check size={18} style={{ display: 'inline', marginRight: 6 }} />{' '}
+                          {saving ? 'Salvando…' : 'Salvar alterações'}
+                        </button>
                       )}
-                      <button
-                        className="dr-btn dr-btn-primary dr-btn-lg"
-                        disabled={!canNext || saving}
-                        onClick={handleSaveSubmit}
-                        style={!canNext || saving ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
-                      >
-                        <Ic.Check size={18} style={{ display: 'inline', marginRight: 6 }} />{' '}
-                        {saving ? 'Salvando…' : 'Salvar alterações'}
-                      </button>
                     </>
                   ) : (
                     <>

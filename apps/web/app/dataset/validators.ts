@@ -1,5 +1,10 @@
 import vine from '@vinejs/vine'
 
+const csvFileSchema = vine.file({
+  extnames: ['csv'],
+  size: 25 * 1024 * 1024,
+})
+
 export const createDatasetValidator = vine.compile(
   vine.object({
     name: vine.string().trim().minLength(3).maxLength(255).unique({ table: 'datasets', column: 'name' }),
@@ -15,11 +20,8 @@ export const createDatasetValidator = vine.compile(
     usabilityScore: vine.number().min(0).max(10).optional(),
     status: vine.string().trim().optional(),
     groupId: vine.number().optional(),
-    file: vine
-      .file({
-        extnames: ['csv'],
-        size: 25 * 1024 * 1024,
-      }),
+    file: csvFileSchema.optional(),
+    files: vine.array(csvFileSchema).optional(),
   })
 )
 
@@ -28,11 +30,8 @@ export const addDatasetVersionValidator = vine.compile(
     version: vine.string().trim().minLength(1).maxLength(32).optional(),
     description: vine.string().trim().maxLength(2000).optional(),
     usabilityScore: vine.number().min(0).max(10).optional(),
-    file: vine
-      .file({
-        extnames: ['csv'],
-        size: 25 * 1024 * 1024,
-      }),
+    file: csvFileSchema.optional(),
+    files: vine.array(csvFileSchema).optional(),
   })
 )
 
@@ -63,11 +62,8 @@ export const updateDatasetValidator = vine.withMetaData<{ datasetId: number }>()
     usabilityScore: vine.number().min(0).max(10).optional(),
     status: vine.string().trim().optional(),
     groupId: vine.number().optional(),
-    file: vine
-      .file({
-        extnames: ['csv'],
-        size: 25 * 1024 * 1024,
-      })
-      .optional(),
+    file: csvFileSchema.optional(),
+    files: vine.array(csvFileSchema).optional(),
   })
 )
+

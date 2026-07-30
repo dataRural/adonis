@@ -73,6 +73,18 @@ router
   .as('datasets.version.download')
 
 router
+  .get('/datasets/:datasetId/version/:versionId/download-all', [DatasetsController, 'downloadAll'])
+  .as('datasets.version.download_all')
+
+router
+  .get('/datasets/:datasetId/version/:versionId/readme/download', [DatasetsController, 'downloadReadme'])
+  .as('datasets.version.readme.download')
+
+router
+  .get('/datasets/:datasetId/version/:versionId/file/:fileId/download', [DatasetsController, 'downloadFile'])
+  .as('datasets.version.file.download')
+
+router
   .get('/datasets', [DatasetsController, 'explore'])
   .as('datasets.explore')
 

@@ -44,8 +44,9 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
 
   const handleDownload = (e: React.MouseEvent) => {
     e.preventDefault()
-    if (latestVersionId) {
-      window.location.href = `/datasets/${ds.id}/version/${latestVersionId}/download`
+    const versionIdToDownload = (ds as any).selectedVersionId || latestVersionId
+    if (versionIdToDownload) {
+      window.location.href = `/datasets/${ds.id}/version/${versionIdToDownload}/download-all`
     } else {
       alert(`Iniciando download do dataset (${ds.size})`)
     }
@@ -176,7 +177,7 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
           </div>
 
           <div className="dr-ds-head-actions">
-            <button className="dr-btn dr-btn-primary dr-btn-lg" onClick={handleDownload}>
+            <button className="dr-btn dr-btn-primary dr-btn-lg" onClick={handleDownload} title="Baixar dataset compactado em arquivo ZIP com todos os CSVs e README.md">
               <Ic.Download size={18} /> Baixar ({ds.size})
             </button>
             {isOwner && (
