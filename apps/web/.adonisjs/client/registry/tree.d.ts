@@ -10,6 +10,34 @@ export interface ApiDefinition {
   marketing: {
     show: typeof routes['marketing.show']
   }
+  auth: {
+    signIn: {
+      show: typeof routes['auth.sign_in.show']
+      handle: typeof routes['auth.sign_in.handle']
+    }
+    signOut: {
+      handle: typeof routes['auth.sign_out.handle']
+    }
+    signUp: {
+      show: typeof routes['auth.sign_up.show']
+      handle: typeof routes['auth.sign_up.handle']
+    }
+    forgotPassword: {
+      show: typeof routes['auth.forgot_password.show']
+      handle: typeof routes['auth.forgot_password.handle']
+    }
+    resetPassword: {
+      show: typeof routes['auth.reset_password.show']
+      handle: typeof routes['auth.reset_password.handle']
+    }
+  }
+  social: {
+    create: typeof routes['social.create']
+    callback: typeof routes['social.callback']
+  }
+  locale: {
+    switch: typeof routes['locale.switch']
+  }
   areas: {
     list: typeof routes['areas.list']
   }
@@ -49,39 +77,14 @@ export interface ApiDefinition {
     show: typeof routes['dashboard.show']
     publish: typeof routes['dashboard.publish']
   }
-  auth: {
-    signIn: {
-      show: typeof routes['auth.sign_in.show']
-      handle: typeof routes['auth.sign_in.handle']
-    }
-    signOut: {
-      handle: typeof routes['auth.sign_out.handle']
-    }
-    signUp: {
-      show: typeof routes['auth.sign_up.show']
-      handle: typeof routes['auth.sign_up.handle']
-    }
-    forgotPassword: {
-      show: typeof routes['auth.forgot_password.show']
-      handle: typeof routes['auth.forgot_password.handle']
-    }
-    resetPassword: {
-      show: typeof routes['auth.reset_password.show']
-      handle: typeof routes['auth.reset_password.handle']
-    }
-  }
-  social: {
-    create: typeof routes['social.create']
-    callback: typeof routes['social.callback']
-  }
-  locale: {
-    switch: typeof routes['locale.switch']
+  admin: {
+    index: typeof routes['admin.index']
+    store: typeof routes['admin.store']
+    update: typeof routes['admin.update']
+    destroy: typeof routes['admin.destroy']
+    audits: typeof routes['admin.audits']
   }
   users: {
-    index: typeof routes['users.index']
-    store: typeof routes['users.store']
-    update: typeof routes['users.update']
-    destroy: typeof routes['users.destroy']
     invite: {
       handle: typeof routes['users.invite.handle']
     }

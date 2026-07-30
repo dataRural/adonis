@@ -43,7 +43,7 @@ export default function UsersTable({ users, roles, q, selectedRoles }: DataTable
     data: users,
     visit: ({ page, perPage }) => {
       return router.get(
-        '/users',
+        '/admin',
         {
           page,
           perPage,

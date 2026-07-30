@@ -42,6 +42,6 @@ export default class InviteController {
       message: payload.description,
     })
 
-    return response.redirect().toRoute('users.index')
+    return response.redirect().toRoute('admin.index')
   }
 }

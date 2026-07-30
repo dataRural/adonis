@@ -4,11 +4,11 @@ import type React from 'react'
 import type { Prettify } from '@adonisjs/core/types/common'
 
 type ExtractProps<T> =
-  T extends (props: infer Props, ...args: any[]) => any
+  T extends React.FC<infer Props>
     ? Prettify<Omit<Props, 'children'>>
     : T extends React.Component<infer Props>
       ? Prettify<Omit<Props, 'children'>>
-      : Record<string, any>
+      : never
 
 declare module '@adonisjs/inertia/types' {
   export interface InertiaPages {

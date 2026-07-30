@@ -1195,7 +1195,7 @@ export default class DatasetsController {
 
     const totalLikesCount = userDatasets.reduce((sum, d) => sum + (d.likes ? d.likes.length : 0), 0)
 
-    const memberships = await auth.user!.related('groupMemberships').query().preload('group')
+    const memberships = await GroupMember.query().where('userId', auth.user!.id).preload('group')
     const userGroups = memberships.map((m) => ({
       id: m.group.id,
       name: m.group.name,
@@ -1401,7 +1401,7 @@ export default class DatasetsController {
       }
     }
 
-    const memberships = await auth.user!.related('groupMemberships').query().preload('group')
+    const memberships = await GroupMember.query().where('userId', auth.user!.id).preload('group')
     const userGroups = memberships.map((m) => ({
       id: m.group.id,
       name: m.group.name,

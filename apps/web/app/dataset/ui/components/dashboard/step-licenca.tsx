@@ -1,5 +1,5 @@
 import * as Ic from '#common/ui/components/datarural/icons'
-import { LICENSES, ME } from './panel-data'
+import { LICENSES } from './panel-data'
 
 interface Step4Props {
   data: any
@@ -7,9 +7,6 @@ interface Step4Props {
 }
 
 export default function StepLicenca({ data, set }: Step4Props) {
-  const lic = LICENSES.find((l) => l.id === data.license) || LICENSES[0]
-  const year = new Date().getFullYear()
-  const randomDoiSuffix = 4729
 
   return (
     <div>
