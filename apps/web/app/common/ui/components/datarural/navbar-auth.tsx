@@ -30,7 +30,7 @@ const DEFAULT_ME = {
   avatarUrl: undefined as string | undefined,
 }
 
-export function NavUser({ user }: { user?: UserProps | null }) {
+export function NavUser({ user, theme, onToggleTheme }: { user?: UserProps | null; theme?: string; onToggleTheme?: () => void }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -135,9 +135,104 @@ export function NavUser({ user }: { user?: UserProps | null }) {
   )
 }
 
+export function NavLanguage() {
+  const { language, changeLanguage } = useTranslation()
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  const currentLang = (language || 'pt').startsWith('pt') ? 'pt' : 'en'
+
+  useEffect(() => {
+    if (!open) return
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    window.addEventListener('click', onDoc)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('click', onDoc)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
+  const selectLanguage = (code: 'pt' | 'en') => {
+    setOpen(false)
+    if (code === currentLang) return
+    router.post(`/switch/${code}`, {}, {
+      onSuccess: () => changeLanguage(code),
+      onError: () => changeLanguage(code),
+    })
+  }
+
+  return (
+    <div style={{ position: 'relative' }} ref={ref}>
+      <button
+        className={'dr-btn dr-btn-icon' + (open ? ' open' : '')}
+        onClick={(e) => {
+          e.stopPropagation()
+          setOpen((v) => !v)
+        }}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        title="Idioma / Language"
+      >
+        <Ic.Globe size={18} />
+      </button>
+
+      {open && (
+        <div
+          className="dr-user-menu"
+          role="menu"
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 'calc(100% + 8px)',
+            minWidth: 140,
+            zIndex: 100,
+            padding: '6px 4px',
+          }}
+        >
+          <button
+            role="menuitem"
+            onClick={() => selectLanguage('pt')}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              fontWeight: currentLang === 'pt' ? 700 : 400,
+            }}
+          >
+            <span>Português</span>
+            {currentLang === 'pt' && <Ic.Check size={14} style={{ color: 'var(--brand-green)' }} />}
+          </button>
+          <button
+            role="menuitem"
+            onClick={() => selectLanguage('en')}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              fontWeight: currentLang === 'en' ? 700 : 400,
+            }}
+          >
+            <span>English</span>
+            {currentLang === 'en' && <Ic.Check size={14} style={{ color: 'var(--brand-green)' }} />}
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function PanelNav({ theme, onToggleTheme, onPublish, active, user, hidePublishButton }: PanelNavProps) {
   const { t } = useTranslation()
   const loggedInUser = useUser()
+
   return (
     <header className="dr-nav">
       <div className="dr-container dr-nav-inner">
@@ -185,20 +280,13 @@ export default function PanelNav({ theme, onToggleTheme, onPublish, active, user
           )}
         </nav>
         <div className="dr-nav-right">
-          <button
-            className="dr-btn dr-btn-icon"
-            onClick={onToggleTheme}
-            title={theme === 'dark' ? t('common.nav.theme_light') : t('common.nav.theme_dark')}
-            aria-label={t('common.nav.toggle_theme')}
-          >
-            {theme === 'dark' ? <Ic.Sun size={18} /> : <Ic.Moon size={18} />}
-          </button>
+          <NavLanguage />
           {!hidePublishButton && onPublish && (
             <button className="dr-btn dr-btn-primary" onClick={onPublish}>
               <Ic.Plus size={17} /> {t('common.nav.publish_dataset')}
             </button>
           )}
-          <NavUser user={user} />
+          <NavUser user={user} theme={theme} onToggleTheme={onToggleTheme} />
         </div>
       </div>
     </header>

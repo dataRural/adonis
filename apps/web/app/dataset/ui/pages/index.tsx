@@ -271,7 +271,7 @@ export default function DatasetsExplorePage({
                     color: 'var(--muted-foreground)',
                     padding: 4,
                   }}
-                  title="Limpar busca"
+                  title={t('dataset.explore.clear_search')}
                 >
                   <Ic.X size={16} />
                 </button>
@@ -293,7 +293,9 @@ export default function DatasetsExplorePage({
             }}
           >
             <div style={{ fontSize: '14px', color: 'var(--muted-foreground)', fontWeight: 500 }}>
-              Exibindo <strong style={{ color: 'var(--foreground)' }}>{filteredList.length}</strong> {filteredList.length === 1 ? 'dataset' : 'datasets'}
+              {filteredList.length === 1
+                ? t('dataset.explore.showing_count_one', { count: filteredList.length })
+                : t('dataset.explore.showing_count', { count: filteredList.length })}
               {(search || activeCat) && (
                 <button
                   onClick={handleClearFilters}
@@ -308,7 +310,7 @@ export default function DatasetsExplorePage({
                     textDecoration: 'underline',
                   }}
                 >
-                  Limpar filtros
+                  {t('dataset.explore.clear_filters')}
                 </button>
               )}
             </div>
@@ -338,7 +340,7 @@ export default function DatasetsExplorePage({
                     boxShadow: tab === 'recent' ? 'var(--shadow-sm)' : 'none',
                   }}
                 >
-                  Mais recentes
+                  {t('dataset.explore.sort_recent')}
                 </button>
                 <button
                   onClick={() => setTab('featured')}
@@ -354,7 +356,7 @@ export default function DatasetsExplorePage({
                     boxShadow: tab === 'featured' ? 'var(--shadow-sm)' : 'none',
                   }}
                 >
-                  Maior usabilidade
+                  {t('dataset.explore.sort_featured')}
                 </button>
                 <button
                   onClick={() => setTab('popular')}
@@ -370,7 +372,7 @@ export default function DatasetsExplorePage({
                     boxShadow: tab === 'popular' ? 'var(--shadow-sm)' : 'none',
                   }}
                 >
-                  Mais curtidos
+                  {t('dataset.explore.sort_popular')}
                 </button>
               </div>
 
@@ -396,7 +398,7 @@ export default function DatasetsExplorePage({
                     display: 'flex',
                     alignItems: 'center',
                   }}
-                  title="Visualização em grade"
+                  title={t('dataset.explore.view_grid')}
                 >
                   <Ic.Grid size={15} />
                 </button>
@@ -412,7 +414,7 @@ export default function DatasetsExplorePage({
                     display: 'flex',
                     alignItems: 'center',
                   }}
-                  title="Visualização em lista"
+                  title={t('dataset.explore.view_list')}
                 >
                   <Ic.Table size={15} />
                 </button>
@@ -446,16 +448,16 @@ export default function DatasetsExplorePage({
             >
               <Ic.Database size={48} style={{ margin: '0 auto 16px', opacity: 0.3 }} />
               <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 8px', color: 'var(--foreground)' }}>
-                Nenhum dataset encontrado
+                {t('dataset.explore.no_datasets_found')}
               </h3>
               <p style={{ fontSize: '14px', margin: '0 0 20px', maxWidth: 420, marginLeft: 'auto', marginRight: 'auto' }}>
                 {search || activeCat
-                  ? 'Não encontramos nenhum conjunto de dados correspondente aos filtros aplicados.'
-                  : 'Ainda não existem datasets cadastrados no catálogo.'}
+                  ? t('dataset.explore.no_matching_filters')
+                  : t('dataset.explore.no_datasets_in_catalog')}
               </p>
               {(search || activeCat) && (
                 <button className="dr-btn dr-btn-primary" onClick={handleClearFilters}>
-                  Limpar busca e filtros
+                  {t('dataset.explore.clear_search_and_filters')}
                 </button>
               )}
             </div>

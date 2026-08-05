@@ -75,7 +75,7 @@ export function ProfileForm({ user }: Props) {
                 <Button type="button" onClick={() => avatarInputRef.current?.click()}>
                   {t('users.action.actions.change_avatar')}
                 </Button>
-                <p className="mt-2 text-xs/5">JPG, GIF or PNG. 1MB max.</p>
+                <p className="mt-2 text-xs/5">{t('users.profile.avatar_hint')}</p>
               </div>
             </div>
 
@@ -103,24 +103,26 @@ export function ProfileForm({ user }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel htmlFor="username">Nome de usuário (Username)</FieldLabel>
+            <FieldLabel htmlFor="username">{t('users.profile.username')}</FieldLabel>
             <Input
               id="username"
-              placeholder="Ex: rafael_vasconcelos"
+              placeholder={t('users.profile.username_placeholder')}
               value={data.username}
               onChange={(e) => setData('username', e.target.value)}
               className={errors?.username ? 'border-destructive' : ''}
             />
-            <p className="text-xs text-muted-foreground mt-1">Seu perfil público estará disponível em datarural.ufrrj.br/u/{data.username || 'username'}</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {t('users.profile.username_hint', { username: data.username || 'username' })}
+            </p>
             <FieldErrorBag errors={errors} field="username" />
           </Field>
 
           <Field>
-            <FieldLabel htmlFor="bio">Biografia</FieldLabel>
+            <FieldLabel htmlFor="bio">{t('users.profile.bio')}</FieldLabel>
             <textarea
               id="bio"
               rows={3}
-              placeholder="Escreva uma breve biografia para o seu perfil público..."
+              placeholder={t('users.profile.bio_placeholder')}
               value={data.bio}
               onChange={(e) => setData('bio', e.target.value)}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -129,10 +131,10 @@ export function ProfileForm({ user }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel htmlFor="institution">Instituição / Unidade</FieldLabel>
+            <FieldLabel htmlFor="institution">{t('users.profile.institution')}</FieldLabel>
             <Input
               id="institution"
-              placeholder="Ex: Instituto de Ciências Exatas — UFRRJ"
+              placeholder={t('users.profile.institution_placeholder')}
               value={data.institution}
               onChange={(e) => setData('institution', e.target.value)}
               className={errors?.institution ? 'border-destructive' : ''}
@@ -141,10 +143,10 @@ export function ProfileForm({ user }: Props) {
           </Field>
 
           <Field>
-            <FieldLabel htmlFor="location">Localização</FieldLabel>
+            <FieldLabel htmlFor="location">{t('users.profile.location')}</FieldLabel>
             <Input
               id="location"
-              placeholder="Ex: Seropédica, Rio de Janeiro"
+              placeholder={t('users.profile.location_placeholder')}
               value={data.location}
               onChange={(e) => setData('location', e.target.value)}
               className={errors?.location ? 'border-destructive' : ''}

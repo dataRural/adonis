@@ -25,7 +25,7 @@
     "cancel": "Cancel",
     "delete": "Delete group",
     "add_member": "Add member",
-    "remove_member_confirm": "Remove {{name}} from the group?",
+    "remove_member_confirm": "Remove {name} from the group?",
     "remove_from_group": "Remove from group",
     "empty_datasets": "No datasets in this group",
     "empty_datasets_sub": "Add existing datasets to this group from the publish dashboard.",
@@ -76,8 +76,8 @@
     }
   },
   "card": {
-    "members_count": "{{count}} members",
-    "datasets_count": "{{count}} datasets",
+    "members_count": "{count} members",
+    "datasets_count": "{count} datasets",
     "owner": "Owner",
     "admin": "Administrator",
     "editor": "Editor",

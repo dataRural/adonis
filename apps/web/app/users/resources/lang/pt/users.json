@@ -53,6 +53,8 @@
     "audits": {
       "title": "Logs de Auditoria",
       "search_placeholder": "Pesquisar por evento, usuário, tabela ou ID…",
+      "search_button": "Buscar",
+      "event_label": "Filtrar por evento",
       "event_all": "Todos os eventos",
       "event_create": "Criação",
       "event_update": "Atualização",
@@ -63,19 +65,77 @@
       "view_details": "Ver Detalhes"
     }
   },
+  "settings_layout": {
+    "breadcrumb_home": "Início",
+    "breadcrumb_settings": "Configurações",
+    "title": "Minha Conta",
+    "sub": "Gerencie seus dados pessoais, senha de acesso e preferências."
+  },
   "password": {
     "breadcrumbs": {
       "settings": "Configurações"
     },
-    "title": "Atualizar senha",
-    "description": "Garanta que sua conta esteja usando uma senha longa e aleatória para manter-se segura"
+    "title": "Alterar Senha",
+    "description": "Certifique-se de que sua conta esteja usando uma senha longa e aleatória para se manter segura."
   },
   "profile": {
     "breadcrumbs": {
       "settings": "Configurações"
     },
-    "title": "Informações do perfil",
-    "description": "Atualize seu nome e endereço de e-mail"
+    "title": "Informações do Perfil",
+    "description": "Atualize suas informações pessoais e foto de perfil.",
+    "avatar_hint": "JPG, GIF ou PNG. Máximo 1MB.",
+    "username": "Nome de usuário",
+    "username_placeholder": "Ex: rafael_vasconcelos",
+    "username_hint": "Seu perfil público estará disponível em datarural.ufrrj.br/u/{username}",
+    "bio": "Biografia",
+    "bio_placeholder": "Escreva uma breve biografia para o seu perfil público...",
+    "institution": "Instituição / Unidade",
+    "institution_placeholder": "Ex: Instituto de Ciências Exatas — UFRRJ",
+    "location": "Localização",
+    "location_placeholder": "Ex: Seropédica, Rio de Janeiro"
+  },
+  "public_profile": {
+    "tab_overview": "Visão Geral",
+    "tab_datasets": "Datasets",
+    "tab_groups": "Grupos",
+    "tab_activity": "Atividades",
+    "default_user": "Usuário DataRural",
+    "no_bio_own": "Sem biografia informada. Clique em Editar perfil para adicionar.",
+    "no_bio_other": "Nenhuma biografia informada.",
+    "edit_profile": "Editar perfil",
+    "no_institution": "Nenhuma instituição informada",
+    "no_location": "Nenhuma localização informada",
+    "member_since": "Membro desde {date}",
+    "groups_title": "Grupos ({count})",
+    "no_groups": "Nenhum grupo participante.",
+    "role_owner": "Dono",
+    "role_admin": "Admin",
+    "role_member": "Membro",
+    "featured_datasets": "Datasets em Destaque",
+    "no_datasets_title": "Nenhum dataset publicado ainda",
+    "no_datasets_sub": "Este usuário ainda não publicou datasets no ecossistema.",
+    "publish_first": "Publicar meu primeiro dataset",
+    "public": "Público",
+    "private": "Privado",
+    "no_dataset_desc": "Sem descrição cadastrada para este conjunto de dados.",
+    "recent_activity": "Atividade Recente",
+    "no_recent_activity": "Nenhuma atividade recente registrada no ecossistema.",
+    "published_new_version": "Publicou nova versão",
+    "of_dataset": "do dataset",
+    "files_count": "{count} arquivo(s)",
+    "search_placeholder": "Pesquisar datasets...",
+    "new_dataset": "Novo Dataset",
+    "no_search_results": "Nenhum dataset encontrado para a busca especificada.",
+    "label_area": "Área:",
+    "label_format": "Formato:",
+    "label_size": "Tamanho:",
+    "label_likes": "Curtidas:",
+    "label_downloads": "Downloads:",
+    "groups_heading": "Grupos de Pesquisa e Laboratórios",
+    "no_public_groups": "O usuário não participa de nenhum grupo público no momento.",
+    "activity_history": "Histórico de Atividade",
+    "published_dataset": "Publicou dataset:"
   },
   "tokens": {
     "breadcrumbs": {
@@ -144,7 +204,7 @@
   },
   "delete": {
     "title": "Excluir Usuário",
-    "description": "Você tem certeza de que deseja excluir <strong1>{{email}}</strong1>? Esta ação removerá permanentemente o usuário com o cargo de <strong2>{{role}}</strong2> do sistema. Esta operação não pode ser desfeita.",
+    "description": "Você tem certeza de que deseja excluir <strong1>{email}</strong1>? Esta ação removerá permanentemente o usuário com o cargo de <strong2>{role}</strong2> do sistema. Esta operação não pode ser desfeita.",
     "confirm_placeholder": "Digite o e-mail para confirmar a exclusão.",
     "confirm_button": "Excluir",
     "alert": {
@@ -157,7 +217,7 @@
   },
   "delete_token": {
     "title": "Excluir Token",
-    "description": "Você tem certeza de que deseja excluir <strong1>{{token_name}}</strong1>? Esta ação removerá permanentemente o token do sistema. Esta operação não pode ser desfeita.",
+    "description": "Você tem certeza de que deseja excluir <strong1>{token_name}</strong1>? Esta ação removerá permanentemente o token do sistema. Esta operação não pode ser desfeita.",
     "confirm_placeholder": "Digite o nome do token para confirmar a exclusão.",
     "confirm_button": "Excluir",
     "alert": {
@@ -170,7 +230,7 @@
   },
   "impersonate": {
     "title": "Assumir Usuário",
-    "description": "Tem certeza de que deseja assumir <strong1>{{email}}</strong1>? Esta ação permitirá que você atue como este usuário (Função: <strong2>{{role}}</strong2>) no sistema.",
+    "description": "Tem certeza de que deseja assumir <strong1>{email}</strong1>? Esta ação permitirá que você atue como este usuário (Função: <strong2>{role}</strong2>) no sistema.",
     "confirm_button": "Assumir",
     "alert": {
       "title": "Atenção",

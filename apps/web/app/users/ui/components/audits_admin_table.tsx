@@ -95,21 +95,21 @@ export default function AuditsAdminTable() {
       case 'created':
         return (
           <span style={{ ...baseStyle, background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e', border: '1px solid rgba(34, 197, 94, 0.3)' }}>
-            {t('admin.audits.event_create')}
+            {t('users.admin.audits.event_create')}
           </span>
         )
       case 'update':
       case 'updated':
         return (
           <span style={{ ...baseStyle, background: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6', border: '1px solid rgba(59, 130, 246, 0.3)' }}>
-            {t('admin.audits.event_update')}
+            {t('users.admin.audits.event_update')}
           </span>
         )
       case 'delete':
       case 'deleted':
         return (
           <span style={{ ...baseStyle, background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
-            {t('admin.audits.event_delete')}
+            {t('users.admin.audits.event_delete')}
           </span>
         )
       case 'published':
@@ -171,7 +171,7 @@ export default function AuditsAdminTable() {
           <div style={{ position: 'relative', width: '100%' }}>
             <input
               type="text"
-              placeholder={t('admin.audits.search_placeholder')}
+              placeholder={t('users.admin.audits.search_placeholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="dr-input"
@@ -182,23 +182,23 @@ export default function AuditsAdminTable() {
             </span>
           </div>
           <button type="submit" className="dr-btn dr-btn-primary" style={{ height: 38, padding: '0 16px' }}>
-            {t('admin.audits.search_button')}
+            {t('users.admin.audits.search_button')}
           </button>
         </form>
 
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontSize: 13, color: 'var(--muted-foreground)' }}>{t('admin.audits.event_label')}:</span>
+            <span style={{ fontSize: 13, color: 'var(--muted-foreground)' }}>{t('users.admin.audits.event_label')}:</span>
             <select
               value={eventFilter}
               onChange={(e) => { setEventFilter(e.target.value); setPage(1) }}
               className="dr-input"
               style={{ height: 38, padding: '0 10px' }}
             >
-              <option value="all">{t('admin.audits.event_all')}</option>
-              <option value="create">{t('admin.audits.event_create')}</option>
-              <option value="update">{t('admin.audits.event_update')}</option>
-              <option value="delete">{t('admin.audits.event_delete')}</option>
+              <option value="all">{t('users.admin.audits.event_all')}</option>
+              <option value="create">{t('users.admin.audits.event_create')}</option>
+              <option value="update">{t('users.admin.audits.event_update')}</option>
+              <option value="delete">{t('users.admin.audits.event_delete')}</option>
             </select>
           </div>
 

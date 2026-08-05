@@ -69,15 +69,15 @@ export default function SettingsLayout({
             <div className="dr-page-head-inner">
               <div>
                 <div className="dr-page-breadcrumb">
-                  <a href="/">Início</a>
+                  <a href="/">{t('users.settings_layout.breadcrumb_home')}</a>
                   <span className="sep">
                     <Ic.Chevr size={13} style={{ display: 'inline', margin: '0 4px' }} />
                   </span>
-                  <span>Configurações</span>
+                  <span>{t('users.settings_layout.breadcrumb_settings')}</span>
                 </div>
-                <h1 style={{ margin: 0 }}>Minha Conta</h1>
+                <h1 style={{ margin: 0 }}>{t('users.settings_layout.title')}</h1>
                 <p className="page-sub">
-                  Gerencie seus dados pessoais, senha de acesso e chaves de API.
+                  {t('users.settings_layout.sub')}
                 </p>
               </div>
             </div>
@@ -123,6 +123,30 @@ export default function SettingsLayout({
                     </Link>
                   )
                 })}
+                <button
+                  type="button"
+                  onClick={handleToggleTheme}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '10px 14px',
+                    borderRadius: 'var(--radius)',
+                    border: 'none',
+                    background: 'transparent',
+                    color: 'var(--muted-foreground)',
+                    fontWeight: 500,
+                    fontSize: '14px',
+                    cursor: 'pointer',
+                    width: '100%',
+                    textAlign: 'left',
+                    transition: 'all 0.15s ease',
+                  }}
+                  className="dr-settings-link"
+                >
+                  {theme === 'dark' ? <Ic.Sun size={18} /> : <Ic.Moon size={18} />}
+                  <span>{theme === 'dark' ? t('common.nav.theme_light') : t('common.nav.theme_dark')}</span>
+                </button>
               </nav>
             </aside>
 

@@ -74,6 +74,22 @@ export interface ApiDefinition {
     update: typeof routes['password.update']
     show: typeof routes['password.show']
   }
+  groups: {
+    index: typeof routes['groups.index']
+    store: typeof routes['groups.store']
+    show: typeof routes['groups.show']
+    update: typeof routes['groups.update']
+    destroy: typeof routes['groups.destroy']
+    members: {
+      store: typeof routes['groups.members.store']
+      update: typeof routes['groups.members.update']
+      destroy: typeof routes['groups.members.destroy']
+    }
+    datasets: {
+      store: typeof routes['groups.datasets.store']
+      destroy: typeof routes['groups.datasets.destroy']
+    }
+  }
   areas: {
     list: typeof routes['areas.list']
   }
@@ -120,21 +136,5 @@ export interface ApiDefinition {
   dashboard: {
     show: typeof routes['dashboard.show']
     publish: typeof routes['dashboard.publish']
-  }
-  groups: {
-    index: typeof routes['groups.index']
-    store: typeof routes['groups.store']
-    show: typeof routes['groups.show']
-    update: typeof routes['groups.update']
-    destroy: typeof routes['groups.destroy']
-    members: {
-      store: typeof routes['groups.members.store']
-      update: typeof routes['groups.members.update']
-      destroy: typeof routes['groups.members.destroy']
-    }
-    datasets: {
-      store: typeof routes['groups.datasets.store']
-      destroy: typeof routes['groups.datasets.destroy']
-    }
   }
 }

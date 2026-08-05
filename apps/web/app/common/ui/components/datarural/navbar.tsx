@@ -1,8 +1,8 @@
-import { Link } from '@adonisjs/inertia/react'
+import { Link } from '@inertiajs/react'
 import { BrandMark } from './brand'
 import * as Ic from './icons'
 import useUser from '#auth/ui/hooks/use_user'
-import { NavUser } from './navbar-auth'
+import { NavUser, NavLanguage } from './navbar-auth'
 import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface NavbarProps {
@@ -65,20 +65,13 @@ export default function Navbar({ theme, onToggleTheme, activePage }: NavbarProps
           )}
         </nav>
         <div className="dr-nav-right">
-          <button
-            className="dr-btn dr-btn-icon"
-            onClick={onToggleTheme}
-            title={theme === 'dark' ? t('common.nav.theme_light') : t('common.nav.theme_dark')}
-            aria-label={t('common.nav.toggle_theme')}
-          >
-            {theme === 'dark' ? <Ic.Sun size={18} /> : <Ic.Moon size={18} />}
-          </button>
+          <NavLanguage />
           {useUser() ? (
             <>
               <Link className="dr-btn dr-btn-primary" style={{ color: 'white', display: 'inline-flex', alignItems: 'center', gap: '6px' }} href="/dashboard/publish">
                 <Ic.Plus size={17} /> {t('common.nav.publish_dataset')}
               </Link>
-              <NavUser user={null} />
+              <NavUser user={null} theme={theme} onToggleTheme={onToggleTheme} />
             </>
           ) : (
             <>
