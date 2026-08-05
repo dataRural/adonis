@@ -1,7 +1,9 @@
 import * as Ic from '#common/ui/components/datarural/icons'
 import { DatasetDetail } from './detail-data'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 export default function FilesTab({ ds, versions }: { ds: DatasetDetail; versions?: any[] }) {
+  const { t } = useTranslation()
   const finalDs = ds
   const finalVersions = versions && versions.length > 0 ? versions : []
   const selectedVersionId = (finalDs as any).selectedVersionId
@@ -72,18 +74,12 @@ export default function FilesTab({ ds, versions }: { ds: DatasetDetail; versions
     }
   }
 
-  const handleDownloadAll = () => {
-    if (currentVersion) {
-      window.location.href = `/datasets/${finalDs.id}/version/${currentVersion.id}/download-all`
-    }
-  }
-
   return (
     <div>
       <div className="dr-panel">
         <div className="dr-panel-head">
           <h3>
-            <Ic.Folder size={17} className="ic" style={{ marginRight: 6 }} /> Arquivos da versão ({currentVersion?.name || 'V1'})
+            <Ic.Folder size={17} className="ic" style={{ marginRight: 6 }} /> {t('dataset.detail.files_panel')} ({currentVersion?.name || 'V1'})
           </h3>
         </div>
         <div className="dr-filelist">
@@ -96,16 +92,16 @@ export default function FilesTab({ ds, versions }: { ds: DatasetDetail; versions
                 <span className="fn">{f.name}</span>
                 <span className="fd">
                   <span>{f.size}</span>
-                  <span>{f.rows !== '—' && f.rows !== '---' ? f.rows + ' linhas' : '—'}</span>
+                  <span>{f.rows !== '—' && f.rows !== '---' ? f.rows + ' ' + t('dataset.show.rows_suffix') : '—'}</span>
                 </span>
               </div>
-              {f.primary && <span className="dr-file-badge prim">principal</span>}
+              {f.primary && <span className="dr-file-badge prim">{t('dataset.detail.primary_file')}</span>}
               <span className="dr-file-badge">{f.type}</span>
               <button
                 className="dr-btn dr-btn-outline dr-btn-sm"
                 onClick={() => handleDownload(f.versionId, f.fileId, f.isReadme)}
                 style={{ marginLeft: 'auto' }}
-                title={`Baixar ${f.name}`}
+                title={`${t('dataset.detail.download')} ${f.name}`}
               >
                 <Ic.Download size={15} />
               </button>

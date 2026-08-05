@@ -3,6 +3,7 @@ import { Link, router } from '@inertiajs/react'
 import useUser from '#auth/ui/hooks/use_user'
 import { BrandMark } from './brand'
 import * as Ic from './icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface UserProps {
   name: string
@@ -30,13 +31,14 @@ const DEFAULT_ME = {
 }
 
 export function NavUser({ user }: { user?: UserProps | null }) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
   const loggedInUser = useUser()
   const me = loggedInUser
     ? {
-      name: loggedInUser.fullName || 'Usuário UFRRJ',
+      name: loggedInUser.fullName || t('common.nav.user_menu.default_user'),
       email: loggedInUser.email,
       short: (loggedInUser.fullName || 'U').split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase(),
       unit: 'Instituto de Ciências Exatas',
@@ -109,23 +111,23 @@ export function NavUser({ user }: { user?: UserProps | null }) {
           </div>
           <div className="sep"></div>
           <Link role="menuitem" href="/profile">
-            <Ic.User size={16} /> Meu perfil
+            <Ic.User size={16} /> {t('common.nav.user_menu.my_profile')}
           </Link>
           <Link role="menuitem" href="/dashboard">
-            <Ic.Database size={16} /> Meus datasets
+            <Ic.Database size={16} /> {t('common.nav.user_menu.my_datasets')}
           </Link>
           <Link role="menuitem" href="/groups">
-            <Ic.Users size={16} /> Meus grupos
+            <Ic.Users size={16} /> {t('common.nav.user_menu.my_groups')}
           </Link>
           <Link role="menuitem" href="/favorites">
-            <Ic.Bookmark size={16} /> Favoritos
+            <Ic.Bookmark size={16} /> {t('common.nav.user_menu.favorites')}
           </Link>
           <Link role="menuitem" href="/settings/profile">
-            <Ic.Settings size={16} /> Configurações da conta
+            <Ic.Settings size={16} /> {t('common.nav.user_menu.account_settings')}
           </Link>
           <div className="sep"></div>
           <button className="danger" role="menuitem" onClick={handleLogout}>
-            <Ic.Logout size={16} /> Sair
+            <Ic.Logout size={16} /> {t('common.nav.user_menu.logout')}
           </button>
         </div>
       )}
@@ -134,6 +136,7 @@ export function NavUser({ user }: { user?: UserProps | null }) {
 }
 
 export default function PanelNav({ theme, onToggleTheme, onPublish, active, user, hidePublishButton }: PanelNavProps) {
+  const { t } = useTranslation()
   const loggedInUser = useUser()
   return (
     <header className="dr-nav">
@@ -152,32 +155,32 @@ export default function PanelNav({ theme, onToggleTheme, onPublish, active, user
             className={'dr-nav-link' + (active === 'datasets' ? ' active' : '')}
             href="/datasets"
           >
-            Datasets
+            {t('common.nav.datasets')}
           </Link>
           <Link
             className={'dr-nav-link' + (active === 'dashboard' ? ' active' : '')}
             href="/dashboard"
           >
-            Meus datasets
+            {t('common.nav.my_datasets')}
           </Link>
           <Link
             className={'dr-nav-link' + (active === 'favorites' ? ' active' : '')}
             href="/favorites"
           >
-            Favoritos
+            {t('common.nav.favorites')}
           </Link>
           <Link
             className={'dr-nav-link' + (active === 'groups' ? ' active' : '')}
             href="/groups"
           >
-            Grupos
+            {t('common.nav.groups')}
           </Link>
           {loggedInUser && (loggedInUser.roleId === 2 || (loggedInUser as any).roleId === 2) && (
             <Link
               className={'dr-nav-link' + (active === 'users' || active === 'admin' ? ' active' : '')}
               href="/admin"
             >
-              Gestão
+              {t('common.nav.management')}
             </Link>
           )}
         </nav>
@@ -185,14 +188,14 @@ export default function PanelNav({ theme, onToggleTheme, onPublish, active, user
           <button
             className="dr-btn dr-btn-icon"
             onClick={onToggleTheme}
-            title={theme === 'dark' ? 'Tema claro' : 'Tema escuro'}
-            aria-label="Alternar tema"
+            title={theme === 'dark' ? t('common.nav.theme_light') : t('common.nav.theme_dark')}
+            aria-label={t('common.nav.toggle_theme')}
           >
             {theme === 'dark' ? <Ic.Sun size={18} /> : <Ic.Moon size={18} />}
           </button>
           {!hidePublishButton && onPublish && (
             <button className="dr-btn dr-btn-primary" onClick={onPublish}>
-              <Ic.Plus size={17} /> Publicar dataset
+              <Ic.Plus size={17} /> {t('common.nav.publish_dataset')}
             </button>
           )}
           <NavUser user={user} />

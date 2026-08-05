@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import * as Ic from '#common/ui/components/datarural/icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 export interface AuditRecord {
   id: number
@@ -29,6 +30,7 @@ interface PaginationMeta {
 }
 
 export default function AuditsAdminTable() {
+  const { t } = useTranslation()
   const [audits, setAudits] = useState<AuditRecord[]>([])
   const [meta, setMeta] = useState<PaginationMeta | null>(null)
   const [loading, setLoading] = useState(true)
@@ -93,21 +95,21 @@ export default function AuditsAdminTable() {
       case 'created':
         return (
           <span style={{ ...baseStyle, background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e', border: '1px solid rgba(34, 197, 94, 0.3)' }}>
-            Criação
+            {t('admin.audits.event_create')}
           </span>
         )
       case 'update':
       case 'updated':
         return (
           <span style={{ ...baseStyle, background: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6', border: '1px solid rgba(59, 130, 246, 0.3)' }}>
-            Atualização
+            {t('admin.audits.event_update')}
           </span>
         )
       case 'delete':
       case 'deleted':
         return (
           <span style={{ ...baseStyle, background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
-            Exclusão
+            {t('admin.audits.event_delete')}
           </span>
         )
       case 'published':
@@ -169,7 +171,7 @@ export default function AuditsAdminTable() {
           <div style={{ position: 'relative', width: '100%' }}>
             <input
               type="text"
-              placeholder="Buscar em comentários, usuários..."
+              placeholder={t('admin.audits.search_placeholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="dr-input"
@@ -180,23 +182,23 @@ export default function AuditsAdminTable() {
             </span>
           </div>
           <button type="submit" className="dr-btn dr-btn-primary" style={{ height: 38, padding: '0 16px' }}>
-            Buscar
+            {t('admin.audits.search_button')}
           </button>
         </form>
 
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontSize: 13, color: 'var(--muted-foreground)' }}>Evento:</span>
+            <span style={{ fontSize: 13, color: 'var(--muted-foreground)' }}>{t('admin.audits.event_label')}:</span>
             <select
               value={eventFilter}
               onChange={(e) => { setEventFilter(e.target.value); setPage(1) }}
               className="dr-input"
               style={{ height: 38, padding: '0 10px' }}
             >
-              <option value="all">Todos os eventos</option>
-              <option value="create">Criação</option>
-              <option value="update">Atualização</option>
-              <option value="delete">Exclusão</option>
+              <option value="all">{t('admin.audits.event_all')}</option>
+              <option value="create">{t('admin.audits.event_create')}</option>
+              <option value="update">{t('admin.audits.event_update')}</option>
+              <option value="delete">{t('admin.audits.event_delete')}</option>
             </select>
           </div>
 

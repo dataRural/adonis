@@ -1,0 +1,112 @@
+{
+  "index": {
+    "title": "Meus Grupos",
+    "sub": "Gerencie os grupos de que você participa e compartilhe datasets com sua equipe.",
+    "breadcrumb_home": "Início",
+    "breadcrumb_my": "Meus grupos",
+    "create_btn": "Criar grupo",
+    "search_placeholder": "Buscar grupo…",
+    "empty_search": "Nenhum grupo encontrado",
+    "empty_search_sub": "Tente outro termo de busca.",
+    "empty_no_groups": "Você ainda não participa de nenhum grupo",
+    "empty_no_groups_sub": "Crie seu primeiro grupo para compartilhar datasets com sua equipe."
+  },
+  "show": {
+    "title": "Grupo",
+    "breadcrumb_home": "Início",
+    "breadcrumb_my": "Meus grupos",
+    "created_by": "Criado por",
+    "tabs": {
+      "members": "Membros",
+      "datasets": "Datasets"
+    },
+    "edit": "Editar",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir grupo",
+    "add_member": "Adicionar membro",
+    "remove_member_confirm": "Remover {{name}} do grupo?",
+    "remove_from_group": "Remover do grupo",
+    "empty_datasets": "Nenhum dataset neste grupo",
+    "empty_datasets_sub": "Adicione datasets existentes a este grupo no painel de publicação.",
+    "by": "por",
+    "updated": "Atualizado",
+    "status": {
+      "published": "Publicado",
+      "review": "Em revisão",
+      "draft": "Rascunho",
+      "unpublished": "Privado"
+    },
+    "card": {
+      "owner": "Dono",
+      "admin": "Admin",
+      "editor": "Editor",
+      "viewer": "Visualizador",
+      "created_by": "Criado por",
+      "member_one": "membro",
+      "member_other": "membros",
+      "dataset_one": "dataset",
+      "dataset_other": "datasets"
+    },
+    "roles": {
+      "owner": "Dono",
+      "admin": "Admin",
+      "editor": "Editor",
+      "viewer": "Visualizador"
+    },
+    "dialogs": {
+      "create_group": {
+        "title": "Criar grupo",
+        "name_label": "Nome do grupo *",
+        "name_placeholder": "Ex: Laboratório de Climatologia",
+        "desc_label": "Descrição",
+        "desc_placeholder": "Breve descrição do propósito do grupo (opcional)",
+        "cancel": "Cancelar",
+        "submit": "Criar grupo"
+      },
+      "add_member": {
+        "title": "Adicionar membro ao grupo",
+        "email_label": "Buscar usuário por nome, @username ou e-mail",
+        "roles": {
+          "viewer": "Pode ver datasets do grupo",
+          "editor": "Pode adicionar e editar datasets",
+          "admin": "Pode gerenciar membros e datasets"
+        }
+      }
+    }
+  },
+  "card": {
+    "members_count": "{{count}} membros",
+    "datasets_count": "{{count}} datasets",
+    "owner": "Proprietário",
+    "admin": "Administrador",
+    "editor": "Editor",
+    "viewer": "Visualizador"
+  },
+  "dialogs": {
+    "create": {
+      "title": "Criar Novo Grupo",
+      "sub": "Organize sua equipe e compartilhe conjuntos de dados de forma colaborativa.",
+      "name_label": "Nome do grupo",
+      "name_placeholder": "ex.: Laboratório de Solos e Nutrição",
+      "desc_label": "Descrição (opcional)",
+      "desc_placeholder": "Descreva o propósito do grupo…",
+      "submit": "Criar grupo",
+      "cancel": "Cancelar"
+    },
+    "add_member": {
+      "title": "Adicionar Membro",
+      "sub": "Convide um usuário registrado para participar deste grupo.",
+      "email_label": "E-mail do usuário",
+      "email_placeholder": "pesquisador@ufrrj.br",
+      "role_label": "Função no grupo",
+      "roles": {
+        "admin": "Administrador — pode gerenciar membros e datasets",
+        "editor": "Editor — pode adicionar e editar datasets",
+        "viewer": "Visualizador — apenas visualiza datasets do grupo"
+      },
+      "submit": "Adicionar",
+      "cancel": "Cancelar"
+    }
+  }
+}

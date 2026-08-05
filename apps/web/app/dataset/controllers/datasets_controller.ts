@@ -19,6 +19,7 @@ import GroupMemberRole from '#app/groups/enums/group_member_role'
 import User from '#users/models/user'
 import UserTransformer from '#users/transformers/user_transformer'
 import { DateTime } from 'luxon'
+// @ts-ignore
 import JSZip from 'jszip'
 
 function sanitizePathSegment(value: string) {

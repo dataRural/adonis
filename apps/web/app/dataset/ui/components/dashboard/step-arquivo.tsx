@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import * as Ic from '#common/ui/components/datarural/icons'
 import { CSV_COLUMNS, TYPE_LABEL } from './panel-data'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface Step1Props {
   data: any
@@ -20,6 +21,7 @@ export interface UploadedFileItem {
 }
 
 export default function StepArquivo({ data, set }: Step1Props) {
+  const { t } = useTranslation()
   const [drag, setDrag] = useState(false)
   const [selectedPreviewIdx, setSelectedPreviewIdx] = useState(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -397,8 +399,8 @@ export default function StepArquivo({ data, set }: Step1Props) {
           <span className="dz-ic">
             <Ic.Uploadcloud size={30} />
           </span>
-          <h3>Arraste seus arquivos CSV aqui ou clique para selecionar</h3>
-          <p>Você pode enviar múltiplos arquivos CSV de uma só vez para o mesmo dataset.</p>
+          <h3>{t('dataset.step_file.drag_drop_title')}</h3>
+          <p>{t('dataset.step_file.drag_drop_desc')}</p>
           <button
             type="button"
             className="dr-btn dr-btn-primary"
@@ -407,7 +409,7 @@ export default function StepArquivo({ data, set }: Step1Props) {
               fileInputRef.current?.click()
             }}
           >
-            <Ic.File size={17} /> Selecionar arquivos
+            <Ic.File size={17} /> {t('dataset.step_file.select_btn')}
           </button>
           <div className="formats">
             {['CSV'].map((f) => (
@@ -423,7 +425,7 @@ export default function StepArquivo({ data, set }: Step1Props) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <h4 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: 'var(--foreground)' }}>
-              Arquivos selecionados ({currentFiles.length})
+              {t('dataset.step_file.selected_files', { count: currentFiles.length })}
             </h4>
             <button
               type="button"
@@ -431,7 +433,7 @@ export default function StepArquivo({ data, set }: Step1Props) {
               onClick={() => fileInputRef.current?.click()}
               style={{ fontSize: 13 }}
             >
-              <Ic.Plus size={14} /> Adicionar mais arquivos
+              <Ic.Plus size={14} /> {t('dataset.step_file.add_more')}
             </button>
           </div>
 
@@ -454,7 +456,7 @@ export default function StepArquivo({ data, set }: Step1Props) {
                   <span>{item.fileName}</span>
                   {idx === 0 ? (
                     <span className="dr-file-badge prim" style={{ fontSize: 11 }}>
-                      Dataset Principal
+                      {t('dataset.step_file.primary_badge')}
                     </span>
                   ) : (
                     <button
@@ -465,20 +467,20 @@ export default function StepArquivo({ data, set }: Step1Props) {
                         e.stopPropagation()
                         handleMakePrimary(idx)
                       }}
-                      title="Definir este arquivo como o dataset principal"
+                      title={t('dataset.step_file.make_primary')}
                     >
-                      Definir como principal
+                      {t('dataset.step_file.make_primary')}
                     </button>
                   )}
                 </div>
                 <div className="fc-sub">
-                  {item.fileSize} · {item.rowCount.toLocaleString('pt-BR')} linhas · {item.colCount} colunas
+                  {t('dataset.step_file.rows_cols', { size: item.fileSize, rows: item.rowCount.toLocaleString(), cols: item.colCount })}
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 {selectedPreviewIdx === idx && (
                   <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--brand-green)' }}>
-                    Visualizando prévia
+                    {t('dataset.step_file.previewing')}
                   </span>
                 )}
                 <button
@@ -488,7 +490,7 @@ export default function StepArquivo({ data, set }: Step1Props) {
                     e.stopPropagation()
                     handleRemoveFile(idx)
                   }}
-                  title="Remover arquivo"
+                  title={t('dataset.step_file.remove_file')}
                 >
                   <Ic.X size={16} />
                 </button>
@@ -504,8 +506,8 @@ export default function StepArquivo({ data, set }: Step1Props) {
             <span className="ic">
               <Ic.Table size={16} />
             </span>{' '}
-            Pré-visualização: <strong>{activePreview.fileName}</strong> {selectedPreviewIdx === 0 ? '(Principal)' : ''}
-            <span className="tail">primeiras 3 linhas de {activePreview.rowCount.toLocaleString('pt-BR')}</span>
+            {t('dataset.step_file.preview_subhead')} <strong>{activePreview.fileName}</strong> {selectedPreviewIdx === 0 ? t('dataset.step_file.primary_label') : ''}
+            <span className="tail">{t('dataset.step_file.first_rows', { rows: activePreview.rowCount.toLocaleString() })}</span>
           </div>
           <div className="dr-csv-wrap">
             <div className="dr-csv-scroll">
@@ -540,12 +542,14 @@ export default function StepArquivo({ data, set }: Step1Props) {
               </table>
             </div>
             <div className="dr-csv-foot">
-              {activePreview.colCount} colunas ·{' '}
-              {activePreview.schema.filter((c: any) => c.type === 'num').length} numéricas ·{' '}
-              {activePreview.schema.filter((c: any) => c.type === 'text').length} texto ·{' '}
-              {activePreview.schema.filter((c: any) => c.type === 'date').length} data ·{' '}
-              {activePreview.schema.filter((c: any) => c.type === 'geo').length} geo — tipos inferidos
-              automaticamente para {activePreview.fileName}.
+              {t('dataset.step_file.stats_tail', {
+                cols: activePreview.colCount,
+                num: activePreview.schema.filter((c: any) => c.type === 'num').length,
+                text: activePreview.schema.filter((c: any) => c.type === 'text').length,
+                date: activePreview.schema.filter((c: any) => c.type === 'date').length,
+                geo: activePreview.schema.filter((c: any) => c.type === 'geo').length,
+                filename: activePreview.fileName,
+              })}
             </div>
           </div>
 
@@ -553,7 +557,7 @@ export default function StepArquivo({ data, set }: Step1Props) {
             <span className="ic">
               <Ic.Verified size={16} />
             </span>{' '}
-            Validação de qualidade: {activePreview.fileName}
+            {t('dataset.step_file.qa_subhead')} {activePreview.fileName}
           </div>
           <div className="dr-qa-grid">
             {activePreview.qaChecks.map((q: any) => (
@@ -575,10 +579,15 @@ export default function StepArquivo({ data, set }: Step1Props) {
             </span>
             <div className="ub-main">
               <div className="ut">
-                Usabilidade média estimada: {Number(data.usabilityScore) >= 9.0 ? 'excelente' : Number(data.usabilityScore) >= 8.0 ? 'boa' : 'regular'}
+                {t('dataset.step_file.usability_title')}{' '}
+                {Number(data.usabilityScore) >= 9.0
+                  ? t('dataset.step_file.usability_exc')
+                  : Number(data.usabilityScore) >= 8.0
+                  ? t('dataset.step_file.usability_good')
+                  : t('dataset.step_file.usability_fair')}
               </div>
               <div className="ud" style={{ margin: '3px 0 0' }}>
-                Nota calculada considerando a média de qualidade dos {currentFiles.length} {currentFiles.length === 1 ? 'arquivo' : 'arquivos'} CSV enviados.
+                {t('dataset.step_file.usability_desc', { count: currentFiles.length })}
               </div>
             </div>
           </div>

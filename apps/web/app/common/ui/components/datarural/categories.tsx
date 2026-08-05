@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import * as Ic from './icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 export interface CategoryItem {
   id: string
@@ -35,6 +36,7 @@ export default function Categories({
   categories = BASE_CATEGORIES,
   limit = 10,
 }: CategoriesProps) {
+  const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
 
   const hasMore = Boolean(limit && categories.length > limit)
@@ -45,8 +47,8 @@ export default function Categories({
       <div className="dr-container">
         <div className="dr-section-head">
           <div>
-            <h2>Explore por área de conhecimento</h2>
-            <p>Dados organizados pelos institutos e unidades da Universidade.</p>
+            <h2>{t('marketing.categories.title')}</h2>
+            <p>{t('marketing.categories.subtitle')}</p>
           </div>
         </div>
         <div className="dr-cat-grid">
@@ -93,7 +95,7 @@ export default function Categories({
             >
               {expanded ? (
                 <>
-                  Ver menos áreas{' '}
+                  {t('marketing.categories.see_less')}{' '}
                   <Ic.Chevd
                     size={16}
                     style={{ transform: 'rotate(180deg)', transition: 'transform 0.2s ease' }}
@@ -101,7 +103,7 @@ export default function Categories({
                 </>
               ) : (
                 <>
-                  Ver mais áreas{' '}
+                  {t('marketing.categories.see_more')}{' '}
                   <Ic.Chevd
                     size={16}
                     style={{ transform: 'rotate(0deg)', transition: 'transform 0.2s ease' }}

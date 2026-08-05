@@ -3,6 +3,7 @@ import { router } from '@inertiajs/react'
 import * as Ic from '#common/ui/components/datarural/icons'
 import { DatasetDetail } from './detail-data'
 import LicenseModal from './license-modal'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface DatasetHeaderProps {
   ds: DatasetDetail
@@ -10,6 +11,7 @@ interface DatasetHeaderProps {
 }
 
 export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProps) {
+  const { t } = useTranslation()
   const [shareOpen, setShareOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const [licenseModalOpen, setLicenseModalOpen] = useState(false)
@@ -149,7 +151,7 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
             <h1>{ds.title}</h1>
             <div className="dr-ds-head-metarow">
               <span className="mi usab">
-                <Ic.Verified size={15} /> <b>{ds.usability}</b> usabilidade
+                <Ic.Verified size={15} /> <b>{ds.usability}</b> {t('dataset.show.usability')}
               </span>
               <span className="vsep"></span>
               <button
@@ -165,7 +167,7 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
                 <Ic.File size={14} /> {ds.format} · {ds.size}
               </span>
               <span className="mi">
-                <Ic.Rows size={14} /> {ds.rows} linhas
+                <Ic.Rows size={14} /> {ds.rows} {t('dataset.show.rows_suffix')}
               </span>
               <span className="mi">
                 <Ic.History size={14} /> {ds.version}
@@ -178,15 +180,15 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
 
           <div className="dr-ds-head-actions">
             <button className="dr-btn dr-btn-primary dr-btn-lg" onClick={handleDownload} title="Baixar dataset compactado em arquivo ZIP com todos os CSVs e README.md">
-              <Ic.Download size={18} /> Baixar ({ds.size})
+              <Ic.Download size={18} /> {t('dataset.show.download')} ({ds.size})
             </button>
             {isOwner && (
               <div className="dr-ds-action-row">
                 <a className="dr-btn dr-btn-outline" href={`/dashboard/publish?id=${ds.id}`}>
-                  <Ic.Edit size={16} /> Editar
+                  <Ic.Edit size={16} /> {t('dataset.show.edit')}
                 </a>
                 <a className="dr-btn dr-btn-outline" href={`/datasets/${ds.id}/version/new`}>
-                  <Ic.Plus size={16} /> Nova versão
+                  <Ic.Plus size={16} /> {t('dataset.show.new_version')}
                 </a>
                 <button
                   className="dr-btn dr-btn-outline"
@@ -196,9 +198,9 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
                       router.post(`/datasets/${ds.id}/delete`)
                     }
                   }}
-                  title="Excluir dataset"
+                  title={t('dataset.show.delete')}
                 >
-                  <Ic.Trash size={16} /> Excluir
+                  <Ic.Trash size={16} /> {t('dataset.show.delete')}
                 </button>
               </div>
             )}
@@ -207,7 +209,7 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
                 className={`dr-btn-count ${isLiked ? 'on' : ''}`}
                 onClick={handleLike}
                 style={{ flex: 1 }}
-                title="Curtir dataset"
+                title={t('dataset.show.like')}
               >
                 <Ic.Heart size={15} className="ic" style={{ marginRight: 6, color: isLiked ? '#e11d48' : undefined, fill: isLiked ? '#e11d48' : 'none' }} />{' '}
                 <span className="n">{votes}</span>
@@ -215,30 +217,30 @@ export default function DatasetHeader({ ds, latestVersionId }: DatasetHeaderProp
               <button
                 className={`dr-btn-count ${isSaved ? 'on' : ''}`}
                 onClick={handleFavorite}
-                title={isSaved ? 'Remover dos favoritos' : 'Salvar nos favoritos'}
+                title={isSaved ? t('dataset.show.saved') : t('dataset.show.save')}
                 style={{ flex: 1 }}
               >
                 <Ic.Bookmark size={15} className="ic" style={{ marginRight: 6, color: isSaved ? 'var(--brand-green)' : undefined, fill: isSaved ? 'var(--brand-green)' : 'none' }} />{' '}
-                {isSaved ? 'Salvo' : 'Salvar'}
+                {isSaved ? t('dataset.show.saved') : t('dataset.show.save')}
               </button>
               <div ref={shareRef} style={{ position: 'relative' }}>
                 <button
                   className={`dr-btn-count ${shareOpen ? 'on' : ''}`}
-                  title="Compartilhar"
+                  title={t('dataset.show.share')}
                   onClick={() => setShareOpen(!shareOpen)}
                 >
                   <Ic.Share size={15} className="ic" />
                 </button>
                 {shareOpen && (
                   <div className="dr-share-menu">
-                    <div className="dr-share-menu-header">Compartilhar</div>
+                    <div className="dr-share-menu-header">{t('dataset.show.share')}</div>
                     <button className="dr-share-menu-item" onClick={handleCopyLink}>
                       {copied ? <Ic.Check size={16} /> : <Ic.Copy size={16} />}
-                      {copied ? 'Link copiado!' : 'Copiar link'}
+                      {copied ? t('dataset.show.link_copied') : t('dataset.show.copy_link')}
                     </button>
                     <button className="dr-share-menu-item" onClick={handleEmailShare}>
                       <Ic.Send size={16} />
-                      Email
+                      {t('dataset.show.email')}
                     </button>
                     <div className="dr-share-menu-sep"></div>
                     <button className="dr-share-menu-item" onClick={handleTwitterShare}>

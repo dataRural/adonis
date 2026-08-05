@@ -1,5 +1,6 @@
 import { ArcosCluster } from './brand'
 import * as Ic from './icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface HeroProps {
   query: string
@@ -9,6 +10,8 @@ interface HeroProps {
 }
 
 export default function Hero({ query, onQuery, onChip: _onChip, onSearch }: HeroProps) {
+  const { t } = useTranslation()
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && onSearch) {
       onSearch()
@@ -28,14 +31,13 @@ export default function Hero({ query, onQuery, onChip: _onChip, onSearch }: Hero
       <div className="dr-container">
         <div className="dr-hero-inner">
           <span className="dr-hero-eyebrow">
-            <span className="dot"></span>Repositório institucional de dados abertos
+            <span className="dot"></span>{t('marketing.hero.eyebrow')}
           </span>
           <h1>
-            Encontre, explore e reutilize os <span className="hl">dados da Rural</span>
+            {t('marketing.hero.title_prefix')}<span className="hl">{t('marketing.hero.title_hl')}</span>
           </h1>
           <p className="dr-hero-lead">
-            Uma plataforma para publicar, versionar e consumir conjuntos de dados acadêmicos
-            e administrativos da UFRRJ — com metadados ricos, licenças explícitas e estatísticas de uso.
+            {t('marketing.hero.lead')}
           </p>
 
           <div className="dr-search">
@@ -45,11 +47,11 @@ export default function Hero({ query, onQuery, onChip: _onChip, onSearch }: Hero
               value={query}
               onChange={(e) => onQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Buscar datasets — ex.: produção agrícola, clima, solos…"
-              aria-label="Buscar datasets"
+              placeholder={t('marketing.hero.search_placeholder')}
+              aria-label={t('marketing.hero.search_button')}
             />
             <button className="dr-btn dr-btn-primary" onClick={onSearch}>
-              Buscar
+              {t('marketing.hero.search_button')}
             </button>
           </div>
         </div>

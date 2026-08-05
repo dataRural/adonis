@@ -1,7 +1,10 @@
 import { Link } from '@adonisjs/inertia/react'
 import { BrandMark } from './brand'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 export default function Footer() {
+  const { t } = useTranslation()
+
   return (
     <footer className="dr-footer">
       <div className="dr-container">
@@ -17,10 +20,10 @@ export default function Footer() {
               </span>
             </Link>
             <p className="dr-footer-about">
-              Plataforma institucional de datasets da Universidade Federal Rural do Rio de Janeiro.
+              {t('common.footer.about_1')}
             </p>
             <p className="dr-footer-about">
-              Dados abertos para ensino, pesquisa e extensão.
+              {t('common.footer.about_2')}
             </p>
             <p className="dr-footer-addr">
               R. Savero José Bruno, 485 — Instituto Multidisciplinar
@@ -29,30 +32,30 @@ export default function Footer() {
             </p>
           </div>
           <div className="dr-footer-col">
-            <h4>Plataforma</h4>
-            <Link href="/datasets">Explorar datasets</Link>
-            <Link href="/dashboard/publish">Publicar dados</Link>
-            <a href="#">Coleções</a>
+            <h4>{t('common.footer.platform')}</h4>
+            <Link href="/datasets">{t('common.footer.explore_datasets')}</Link>
+            <Link href="/dashboard/publish">{t('common.footer.publish_data')}</Link>
+            <a href="#">{t('common.footer.collections')}</a>
           </div>
           <div className="dr-footer-col">
-            <h4>Recursos</h4>
-            <a href="#">Documentação</a>
-            <a href="#">Sobre licenças</a>
-            <a href="#">API de dados</a>
-            <a href="#">Política de dados</a>
+            <h4>{t('common.footer.resources')}</h4>
+            <a href="#">{t('common.footer.documentation')}</a>
+            <a href="#">{t('common.footer.about_licenses')}</a>
+            <a href="#">{t('common.footer.data_api')}</a>
+            <a href="#">{t('common.footer.data_policy')}</a>
           </div>
           <div className="dr-footer-col">
-            <h4>Institucional</h4>
+            <h4>{t('common.footer.institutional')}</h4>
             <a href="https://portal.ufrrj.br" target="_blank" rel="noopener noreferrer">
-              UFRRJ
+              {t('common.footer.ufrrj')}
             </a>
-            <a href="#">Pró-Reitorias</a>
-            <a href="#">Institutos</a>
-            <a href="#">Contato</a>
+            <a href="#">{t('common.footer.deanships')}</a>
+            <a href="#">{t('common.footer.institutes')}</a>
+            <a href="#">{t('common.footer.contact')}</a>
           </div>
         </div>
         <div className="dr-footer-bar">
-          <span>© 2026 Universidade Federal Rural do Rio de Janeiro · DataRural</span>
+          <span>{t('common.footer.copyright')}</span>
           <span className="colors" aria-hidden="true">
             <i style={{ background: 'var(--brand-blue)' }}></i>
             <i style={{ background: 'var(--brand-green)' }}></i>

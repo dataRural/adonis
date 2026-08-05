@@ -1,0 +1,39 @@
+{
+  "hero": {
+    "eyebrow": "Institutional open data repository",
+    "title_prefix": "Find, explore and reuse ",
+    "title_hl": "Rural's data",
+    "lead": "A platform to publish, version and consume academic and administrative datasets from UFRRJ — with rich metadata, explicit licenses and usage statistics.",
+    "search_placeholder": "Search datasets — e.g., agricultural production, climate, soils…",
+    "search_button": "Search"
+  },
+  "publish_cta": {
+    "title": "Do you produce data at Rural? Publish it here.",
+    "subtitle": "Turn scattered spreadsheets into a living repository, documented and reusable by the academic community.",
+    "step1": "Upload your CSV file",
+    "step2": "Describe metadata and license",
+    "step3": "Publish and track usage",
+    "btn_publish": "Publish dataset",
+    "btn_my_datasets": "My datasets"
+  },
+  "datasets_section": {
+    "title": "Datasets",
+    "tab_recent": "Recent",
+    "tab_featured": "Featured",
+    "view_grid": "Grid",
+    "view_list": "List"
+  },
+  "categories": {
+    "title": "Explore by knowledge area",
+    "subtitle": "Data organized by the University's institutes and units.",
+    "all_areas": "All areas",
+    "see_more": "See more areas",
+    "see_less": "See less areas"
+  },
+  "stats": {
+    "public_datasets": "Public datasets",
+    "knowledge_areas": "Knowledge areas",
+    "research_groups": "Research groups",
+    "researchers": "Researchers"
+  }
+}

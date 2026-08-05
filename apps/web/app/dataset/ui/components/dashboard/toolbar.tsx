@@ -1,4 +1,5 @@
 import * as Ic from '#common/ui/components/datarural/icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface ToolbarProps {
   filter: string
@@ -21,11 +22,13 @@ export default function Toolbar({
   onQueryChange,
   counts,
 }: ToolbarProps) {
+  const { t } = useTranslation()
+
   const filters = [
-    { id: 'all', label: 'Todos', n: counts.all },
-    { id: 'published', label: 'Publicados', n: counts.published },
-    { id: 'draft', label: 'Rascunhos', n: counts.draft },
-    { id: 'unpublished', label: 'Privados', n: counts.unpublished },
+    { id: 'all', label: t('dataset.dashboard.filter_all'), n: counts.all },
+    { id: 'published', label: t('dataset.dashboard.filter_published'), n: counts.published },
+    { id: 'draft', label: t('dataset.dashboard.filter_draft'), n: counts.draft },
+    { id: 'unpublished', label: t('dataset.dashboard.filter_private'), n: counts.unpublished },
   ]
 
   return (
@@ -47,11 +50,11 @@ export default function Toolbar({
         <input
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
-          placeholder="Buscar nos meus datasets…"
+          placeholder={t('dataset.dashboard.search_placeholder')}
         />
       </div>
-      <button className="dr-btn dr-btn-outline" onClick={() => alert('Ordenar datasets')}>
-        <Ic.Sort size={16} /> Ordenar
+      <button className="dr-btn dr-btn-outline" onClick={() => alert(t('dataset.dashboard.sort_btn'))}>
+        <Ic.Sort size={16} /> {t('dataset.dashboard.sort_btn')}
       </button>
     </div>
   )

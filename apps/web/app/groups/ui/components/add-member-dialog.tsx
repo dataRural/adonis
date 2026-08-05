@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { router } from '@inertiajs/react'
 import * as Ic from '#common/ui/components/datarural/icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface AddMemberDialogProps {
   groupId: number
@@ -16,13 +17,15 @@ interface UserSearchResult {
   avatarUrl: string | null
 }
 
-const ROLE_OPTIONS = [
-  { value: 'viewer', label: 'Visualizador', desc: 'Pode ver datasets do grupo' },
-  { value: 'editor', label: 'Editor', desc: 'Pode adicionar e editar datasets' },
-  { value: 'admin', label: 'Admin', desc: 'Pode gerenciar membros e datasets' },
-]
-
 export default function AddMemberDialog({ groupId, open, onClose }: AddMemberDialogProps) {
+  const { t } = useTranslation()
+
+  const roleOptions = [
+    { value: 'viewer', label: t('groups.card.viewer'), desc: t('groups.dialogs.add_member.roles.viewer') },
+    { value: 'editor', label: t('groups.card.editor'), desc: t('groups.dialogs.add_member.roles.editor') },
+    { value: 'admin', label: t('groups.card.admin'), desc: t('groups.dialogs.add_member.roles.admin') },
+  ]
+
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<UserSearchResult[]>([])
   const [selectedUser, setSelectedUser] = useState<UserSearchResult | null>(null)
@@ -140,7 +143,7 @@ export default function AddMemberDialog({ groupId, open, onClose }: AddMemberDia
         onClick={(e) => e.stopPropagation()}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-          <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 700 }}>Adicionar membro ao grupo</h3>
+          <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 700 }}>{t('groups.dialogs.add_member.title')}</h3>
           <button className="dr-btn dr-btn-ghost" onClick={onClose} style={{ padding: 4 }}>
             <Ic.X size={18} />
           </button>
@@ -150,7 +153,7 @@ export default function AddMemberDialog({ groupId, open, onClose }: AddMemberDia
           {/* User Search Input or Selected User Card */}
           <div style={{ marginBottom: 18, position: 'relative' }} ref={dropdownRef}>
             <label style={{ fontSize: '13px', fontWeight: 600, display: 'block', marginBottom: 6 }}>
-              Buscar usuário por nome, @username ou e-mail
+              {t('groups.dialogs.add_member.email_label')}
             </label>
 
             {selectedUser ? (

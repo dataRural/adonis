@@ -4,6 +4,7 @@ import Navbar from '#common/ui/components/datarural/navbar'
 import DatasetCard, { DatasetItem } from '#common/ui/components/datarural/dataset-card'
 import Footer from '#common/ui/components/datarural/footer'
 import * as Ic from '#common/ui/components/datarural/icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 import type { InertiaProps } from '#core/ui/types'
 
 type PageProps = InertiaProps<{
@@ -11,6 +12,7 @@ type PageProps = InertiaProps<{
 }>
 
 export default function FavoritesPage({ datasets = [] }: PageProps) {
+  const { t } = useTranslation()
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -69,13 +71,9 @@ export default function FavoritesPage({ datasets = [] }: PageProps) {
     if (tab === 'recent') {
       if (!raw) arr.sort((a, b) => b.id - a.id)
     } else if (tab === 'featured') {
-      arr.sort((a, b) => {
-        const scoreA = Number(a.usability) || 0
-        const scoreB = Number(b.usability) || 0
-        return scoreB - scoreA
-      })
+      arr.sort((a, b) => (Number(b.usability) || 0) - (Number(a.usability) || 0))
     } else if (tab === 'popular') {
-      arr.sort((a, b) => (b.likesCount || 0) - (a.likesCount || 0))
+      arr.sort((a, b) => (Number(b.votes || b.downloads) || 0) - (Number(a.votes || a.downloads) || 0))
     }
 
     return arr
@@ -87,7 +85,7 @@ export default function FavoritesPage({ datasets = [] }: PageProps) {
 
   return (
     <div className="dr-app dr-panel-wrap" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Head title="Meus Datasets Favoritos — DataRural" />
+      <Head title={`${t('dataset.favorites.title')} — DataRural`} />
       <Navbar theme={theme} onToggleTheme={handleToggleTheme} activePage="favorites" />
 
       {/* Page Header */}
@@ -96,23 +94,23 @@ export default function FavoritesPage({ datasets = [] }: PageProps) {
           <div className="dr-page-head-inner">
             <div>
               <div className="dr-page-breadcrumb">
-                <a href="/">Início</a>
+                <a href="/">{t('dataset.dashboard.breadcrumb_home')}</a>
                 <span className="sep">
                   <Ic.Chevr size={13} style={{ display: 'inline', margin: '0 4px' }} />
                 </span>
-                <span>Favoritos</span>
+                <span>{t('common.nav.favorites')}</span>
               </div>
               <h1 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
                 <Ic.Bookmark size={28} style={{ color: 'var(--brand-green)', fill: 'var(--brand-green)' }} />
-                Meus Datasets Favoritos
+                {t('dataset.favorites.title')}
               </h1>
               <p className="page-sub">
-                Conjuntos de dados que você salvou para referência e acesso rápido.
+                {t('dataset.favorites.sub')}
               </p>
             </div>
             <div className="dr-page-head-actions">
               <Link className="dr-btn dr-btn-outline dr-btn-lg" href="/datasets">
-                <Ic.Search size={18} /> Explorar catálogo
+                <Ic.Search size={18} /> {t('common.footer.explore_datasets')}
               </Link>
             </div>
           </div>

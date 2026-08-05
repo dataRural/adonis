@@ -1,5 +1,6 @@
 import * as Ic from '#common/ui/components/datarural/icons'
 import { LICENSES } from './panel-data'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface Step4Props {
   data: any
@@ -7,6 +8,7 @@ interface Step4Props {
 }
 
 export default function StepLicenca({ data, set }: Step4Props) {
+  const { t } = useTranslation()
 
   return (
     <div>
@@ -14,7 +16,7 @@ export default function StepLicenca({ data, set }: Step4Props) {
         <span className="ic">
           <Ic.Scale size={16} />
         </span>{' '}
-        Licença de uso
+        {t('dataset.step_license.license_subhead')}
       </div>
       <div className="dr-lic-grid">
         {LICENSES.map((l) => (
@@ -32,10 +34,10 @@ export default function StepLicenca({ data, set }: Step4Props) {
               <div className="lc-desc">{l.desc}</div>
               <div className="lc-perms">
                 <span className={l.commercial ? 'yes' : 'no'} style={{ display: l.id === 'custom' ? 'none' : undefined }}>
-                  {l.commercial ? <Ic.Check size={13} /> : <Ic.X size={13} />} Uso comercial
+                  {l.commercial ? <Ic.Check size={13} /> : <Ic.X size={13} />} {t('dataset.step_license.commercial_use')}
                 </span>
                 <span className={l.derivatives ? 'yes' : 'no'} style={{ display: l.id === 'custom' ? 'none' : undefined }}>
-                  {l.derivatives ? <Ic.Check size={13} /> : <Ic.X size={13} />} Derivações
+                  {l.derivatives ? <Ic.Check size={13} /> : <Ic.X size={13} />} {t('dataset.step_license.derivatives')}
                 </span>
               </div>
             </div>
@@ -47,7 +49,7 @@ export default function StepLicenca({ data, set }: Step4Props) {
         <span className="ic">
           <Ic.Eye size={16} />
         </span>{' '}
-        Visibilidade
+        {t('dataset.step_license.visibility_subhead')}
       </div>
       <div className="dr-vis-row">
         <div
@@ -58,8 +60,8 @@ export default function StepLicenca({ data, set }: Step4Props) {
             <Ic.Globe size={20} />
           </span>
           <div>
-            <div className="vt">Público</div>
-            <div className="vd" style={{ margin: '3px 0 0' }}>Qualquer pessoa pode encontrar, visualizar e baixar.</div>
+            <div className="vt">{t('dataset.step_license.public_title')}</div>
+            <div className="vd" style={{ margin: '3px 0 0' }}>{t('dataset.step_license.public_desc')}</div>
           </div>
         </div>
         <div
@@ -70,8 +72,8 @@ export default function StepLicenca({ data, set }: Step4Props) {
             <Ic.Lock size={20} />
           </span>
           <div>
-            <div className="vt">Restrito</div>
-            <div className="vd" style={{ margin: '3px 0 0' }}>Acesso mediante solicitação aprovada pelo autor.</div>
+            <div className="vt">{t('dataset.step_license.restricted_title')}</div>
+            <div className="vd" style={{ margin: '3px 0 0' }}>{t('dataset.step_license.restricted_desc')}</div>
           </div>
         </div>
       </div>
@@ -82,7 +84,7 @@ export default function StepLicenca({ data, set }: Step4Props) {
             <span className="ic">
               <Ic.Users size={16} />
             </span>{' '}
-            Grupo (opcional)
+            {t('dataset.step_license.group_subhead')}
           </div>
           <div style={{ maxWidth: 420 }}>
             <select
@@ -90,7 +92,7 @@ export default function StepLicenca({ data, set }: Step4Props) {
               value={data.groupId || ''}
               onChange={(e) => set({ groupId: e.target.value ? Number(e.target.value) : null })}
             >
-              <option value="">Nenhum grupo — somente você</option>
+              <option value="">{t('dataset.step_license.no_group')}</option>
               {data.userGroups.map((g: { id: number; name: string }) => (
                 <option key={g.id} value={g.id}>
                   {g.name}
@@ -99,7 +101,7 @@ export default function StepLicenca({ data, set }: Step4Props) {
             </select>
             <span className="dr-field-hint" style={{ display: 'block', marginTop: 6 }}>
               <Ic.Info size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />
-              Membros do grupo selecionado poderão ver este dataset.
+              {t('dataset.step_license.group_hint')}
             </span>
           </div>
         </>

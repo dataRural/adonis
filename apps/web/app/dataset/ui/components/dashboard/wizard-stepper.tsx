@@ -1,9 +1,10 @@
 import * as Ic from '#common/ui/components/datarural/icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface StepMeta {
   id: number
-  label: string
-  title: string
+  labelKey: string
+  titleKey: string
   icon: string
 }
 
@@ -14,27 +15,29 @@ interface StepperProps {
   isEditing?: boolean
 }
 
-const WIZ_STEPS: StepMeta[] = [
-  { id: 0, label: 'Etapa 1', title: 'Arquivo', icon: 'Uploadcloud' },
-  { id: 1, label: 'Etapa 2', title: 'Metadados', icon: 'Info' },
-  { id: 2, label: 'Etapa 3', title: 'Esquema', icon: 'Columns' },
-  { id: 3, label: 'Etapa 4', title: 'Licença', icon: 'Scale' },
-  { id: 4, label: 'Etapa 5', title: 'Revisão', icon: 'Verified' },
-]
-
-const EDIT_STEPS: StepMeta[] = [
-  { id: 1, label: 'Etapa 1', title: 'Metadados', icon: 'Info' },
-  { id: 2, label: 'Etapa 2', title: 'Esquema', icon: 'Columns' },
-  { id: 3, label: 'Etapa 3', title: 'Licença', icon: 'Scale' },
-]
-
 export default function WizardStepper({ step, onJump, maxReached, isEditing }: StepperProps) {
-  const stepsToRender = isEditing ? EDIT_STEPS : WIZ_STEPS
+  const { t } = useTranslation()
+
+  const wizSteps: StepMeta[] = [
+    { id: 0, labelKey: t('dataset.publish.step_label', { num: 1 }), titleKey: t('dataset.publish.steps.file'), icon: 'Uploadcloud' },
+    { id: 1, labelKey: t('dataset.publish.step_label', { num: 2 }), titleKey: t('dataset.publish.steps.metadata'), icon: 'Info' },
+    { id: 2, labelKey: t('dataset.publish.step_label', { num: 3 }), titleKey: t('dataset.publish.steps.schema'), icon: 'Columns' },
+    { id: 3, labelKey: t('dataset.publish.step_label', { num: 4 }), titleKey: t('dataset.publish.steps.license'), icon: 'Scale' },
+    { id: 4, labelKey: t('dataset.publish.step_label', { num: 5 }), titleKey: t('dataset.publish.steps.review'), icon: 'Verified' },
+  ]
+
+  const editSteps: StepMeta[] = [
+    { id: 1, labelKey: t('dataset.publish.step_label', { num: 1 }), titleKey: t('dataset.publish.steps.metadata'), icon: 'Info' },
+    { id: 2, labelKey: t('dataset.publish.step_label', { num: 2 }), titleKey: t('dataset.publish.steps.schema'), icon: 'Columns' },
+    { id: 3, labelKey: t('dataset.publish.step_label', { num: 3 }), titleKey: t('dataset.publish.steps.license'), icon: 'Scale' },
+  ]
+
+  const stepsToRender = isEditing ? editSteps : wizSteps
 
   return (
     <aside className="dr-stepper">
       <div className="dr-stepper-inner">
-        <p className="dr-stepper-title">{isEditing ? 'Editar dataset' : 'Publicar dataset'}</p>
+        <p className="dr-stepper-title">{isEditing ? t('dataset.publish.title_edit') : t('dataset.publish.title')}</p>
         {stepsToRender.map((s, idx) => {
           const state = s.id === step ? 'active' : s.id < step ? 'done' : 'todo'
           const clickable = s.id <= maxReached
@@ -51,8 +54,8 @@ export default function WizardStepper({ step, onJump, maxReached, isEditing }: S
                 {s.id < step ? <Ic.Check size={16} /> : idx + 1}
               </span>
               <span className="dr-step-meta">
-                <span className="sl">{s.label}</span>
-                <span className="st">{s.title}</span>
+                <span className="sl">{s.labelKey}</span>
+                <span className="st">{s.titleKey}</span>
               </span>
             </div>
           )

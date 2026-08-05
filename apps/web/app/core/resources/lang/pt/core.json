@@ -1,0 +1,16 @@
+{
+  "errors": {
+    "not_found": {
+      "title": "Ops! Página Não Encontrada!",
+      "description": "Parece que a página que você está procurando não existe ou foi removida.",
+      "go_back": "Voltar",
+      "back_home": "Voltar ao Início"
+    },
+    "server_error": {
+      "title": "Ops! Algo deu errado",
+      "description": "Pedimos desculpas pelo inconveniente. Por favor, tente novamente mais tarde.",
+      "go_back": "Voltar",
+      "back_home": "Voltar ao Início"
+    }
+  }
+}

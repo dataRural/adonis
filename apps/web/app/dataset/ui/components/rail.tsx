@@ -3,18 +3,20 @@ import { Link } from '@inertiajs/react'
 import * as Ic from '#common/ui/components/datarural/icons'
 import { DatasetDetail } from './detail-data'
 import LicenseModal from './license-modal'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface RailProps {
   ds: DatasetDetail
 }
 
 export default function Rail({ ds }: RailProps) {
+  const { t } = useTranslation()
   const [licenseModalOpen, setLicenseModalOpen] = useState(false)
 
   const meta = [
-    { k: 'Formato', v: ds.format, icon: 'File' },
-    { k: 'Tamanho', v: ds.size, icon: 'Database' },
-    { k: 'Linhas × Colunas', v: `${ds.rows} × ${ds.cols}`, icon: 'Table' },
+    { k: t('dataset.rail.format'), v: ds.format, icon: 'File' },
+    { k: t('dataset.rail.size'), v: ds.size, icon: 'Database' },
+    { k: t('dataset.rail.rows_cols'), v: `${ds.rows} × ${ds.cols}`, icon: 'Table' },
   ]
 
   return (
@@ -23,7 +25,7 @@ export default function Rail({ ds }: RailProps) {
       <div className="dr-rail-card">
         <div className="dr-rail-card-head">
           <h4>
-            <Ic.Scale size={13} style={{ marginRight: 6 }} /> Licença
+            <Ic.Scale size={13} style={{ marginRight: 6 }} /> {t('dataset.rail.license')}
           </h4>
         </div>
         <div className="dr-rail-card-body">
@@ -38,7 +40,7 @@ export default function Rail({ ds }: RailProps) {
             </span>
             <span style={{ minWidth: 0 }}>
               <span className="lt">{ds.license}</span>
-              <span className="ld">Clique para ler os termos completos</span>
+              <span className="ld">{t('dataset.rail.click_terms')}</span>
             </span>
             <span className="ext">
               <Ic.Info size={15} />
@@ -51,7 +53,7 @@ export default function Rail({ ds }: RailProps) {
       <div className="dr-rail-card">
         <div className="dr-rail-card-head">
           <h4>
-            <Ic.Info size={13} style={{ marginRight: 6 }} /> Metadados
+            <Ic.Info size={13} style={{ marginRight: 6 }} /> {t('dataset.rail.metadata')}
           </h4>
         </div>
         <div className="dr-rail-card-body">
@@ -78,7 +80,7 @@ export default function Rail({ ds }: RailProps) {
       <div className="dr-rail-card">
         <div className="dr-rail-card-head">
           <h4>
-            <Ic.Pin size={13} style={{ marginRight: 6 }} /> Proveniência
+            <Ic.Pin size={13} style={{ marginRight: 6 }} /> {t('dataset.rail.provenance')}
           </h4>
         </div>
         <div className="dr-rail-card-body">
@@ -88,7 +90,7 @@ export default function Rail({ ds }: RailProps) {
                 <Ic.Calendar size={16} />
               </span>
               <span>
-                <span className="pk">Cobertura temporal</span>
+                <span className="pk">{t('dataset.rail.temp_coverage')}</span>
                 <span className="pv">{ds.coverageTime}</span>
               </span>
             </div>
@@ -97,7 +99,7 @@ export default function Rail({ ds }: RailProps) {
                 <Ic.Globe size={16} />
               </span>
               <span>
-                <span className="pk">Cobertura geográfica</span>
+                <span className="pk">{t('dataset.rail.geo_coverage')}</span>
                 <span className="pv">{ds.coverageGeo}</span>
               </span>
             </div>
@@ -109,7 +111,7 @@ export default function Rail({ ds }: RailProps) {
       <div className="dr-rail-card">
         <div className="dr-rail-card-head">
           <h4>
-            <Ic.Users size={13} style={{ marginRight: 6 }} /> Mantenedores
+            <Ic.Users size={13} style={{ marginRight: 6 }} /> {t('dataset.rail.maintainers')}
           </h4>
         </div>
         <div className="dr-rail-card-body">
@@ -145,14 +147,14 @@ export default function Rail({ ds }: RailProps) {
       <div className="dr-rail-card">
         <div className="dr-rail-card-head">
           <h4>
-            <Ic.Hash size={13} style={{ marginRight: 6 }} /> Tags
+            <Ic.Hash size={13} style={{ marginRight: 6 }} /> {t('dataset.rail.tags')}
           </h4>
         </div>
         <div className="dr-rail-card-body">
           <div className="dr-rail-tags">
-            {ds.tags.map((t) => (
-              <span className="dr-rail-tag" key={t}>
-                {t}
+            {ds.tags.map((tTag) => (
+              <span className="dr-rail-tag" key={tTag}>
+                {tTag}
               </span>
             ))}
           </div>

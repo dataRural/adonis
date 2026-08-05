@@ -1,4 +1,5 @@
 import * as Ic from '#common/ui/components/datarural/icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 export interface SubmissionErrorItem {
   id: string
@@ -19,6 +20,8 @@ export default function SubmissionErrorAlert({
   onDismiss,
   onJumpToStep,
 }: SubmissionErrorAlertProps) {
+  const { t } = useTranslation()
+
   if (!errors || errors.length === 0) return null
 
   return (
@@ -63,11 +66,14 @@ export default function SubmissionErrorAlert({
                 gap: 8,
               }}
             >
-              Não foi possível enviar o dataset ({errors.length}{' '}
-              {errors.length === 1 ? 'pendência encontrada' : 'pendências encontradas'})
+              {t('dataset.submission_error.title')} (
+              {errors.length === 1
+                ? t('dataset.submission_error.one_issue')
+                : t('dataset.submission_error.other_issues', { count: errors.length })}
+              )
             </h4>
             <p style={{ margin: '4px 0 12px', fontSize: 13, color: 'var(--muted-foreground)' }}>
-              Corrija os itens indicados abaixo antes de concluir a publicação:
+              {t('dataset.submission_error.subtitle')}
             </p>
 
             <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, lineHeight: 1.6 }}>
@@ -93,7 +99,7 @@ export default function SubmissionErrorAlert({
                         gap: 2,
                       }}
                     >
-                      Ir para {err.stepName || `Passo ${err.stepIndex + 1}`}
+                      {t('dataset.submission_error.go_to_step', { step: err.stepName || `Passo ${err.stepIndex + 1}` })}
                       <Ic.Arrow size={12} />
                     </button>
                   )}
@@ -115,7 +121,7 @@ export default function SubmissionErrorAlert({
               padding: 4,
               borderRadius: 4,
             }}
-            title="Fechar aviso"
+            title={t('dataset.submission_error.dismiss')}
           >
             <Ic.X size={18} />
           </button>

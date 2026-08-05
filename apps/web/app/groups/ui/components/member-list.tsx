@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, router } from '@inertiajs/react'
 import * as Ic from '#common/ui/components/datarural/icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 export interface MemberItem {
   id: number
@@ -12,19 +13,6 @@ export interface MemberItem {
   avatarUrl?: string | null
 }
 
-const ROLE_LABELS: Record<string, { label: string; color: string }> = {
-  owner: { label: 'Dono', color: 'var(--brand-blue)' },
-  admin: { label: 'Admin', color: 'var(--brand-purple)' },
-  editor: { label: 'Editor', color: 'var(--brand-green)' },
-  viewer: { label: 'Visualizador', color: 'var(--brand-sky)' },
-}
-
-const ROLE_OPTIONS = [
-  { value: 'admin', label: 'Admin' },
-  { value: 'editor', label: 'Editor' },
-  { value: 'viewer', label: 'Visualizador' },
-]
-
 interface MemberListProps {
   groupId: number
   members: MemberItem[]
@@ -33,7 +21,21 @@ interface MemberListProps {
 }
 
 export default function MemberList({ groupId, members, canManage }: MemberListProps) {
+  const { t } = useTranslation()
   const [changingRole, setChangingRole] = useState<number | null>(null)
+
+  const roleLabelsMap: Record<string, { label: string; color: string }> = {
+    owner: { label: t('groups.card.owner'), color: 'var(--brand-blue)' },
+    admin: { label: t('groups.card.admin'), color: 'var(--brand-purple)' },
+    editor: { label: t('groups.card.editor'), color: 'var(--brand-green)' },
+    viewer: { label: t('groups.card.viewer'), color: 'var(--brand-sky)' },
+  }
+
+  const roleOptions = [
+    { value: 'admin', label: t('groups.card.admin') },
+    { value: 'editor', label: t('groups.card.editor') },
+    { value: 'viewer', label: t('groups.card.viewer') },
+  ]
 
   const handleRoleChange = (memberId: number, newRole: string) => {
     router.put(`/groups/${groupId}/members/${memberId}`, { role: newRole }, {
@@ -43,14 +45,14 @@ export default function MemberList({ groupId, members, canManage }: MemberListPr
   }
 
   const handleRemove = (member: MemberItem) => {
-    if (!confirm(`Remover ${member.fullName} do grupo?`)) return
+    if (!confirm(t('groups.show.remove_member_confirm', { name: member.fullName }))) return
     router.delete(`/groups/${groupId}/members/${member.id}`)
   }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
       {members.map((m) => {
-        const roleMeta = ROLE_LABELS[m.role] || ROLE_LABELS.viewer
+        const roleMeta = roleLabelsMap[m.role] || roleLabelsMap.viewer
         const initials = (m.fullName || 'U')
           .split(' ')
           .slice(0, 2)
@@ -85,7 +87,7 @@ export default function MemberList({ groupId, members, canManage }: MemberListPr
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
-              title={`Ver perfil de ${m.fullName}`}
+              title={m.fullName}
             >
               {m.avatarUrl ? (
                 <img
@@ -120,13 +122,13 @@ export default function MemberList({ groupId, members, canManage }: MemberListPr
                 {m.fullName}
               </Link>
               <div style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>
-                {m.email} · Entrou {m.joinedAt}
+                {m.email} · {m.joinedAt}
               </div>
             </div>
 
             {changingRole === m.id ? (
               <div style={{ display: 'flex', gap: 6 }}>
-                {ROLE_OPTIONS.map((opt) => (
+                {roleOptions.map((opt) => (
                   <button
                     key={opt.value}
                     onClick={() => handleRoleChange(m.id, opt.value)}
@@ -175,7 +177,7 @@ export default function MemberList({ groupId, members, canManage }: MemberListPr
                       className="dr-btn dr-btn-ghost"
                       style={{ fontSize: '12px', padding: '4px 8px' }}
                       onClick={() => setChangingRole(m.id)}
-                      title="Alterar papel"
+                      title={t('groups.show.edit')}
                     >
                       <Ic.Edit size={14} />
                     </button>
@@ -183,7 +185,7 @@ export default function MemberList({ groupId, members, canManage }: MemberListPr
                       className="dr-btn dr-btn-ghost"
                       style={{ fontSize: '12px', padding: '4px 8px', color: 'var(--destructive)' }}
                       onClick={() => handleRemove(m)}
-                      title="Remover membro"
+                      title={t('groups.show.delete')}
                     >
                       <Ic.Trash size={14} />
                     </button>
@@ -197,7 +199,7 @@ export default function MemberList({ groupId, members, canManage }: MemberListPr
 
       {members.length === 0 && (
         <div style={{ padding: '32px 0', textAlign: 'center', color: 'var(--muted-foreground)', fontSize: '14px' }}>
-          Nenhum membro encontrado.
+          {t('common.table.filters.no_results')}
         </div>
       )}
     </div>

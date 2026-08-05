@@ -40,6 +40,29 @@
       "add": "Adicionar"
     }
   },
+  "admin": {
+    "title": "Painel Administrativo",
+    "sub": "Gerenciamento de usuários, permissões, áreas do conhecimento e logs de auditoria.",
+    "breadcrumb_home": "Início",
+    "breadcrumb_admin": "Administração",
+    "tabs": {
+      "users": "Gestão de Usuários",
+      "areas": "Áreas do Conhecimento",
+      "audits": "Logs de Auditoria"
+    },
+    "audits": {
+      "title": "Logs de Auditoria",
+      "search_placeholder": "Pesquisar por evento, usuário, tabela ou ID…",
+      "event_all": "Todos os eventos",
+      "event_create": "Criação",
+      "event_update": "Atualização",
+      "event_delete": "Excluir",
+      "details_modal": "Detalhes da Auditoria",
+      "old_values": "Valores Anteriores",
+      "new_values": "Valores Novos",
+      "view_details": "Ver Detalhes"
+    }
+  },
   "password": {
     "breadcrumbs": {
       "settings": "Configurações"

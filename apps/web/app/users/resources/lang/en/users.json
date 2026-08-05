@@ -40,6 +40,29 @@
       "add": "Add"
     }
   },
+  "admin": {
+    "title": "Admin Panel",
+    "sub": "Management of users, permissions, knowledge areas, and audit logs.",
+    "breadcrumb_home": "Home",
+    "breadcrumb_admin": "Administration",
+    "tabs": {
+      "users": "User Management",
+      "areas": "Knowledge Areas",
+      "audits": "Audit Logs"
+    },
+    "audits": {
+      "title": "Audit Logs",
+      "search_placeholder": "Search by event, user, table or ID…",
+      "event_all": "All events",
+      "event_create": "Creation",
+      "event_update": "Update",
+      "event_delete": "Deletion",
+      "details_modal": "Audit Details",
+      "old_values": "Old Values",
+      "new_values": "New Values",
+      "view_details": "View Details"
+    }
+  },
   "password": {
     "breadcrumbs": {
       "settings": "Settings"

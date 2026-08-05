@@ -51,9 +51,6 @@ function RowMenu({
       >
         <Ic.Eye size={16} /> Ver página pública
       </button>
-      <button onClick={onClose}>
-        <Ic.Chart size={16} /> Estatísticas de uso
-      </button>
       <div className="sep"></div>
       <button
         className="danger"

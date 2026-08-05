@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import * as Ic from '#common/ui/components/datarural/icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 export interface LicenseModalProps {
   isOpen: boolean
@@ -103,6 +104,7 @@ export default function LicenseModal({
   licenseName,
   licenseDescription,
 }: LicenseModalProps) {
+  const { t } = useTranslation()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -265,7 +267,7 @@ export default function LicenseModal({
           {/* Key terms bullet points */}
           <div>
             <h5 style={{ fontSize: 12.5, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', margin: '0 0 8px', color: 'var(--muted-foreground)' }}>
-              Principais Termos de Uso
+              {t('dataset.license_modal.main_terms')}
             </h5>
             <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: 'var(--foreground)', lineHeight: 1.6 }}>
               {details.terms.map((term, i) => (
@@ -296,10 +298,10 @@ export default function LicenseModal({
               className="dr-link-more"
               style={{ fontSize: 13, fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}
             >
-              Ver texto legal completo <Ic.External size={14} />
+              {t('dataset.license_modal.full_legal_text')} <Ic.External size={14} />
             </a>
           ) : (
-            <span style={{ fontSize: 12.5, color: 'var(--muted-foreground)' }}>Licença registrada na plataforma</span>
+            <span style={{ fontSize: 12.5, color: 'var(--muted-foreground)' }}>{t('dataset.license_modal.registered_license')}</span>
           )}
           <button
             type="button"
@@ -307,7 +309,7 @@ export default function LicenseModal({
             className="dr-btn dr-btn-primary dr-btn-sm"
             style={{ padding: '8px 20px', borderRadius: 8 }}
           >
-            Entendido
+            {t('dataset.license_modal.understood')}
           </button>
         </div>
       </div>

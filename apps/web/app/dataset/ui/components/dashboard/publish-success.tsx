@@ -1,4 +1,5 @@
 import * as Ic from '#common/ui/components/datarural/icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface SuccessProps {
   data: any
@@ -6,21 +7,22 @@ interface SuccessProps {
 }
 
 export default function PublishSuccess({ data, onDashboard }: SuccessProps) {
+  const { t } = useTranslation()
+
   return (
     <div className="dr-wpanel">
       <div className="dr-publish-success">
         <div className="dr-ps-check">
           <Ic.Check size={44} />
         </div>
-        <h2>Dataset enviado para curadoria!</h2>
+        <h2>{t('dataset.publish_success.heading')}</h2>
         <p>
           <strong style={{ color: 'var(--foreground)' }}>{data.title || 'Seu dataset'}</strong>{' '}
-          foi recebido e está na fila de revisão da equipe DataRural. Você será notificada por
-          e-mail quando ele for ao ar — normalmente em até 2 dias úteis.
+          {t('dataset.publish_success.message')}
         </p>
         <div className="dr-ps-actions">
           <button className="dr-btn dr-btn-primary dr-btn-lg" onClick={onDashboard}>
-            <Ic.Layers size={18} /> Ir para Meus datasets
+            <Ic.Layers size={18} /> {t('dataset.publish_success.my_datasets')}
           </button>
           <a
             className="dr-btn dr-btn-outline dr-btn-lg"
@@ -29,22 +31,22 @@ export default function PublishSuccess({ data, onDashboard }: SuccessProps) {
               // we can navigate to detail page or let the user click through
             }}
           >
-            <Ic.Eye size={18} /> Pré-visualizar página
+            <Ic.Eye size={18} /> {t('dataset.publish_success.preview')}
           </a>
         </div>
         <div className="dr-ps-meta">
           <div className="pm">
-            <span className="k">Status</span>
+            <span className="k">{t('dataset.publish_success.status')}</span>
             <span className="v" style={{ color: 'var(--brand-orange)' }}>
-              Em revisão
+              {t('dataset.publish_success.in_review')}
             </span>
           </div>
           <div className="pm">
-            <span className="k">Versão</span>
+            <span className="k">{t('dataset.publish_success.version')}</span>
             <span className="v">v1</span>
           </div>
           <div className="pm">
-            <span className="k">Identificador</span>
+            <span className="k">{t('dataset.publish_success.identifier')}</span>
             <span className="v">DR-2026-0148</span>
           </div>
         </div>
