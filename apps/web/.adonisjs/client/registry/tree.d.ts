@@ -38,42 +38,6 @@ export interface ApiDefinition {
   locale: {
     switch: typeof routes['locale.switch']
   }
-  admin: {
-    index: typeof routes['admin.index']
-    store: typeof routes['admin.store']
-    update: typeof routes['admin.update']
-    destroy: typeof routes['admin.destroy']
-    audits: typeof routes['admin.audits']
-  }
-  users: {
-    invite: {
-      handle: typeof routes['users.invite.handle']
-    }
-    impersonate: {
-      handle: typeof routes['users.impersonate.handle']
-    }
-    search: typeof routes['users.search']
-    publicProfile: typeof routes['users.public_profile']
-  }
-  user: {
-    profile: typeof routes['user.profile']
-  }
-  settings: {
-    index: typeof routes['settings.index']
-  }
-  profile: {
-    update: typeof routes['profile.update']
-    show: typeof routes['profile.show']
-  }
-  tokens: {
-    index: typeof routes['tokens.index']
-    destroy: typeof routes['tokens.destroy']
-    store: typeof routes['tokens.store']
-  }
-  password: {
-    update: typeof routes['password.update']
-    show: typeof routes['password.show']
-  }
   areas: {
     list: typeof routes['areas.list']
   }
@@ -120,6 +84,42 @@ export interface ApiDefinition {
   dashboard: {
     show: typeof routes['dashboard.show']
     publish: typeof routes['dashboard.publish']
+  }
+  admin: {
+    index: typeof routes['admin.index']
+    store: typeof routes['admin.store']
+    update: typeof routes['admin.update']
+    destroy: typeof routes['admin.destroy']
+    audits: typeof routes['admin.audits']
+  }
+  users: {
+    invite: {
+      handle: typeof routes['users.invite.handle']
+    }
+    impersonate: {
+      handle: typeof routes['users.impersonate.handle']
+    }
+    search: typeof routes['users.search']
+    publicProfile: typeof routes['users.public_profile']
+  }
+  user: {
+    profile: typeof routes['user.profile']
+  }
+  settings: {
+    index: typeof routes['settings.index']
+  }
+  profile: {
+    update: typeof routes['profile.update']
+    show: typeof routes['profile.show']
+  }
+  tokens: {
+    index: typeof routes['tokens.index']
+    destroy: typeof routes['tokens.destroy']
+    store: typeof routes['tokens.store']
+  }
+  password: {
+    update: typeof routes['password.update']
+    show: typeof routes['password.show']
   }
   groups: {
     index: typeof routes['groups.index']

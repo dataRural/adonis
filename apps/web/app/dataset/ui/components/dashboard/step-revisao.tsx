@@ -1,5 +1,6 @@
 import * as Ic from '#common/ui/components/datarural/icons'
 import { LICENSES, AREAS } from './panel-data'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface Step5Props {
   data: any
@@ -8,42 +9,43 @@ interface Step5Props {
 }
 
 export default function StepRevisao({ data, set, onJump }: Step5Props) {
+  const { t } = useTranslation()
   const lic = LICENSES.find((l) => l.id === data.license) || LICENSES[0]
   const area = AREAS.find((a) => a.id === data.area)
 
   const cards = [
     {
-      title: 'Arquivo',
+      title: t('dataset.step_review.file_card_title'),
       icon: 'Uploadcloud',
       color: 'var(--brand-blue)',
       step: 0,
       rows: [
-        ['Nome do arquivo', data.fileName || '—'],
-        ['Tamanho', data.fileSize || '—'],
-        ['Conteúdo', `${data.rowCount.toLocaleString('pt-BR')} linhas · ${data.colCount} colunas`],
+        [t('dataset.step_review.filename'), data.fileName || '—'],
+        [t('dataset.step_review.size'), data.fileSize || '—'],
+        [t('dataset.step_review.content'), t('dataset.step_review.content_val', { rows: data.rowCount.toLocaleString(), cols: data.colCount })],
       ],
     },
     {
-      title: 'Metadados',
+      title: t('dataset.step_review.metadata_card_title'),
       icon: 'Info',
       color: 'var(--brand-sky)',
       step: 1,
       rows: [
-        ['Título', data.title || '—'],
-        ['Unidade', data.unit],
-        ['Área', area ? area.name : '—'],
-        ['Período', data.period || '—'],
-        ['Tags', 'tags'],
+        [t('dataset.step_review.title'), data.title || '—'],
+        [t('dataset.step_review.unit'), data.unit],
+        [t('dataset.step_review.area'), area ? area.name : '—'],
+        [t('dataset.step_review.period'), data.period || '—'],
+        [t('dataset.step_review.tags'), 'tags'],
       ],
     },
     {
-      title: 'Licença & visibilidade',
+      title: t('dataset.step_review.license_vis_card_title'),
       icon: 'Scale',
       color: 'var(--brand-green)',
       step: 3,
       rows: [
-        ['Licença', lic.name],
-        ['Visibilidade', data.visibility === 'public' ? 'Público' : 'Restrito'],
+        [t('dataset.step_review.license'), lic.name],
+        [t('dataset.step_review.visibility'), data.visibility === 'public' ? t('dataset.step_review.public') : t('dataset.step_review.restricted')],
       ],
     },
   ]
@@ -60,7 +62,7 @@ export default function StepRevisao({ data, set, onJump }: Step5Props) {
               </span>
               <span className="rt">{c.title}</span>
               <button className="edit" type="button" onClick={() => onJump(c.step)}>
-                <Ic.Edit size={13} style={{ marginRight: 4 }} /> Editar
+                <Ic.Edit size={13} style={{ marginRight: 4 }} /> {t('dataset.step_review.edit')}
               </button>
             </div>
             <div className="dr-review-rows">
@@ -71,9 +73,9 @@ export default function StepRevisao({ data, set, onJump }: Step5Props) {
                     {v === 'tags' ? (
                       <span className="tagline">
                         {data.tags.length
-                          ? data.tags.map((t: string) => (
-                              <span key={t} className="dr-review-row rv tagline ds-tag">
-                                {t}
+                          ? data.tags.map((tTag: string) => (
+                              <span key={tTag} className="dr-review-row rv tagline ds-tag">
+                                {tTag}
                               </span>
                             ))
                           : '—'}
@@ -97,9 +99,7 @@ export default function StepRevisao({ data, set, onJump }: Step5Props) {
           onChange={(e) => set({ confirm: e.target.checked })}
         />
         <label htmlFor="confirm" style={{ marginLeft: 8 }}>
-          Confirmo que tenho autorização para publicar estes dados e que eles estão de acordo com a{' '}
-          <a href="#" onClick={(e) => e.preventDefault()}>Política de Dados Abertos da UFRRJ</a> e a LGPD (sem dados pessoais
-          identificáveis).
+          {t('dataset.step_review.confirm_label')}
         </label>
       </div>
     </div>

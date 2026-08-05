@@ -3,6 +3,7 @@ import { Link, router } from '@inertiajs/react'
 import useUser from '#auth/ui/hooks/use_user'
 import { BrandMark } from './brand'
 import * as Ic from './icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface UserProps {
   name: string
@@ -29,14 +30,15 @@ const DEFAULT_ME = {
   avatarUrl: undefined as string | undefined,
 }
 
-export function NavUser({ user }: { user?: UserProps | null }) {
+export function NavUser({ user, theme, onToggleTheme }: { user?: UserProps | null; theme?: string; onToggleTheme?: () => void }) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
   const loggedInUser = useUser()
   const me = loggedInUser
     ? {
-      name: loggedInUser.fullName || 'Usuário UFRRJ',
+      name: loggedInUser.fullName || t('common.nav.user_menu.default_user'),
       email: loggedInUser.email,
       short: (loggedInUser.fullName || 'U').split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase(),
       unit: 'Instituto de Ciências Exatas',
@@ -109,23 +111,117 @@ export function NavUser({ user }: { user?: UserProps | null }) {
           </div>
           <div className="sep"></div>
           <Link role="menuitem" href="/profile">
-            <Ic.User size={16} /> Meu perfil
+            <Ic.User size={16} /> {t('common.nav.user_menu.my_profile')}
           </Link>
           <Link role="menuitem" href="/dashboard">
-            <Ic.Database size={16} /> Meus datasets
+            <Ic.Database size={16} /> {t('common.nav.user_menu.my_datasets')}
           </Link>
           <Link role="menuitem" href="/groups">
-            <Ic.Users size={16} /> Meus grupos
+            <Ic.Users size={16} /> {t('common.nav.user_menu.my_groups')}
           </Link>
           <Link role="menuitem" href="/favorites">
-            <Ic.Bookmark size={16} /> Favoritos
+            <Ic.Bookmark size={16} /> {t('common.nav.user_menu.favorites')}
           </Link>
           <Link role="menuitem" href="/settings/profile">
-            <Ic.Settings size={16} /> Configurações da conta
+            <Ic.Settings size={16} /> {t('common.nav.user_menu.account_settings')}
           </Link>
           <div className="sep"></div>
           <button className="danger" role="menuitem" onClick={handleLogout}>
-            <Ic.Logout size={16} /> Sair
+            <Ic.Logout size={16} /> {t('common.nav.user_menu.logout')}
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function NavLanguage() {
+  const { language, changeLanguage } = useTranslation()
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  const currentLang = (language || 'pt').startsWith('pt') ? 'pt' : 'en'
+
+  useEffect(() => {
+    if (!open) return
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    window.addEventListener('click', onDoc)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('click', onDoc)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
+  const selectLanguage = (code: 'pt' | 'en') => {
+    setOpen(false)
+    if (code === currentLang) return
+    router.post(`/switch/${code}`, {}, {
+      onSuccess: () => changeLanguage(code),
+      onError: () => changeLanguage(code),
+    })
+  }
+
+  return (
+    <div style={{ position: 'relative' }} ref={ref}>
+      <button
+        className={'dr-btn dr-btn-icon' + (open ? ' open' : '')}
+        onClick={(e) => {
+          e.stopPropagation()
+          setOpen((v) => !v)
+        }}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        title="Idioma / Language"
+      >
+        <Ic.Globe size={18} />
+      </button>
+
+      {open && (
+        <div
+          className="dr-user-menu"
+          role="menu"
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 'calc(100% + 8px)',
+            minWidth: 140,
+            zIndex: 100,
+            padding: '6px 4px',
+          }}
+        >
+          <button
+            role="menuitem"
+            onClick={() => selectLanguage('pt')}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              fontWeight: currentLang === 'pt' ? 700 : 400,
+            }}
+          >
+            <span>Português</span>
+            {currentLang === 'pt' && <Ic.Check size={14} style={{ color: 'var(--brand-green)' }} />}
+          </button>
+          <button
+            role="menuitem"
+            onClick={() => selectLanguage('en')}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              fontWeight: currentLang === 'en' ? 700 : 400,
+            }}
+          >
+            <span>English</span>
+            {currentLang === 'en' && <Ic.Check size={14} style={{ color: 'var(--brand-green)' }} />}
           </button>
         </div>
       )}
@@ -134,7 +230,9 @@ export function NavUser({ user }: { user?: UserProps | null }) {
 }
 
 export default function PanelNav({ theme, onToggleTheme, onPublish, active, user, hidePublishButton }: PanelNavProps) {
+  const { t } = useTranslation()
   const loggedInUser = useUser()
+
   return (
     <header className="dr-nav">
       <div className="dr-container dr-nav-inner">
@@ -152,50 +250,43 @@ export default function PanelNav({ theme, onToggleTheme, onPublish, active, user
             className={'dr-nav-link' + (active === 'datasets' ? ' active' : '')}
             href="/datasets"
           >
-            Datasets
+            {t('common.nav.datasets')}
           </Link>
           <Link
             className={'dr-nav-link' + (active === 'dashboard' ? ' active' : '')}
             href="/dashboard"
           >
-            Meus datasets
+            {t('common.nav.my_datasets')}
           </Link>
           <Link
             className={'dr-nav-link' + (active === 'favorites' ? ' active' : '')}
             href="/favorites"
           >
-            Favoritos
+            {t('common.nav.favorites')}
           </Link>
           <Link
             className={'dr-nav-link' + (active === 'groups' ? ' active' : '')}
             href="/groups"
           >
-            Grupos
+            {t('common.nav.groups')}
           </Link>
           {loggedInUser && (loggedInUser.roleId === 2 || (loggedInUser as any).roleId === 2) && (
             <Link
               className={'dr-nav-link' + (active === 'users' || active === 'admin' ? ' active' : '')}
               href="/admin"
             >
-              Gestão
+              {t('common.nav.management')}
             </Link>
           )}
         </nav>
         <div className="dr-nav-right">
-          <button
-            className="dr-btn dr-btn-icon"
-            onClick={onToggleTheme}
-            title={theme === 'dark' ? 'Tema claro' : 'Tema escuro'}
-            aria-label="Alternar tema"
-          >
-            {theme === 'dark' ? <Ic.Sun size={18} /> : <Ic.Moon size={18} />}
-          </button>
+          <NavLanguage />
           {!hidePublishButton && onPublish && (
             <button className="dr-btn dr-btn-primary" onClick={onPublish}>
-              <Ic.Plus size={17} /> Publicar dataset
+              <Ic.Plus size={17} /> {t('common.nav.publish_dataset')}
             </button>
           )}
-          <NavUser user={user} />
+          <NavUser user={user} theme={theme} onToggleTheme={onToggleTheme} />
         </div>
       </div>
     </header>

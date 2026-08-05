@@ -3,6 +3,7 @@ import { Link } from '@adonisjs/inertia/react'
 import { router } from '@inertiajs/react'
 import * as Ic from '#common/ui/components/datarural/icons'
 import { UserDatasetItem, STATUS_META } from './panel-data'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface DatasetTableProps {
   list: UserDatasetItem[]
@@ -21,6 +22,8 @@ function RowMenu({
   onClose: () => void
   openUpwards?: boolean
 }) {
+  const { t } = useTranslation()
+
   return (
     <div
       className="dr-row-menu"
@@ -33,7 +36,7 @@ function RowMenu({
           onClose()
         }}
       >
-        <Ic.Edit size={16} /> Editar metadados
+        <Ic.Edit size={16} /> {t('dataset.table.edit_metadata')}
       </button>
       <button
         onClick={() => {
@@ -41,7 +44,7 @@ function RowMenu({
           onClose()
         }}
       >
-        <Ic.Branch size={16} /> Enviar nova versão
+        <Ic.Branch size={16} /> {t('dataset.table.new_version')}
       </button>
       <button
         onClick={() => {
@@ -49,22 +52,19 @@ function RowMenu({
           onClose()
         }}
       >
-        <Ic.Eye size={16} /> Ver página pública
-      </button>
-      <button onClick={onClose}>
-        <Ic.Chart size={16} /> Estatísticas de uso
+        <Ic.Eye size={16} /> {t('dataset.table.public_page')}
       </button>
       <div className="sep"></div>
       <button
         className="danger"
         onClick={() => {
-          if (confirm(`Tem certeza que deseja excluir o dataset "${d.title}"? Esta ação não pode ser desfeita.`)) {
+          if (confirm(t('dataset.table.delete_confirm', { title: d.title }))) {
             router.post(`/datasets/${d.id}/delete`)
           }
           onClose()
         }}
       >
-        <Ic.Trash size={16} /> Excluir
+        <Ic.Trash size={16} /> {t('dataset.table.delete')}
       </button>
     </div>
   )
@@ -83,6 +83,7 @@ function DatasetRow({
   onEdit: (d: UserDatasetItem) => void
   onCloseMenu: () => void
 }) {
+  const { t } = useTranslation()
   const sm = STATUS_META[d.status] || { label: d.status, color: 'var(--muted-foreground)' }
   const ref = useRef<HTMLDivElement>(null)
   const [openUpwards, setOpenUpwards] = useState(false)
@@ -123,7 +124,7 @@ function DatasetRow({
             </span>
             <span className="dotsep"></span>
             <span className="v">
-              <Ic.Rows size={12} /> {d.rows} linhas
+              <Ic.Rows size={12} /> {d.rows} {t('dataset.table.rows_suffix')}
             </span>
             <span className="dotsep"></span>
             <span className="v">
@@ -140,7 +141,7 @@ function DatasetRow({
             e.stopPropagation()
             router.post(`/datasets/${d.id}/privacy`, {}, { preserveScroll: true })
           }}
-          title={d.status === 'published' ? 'Clique para tornar Privado' : 'Clique para tornar Público'}
+          title={d.status === 'published' ? t('dataset.table.make_private') : t('dataset.table.make_public')}
           style={{ cursor: 'pointer' }}
         >
           <span className="d" style={{ background: sm.color }}></span>
@@ -150,7 +151,7 @@ function DatasetRow({
 
       <div className="col-dl dr-mds-metric">
         <span className="num">{d.likes ?? d.downloads ?? '0'}</span>
-        <span className="lbl">curtidas</span>
+        <span className="lbl">{t('dataset.table.likes')}</span>
       </div>
 
       <div className="col-usab">
@@ -181,15 +182,16 @@ function DatasetRow({
 }
 
 export default function DatasetTable({ list, onEdit, onPublish }: DatasetTableProps) {
+  const { t } = useTranslation()
   const [openMenuId, setOpenMenuId] = useState<number | null>(null)
 
   return (
     <div className="dr-mds">
       <div className="dr-mds-head">
-        <span>Dataset</span>
-        <span>Status</span>
-        <span>Curtidas</span>
-        <span>Usabilidade</span>
+        <span>{t('dataset.table.th_dataset')}</span>
+        <span>{t('dataset.table.th_status')}</span>
+        <span>{t('dataset.table.th_likes')}</span>
+        <span>{t('dataset.table.th_usability')}</span>
         <span></span>
       </div>
       {list.length === 0 ? (
@@ -197,10 +199,10 @@ export default function DatasetTable({ list, onEdit, onPublish }: DatasetTablePr
           <span className="ic">
             <Ic.Folder size={28} />
           </span>
-          <strong>Nenhum dataset nesta visão</strong>
-          <p>Ajuste os filtros ou publique um novo conjunto de dados.</p>
+          <strong>{t('dataset.table.empty_title')}</strong>
+          <p>{t('dataset.table.empty_sub')}</p>
           <button className="dr-btn dr-btn-primary" onClick={onPublish}>
-            <Ic.Plus size={17} /> Publicar dataset
+            <Ic.Plus size={17} /> {t('dataset.table.publish_btn')}
           </button>
         </div>
       ) : (

@@ -4,6 +4,7 @@ import Navbar from '#common/ui/components/datarural/navbar'
 import DatasetCard, { DatasetItem } from '#common/ui/components/datarural/dataset-card'
 import Footer from '#common/ui/components/datarural/footer'
 import * as Ic from '#common/ui/components/datarural/icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 import type { InertiaProps } from '#core/ui/types'
 
 type PageProps = InertiaProps<{
@@ -11,6 +12,7 @@ type PageProps = InertiaProps<{
 }>
 
 export default function FavoritesPage({ datasets = [] }: PageProps) {
+  const { t } = useTranslation()
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -69,13 +71,9 @@ export default function FavoritesPage({ datasets = [] }: PageProps) {
     if (tab === 'recent') {
       if (!raw) arr.sort((a, b) => b.id - a.id)
     } else if (tab === 'featured') {
-      arr.sort((a, b) => {
-        const scoreA = Number(a.usability) || 0
-        const scoreB = Number(b.usability) || 0
-        return scoreB - scoreA
-      })
+      arr.sort((a, b) => (Number(b.usability) || 0) - (Number(a.usability) || 0))
     } else if (tab === 'popular') {
-      arr.sort((a, b) => (b.likesCount || 0) - (a.likesCount || 0))
+      arr.sort((a, b) => (Number(b.votes || b.downloads) || 0) - (Number(a.votes || a.downloads) || 0))
     }
 
     return arr
@@ -87,7 +85,7 @@ export default function FavoritesPage({ datasets = [] }: PageProps) {
 
   return (
     <div className="dr-app dr-panel-wrap" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Head title="Meus Datasets Favoritos — DataRural" />
+      <Head title={`${t('dataset.favorites.title')} — DataRural`} />
       <Navbar theme={theme} onToggleTheme={handleToggleTheme} activePage="favorites" />
 
       {/* Page Header */}
@@ -96,23 +94,23 @@ export default function FavoritesPage({ datasets = [] }: PageProps) {
           <div className="dr-page-head-inner">
             <div>
               <div className="dr-page-breadcrumb">
-                <a href="/">Início</a>
+                <a href="/">{t('dataset.dashboard.breadcrumb_home')}</a>
                 <span className="sep">
                   <Ic.Chevr size={13} style={{ display: 'inline', margin: '0 4px' }} />
                 </span>
-                <span>Favoritos</span>
+                <span>{t('common.nav.favorites')}</span>
               </div>
               <h1 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
                 <Ic.Bookmark size={28} style={{ color: 'var(--brand-green)', fill: 'var(--brand-green)' }} />
-                Meus Datasets Favoritos
+                {t('dataset.favorites.title')}
               </h1>
               <p className="page-sub">
-                Conjuntos de dados que você salvou para referência e acesso rápido.
+                {t('dataset.favorites.sub')}
               </p>
             </div>
             <div className="dr-page-head-actions">
               <Link className="dr-btn dr-btn-outline dr-btn-lg" href="/datasets">
-                <Ic.Search size={18} /> Explorar catálogo
+                <Ic.Search size={18} /> {t('common.footer.explore_datasets')}
               </Link>
             </div>
           </div>
@@ -140,7 +138,7 @@ export default function FavoritesPage({ datasets = [] }: PageProps) {
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Buscar nos seus favoritos…"
+                  placeholder={t('dataset.favorites.search_placeholder')}
                   style={{
                     width: '100%',
                     padding: '12px 42px 12px 44px',
@@ -167,7 +165,7 @@ export default function FavoritesPage({ datasets = [] }: PageProps) {
                       color: 'var(--muted-foreground)',
                       padding: 4,
                     }}
-                    title="Limpar busca"
+                    title={t('dataset.favorites.clear_search')}
                   >
                     <Ic.X size={16} />
                   </button>
@@ -191,7 +189,9 @@ export default function FavoritesPage({ datasets = [] }: PageProps) {
               }}
             >
               <div style={{ fontSize: '14px', color: 'var(--muted-foreground)', fontWeight: 500 }}>
-                Você tem <strong style={{ color: 'var(--foreground)' }}>{filteredList.length}</strong> {filteredList.length === 1 ? 'dataset salvo' : 'datasets salvos'}
+                {filteredList.length === 1
+                  ? t('dataset.favorites.saved_count_one', { count: filteredList.length })
+                  : t('dataset.favorites.saved_count', { count: filteredList.length })}
                 {search && (
                   <button
                     onClick={() => setSearch('')}
@@ -206,7 +206,7 @@ export default function FavoritesPage({ datasets = [] }: PageProps) {
                       textDecoration: 'underline',
                     }}
                   >
-                    Limpar busca
+                    {t('dataset.favorites.clear_search')}
                   </button>
                 )}
               </div>
@@ -236,7 +236,7 @@ export default function FavoritesPage({ datasets = [] }: PageProps) {
                       boxShadow: tab === 'recent' ? 'var(--shadow-sm)' : 'none',
                     }}
                   >
-                    Mais recentes
+                    {t('dataset.explore.sort_recent')}
                   </button>
                   <button
                     onClick={() => setTab('featured')}
@@ -252,7 +252,7 @@ export default function FavoritesPage({ datasets = [] }: PageProps) {
                       boxShadow: tab === 'featured' ? 'var(--shadow-sm)' : 'none',
                     }}
                   >
-                    Maior usabilidade
+                    {t('dataset.explore.sort_featured')}
                   </button>
                   <button
                     onClick={() => setTab('popular')}
@@ -268,7 +268,7 @@ export default function FavoritesPage({ datasets = [] }: PageProps) {
                       boxShadow: tab === 'popular' ? 'var(--shadow-sm)' : 'none',
                     }}
                   >
-                    Mais curtidos
+                    {t('dataset.explore.sort_popular')}
                   </button>
                 </div>
 
@@ -294,7 +294,7 @@ export default function FavoritesPage({ datasets = [] }: PageProps) {
                       display: 'flex',
                       alignItems: 'center',
                     }}
-                    title="Visualização em grade"
+                    title={t('dataset.explore.view_grid')}
                   >
                     <Ic.Grid size={15} />
                   </button>
@@ -310,7 +310,7 @@ export default function FavoritesPage({ datasets = [] }: PageProps) {
                       display: 'flex',
                       alignItems: 'center',
                     }}
-                    title="Visualização em lista"
+                    title={t('dataset.explore.view_list')}
                   >
                     <Ic.Table size={15} />
                   </button>
@@ -345,20 +345,20 @@ export default function FavoritesPage({ datasets = [] }: PageProps) {
             >
               <Ic.Bookmark size={48} style={{ margin: '0 auto 16px', opacity: 0.3, color: 'var(--brand-green)' }} />
               <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 8px', color: 'var(--foreground)' }}>
-                {search ? 'Nenhum favorito encontrado' : 'Nenhum dataset salvo ainda'}
+                {search ? t('dataset.favorites.no_favorites_found') : t('dataset.favorites.no_saved_yet')}
               </h3>
               <p style={{ fontSize: '14px', margin: '0 0 20px', maxWidth: 460, marginLeft: 'auto', marginRight: 'auto' }}>
                 {search
-                  ? 'Não encontramos nenhum dataset nos seus favoritos com este termo.'
-                  : 'Quando você encontrar datasets interessantes no catálogo, clique no botão "Salvar" para guardar o dataset na sua lista de favoritos.'}
+                  ? t('dataset.favorites.no_matching_search')
+                  : t('dataset.favorites.empty_hint')}
               </p>
               {search ? (
                 <button className="dr-btn dr-btn-primary" onClick={() => setSearch('')}>
-                  Limpar busca
+                  {t('dataset.favorites.clear_search')}
                 </button>
               ) : (
                 <Link className="dr-btn dr-btn-primary" href="/datasets">
-                  Explorar catálogo de datasets
+                  {t('dataset.favorites.explore_catalog')}
                 </Link>
               )}
             </div>

@@ -1,4 +1,5 @@
 import * as Ic from '#common/ui/components/datarural/icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 export interface DashboardStatsProps {
   publishedCount: number
@@ -7,9 +8,11 @@ export interface DashboardStatsProps {
 }
 
 export default function DashboardStats({ stats }: { stats?: DashboardStatsProps }) {
+  const { t } = useTranslation()
+
   const finalStats = [
-    { id: 'pub', val: String(stats?.publishedCount ?? 0), label: 'Datasets publicados', icon: 'Database', color: 'var(--brand-blue)', trend: 'Total' },
-    { id: 'likes', val: String(stats?.likesCount ?? 0), label: 'Curtidas totais', icon: 'Heart', color: 'var(--brand-green)', trend: 'Total' },
+    { id: 'pub', val: String(stats?.publishedCount ?? 0), label: t('dataset.dashboard.stats_published'), icon: 'Database', color: 'var(--brand-blue)', trend: t('dataset.dashboard.stats_trend') },
+    { id: 'likes', val: String(stats?.likesCount ?? 0), label: t('dataset.dashboard.stats_likes'), icon: 'Heart', color: 'var(--brand-green)', trend: t('dataset.dashboard.stats_trend') },
   ]
 
   return (

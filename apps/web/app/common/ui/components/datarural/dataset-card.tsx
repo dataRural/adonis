@@ -2,11 +2,15 @@ import { Link } from '@adonisjs/inertia/react'
 import { router } from '@inertiajs/react'
 import { CardArt } from './brand'
 import * as Ic from './icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 export interface DatasetItem {
   id: number
   title?: string
   name?: string
+  author?: string
+  authorName?: string
+  user?: { fullName?: string; username?: string }
   desc?: string
   description?: string
   unit?: string
@@ -29,15 +33,17 @@ interface DatasetCardProps {
 }
 
 export default function DatasetCard({ d }: DatasetCardProps) {
+  const { t } = useTranslation()
   const id = d.id
-  const title = d.title || d.name || 'Sem título'
-  const desc = d.desc || d.description || 'Nenhuma descrição fornecida para este conjunto de dados.'
-  const unit = d.unit || 'Instituto de Ciências Exatas'
-  const tags = d.tags && d.tags.length > 0 ? d.tags : ['Geral']
+  const title = d.title || d.name || t('dataset.card.no_title')
+  const desc = d.desc || d.description || t('dataset.card.no_desc')
+  const unit = d.unit || t('dataset.card.default_unit')
+  const author = d.author || d.authorName || d.user?.fullName || d.user?.username || 'Administrador'
+  const tags = d.tags && d.tags.length > 0 ? d.tags : [t('dataset.card.general_tag')]
   const dl = d.likesCount !== undefined ? d.likesCount : (d.dl !== undefined ? d.dl : 0)
   const isLiked = !!d.isLiked
   const isSaved = !!d.isSaved
-  const updated = d.updated || 'Recentemente'
+  const updated = d.updated || t('dataset.card.recently')
   const usability = d.usability !== null && d.usability !== undefined ? d.usability : '8.0'
   const size = d.size || '—'
 
@@ -53,7 +59,7 @@ export default function DatasetCard({ d }: DatasetCardProps) {
     router.post(`/datasets/${id}/favorite`, {}, { preserveScroll: true })
   }
   
-  let licenseName = 'Proprietária'
+  let licenseName = t('dataset.card.proprietary_license')
   if (d.license) {
     if (typeof d.license === 'string') {
       licenseName = d.license
@@ -81,26 +87,26 @@ export default function DatasetCard({ d }: DatasetCardProps) {
         <h3 className="dr-ds-title">{title}</h3>
         <p className="dr-ds-desc">{desc}</p>
         <div className="dr-ds-tags">
-          {tags.slice(0, 3).map((t) => (
-            <span className="dr-ds-tag" key={t}>
-              {t}
+          {tags.slice(0, 3).map((tTag) => (
+            <span className="dr-ds-tag" key={tTag}>
+              {tTag}
             </span>
           ))}
         </div>
         <div className="dr-ds-meta">
           <button
             type="button"
-            className={`dr-card-like-btn ${isLiked ? 'liked' : ''}`}
+            className={`dr-card-like-btn ${isLiked ? 'on' : ''}`}
             onClick={handleLike}
-            title="Curtir dataset"
+            title={t('dataset.card.like_title')}
           >
             <Ic.Heart size={14} style={{ color: isLiked ? '#e11d48' : undefined, fill: isLiked ? '#e11d48' : 'none' }} /> {dl}
           </button>
           <button
             type="button"
-            className={`dr-card-like-btn ${isSaved ? 'liked' : ''}`}
+            className={`dr-card-like-btn ${isSaved ? 'on' : ''}`}
             onClick={handleFavorite}
-            title={isSaved ? 'Remover dos favoritos' : 'Salvar dataset'}
+            title={isSaved ? t('dataset.card.unsave_title') : t('dataset.card.save_title')}
             style={{ marginLeft: 6 }}
           >
             <Ic.Bookmark size={14} style={{ color: isSaved ? 'var(--brand-green)' : undefined, fill: isSaved ? 'var(--brand-green)' : 'none' }} />
@@ -109,13 +115,31 @@ export default function DatasetCard({ d }: DatasetCardProps) {
             <Ic.Clock size={14} /> {updated}
           </span>
           <span className="spacer"></span>
-          <span className="dr-usability" title="Índice de usabilidade">
+          <span className="dr-usability" title={t('dataset.card.usability_title')}>
             <Ic.Verified size={14} /> {usability}
           </span>
         </div>
-        <div className="dr-ds-meta" style={{ borderTop: 'none', paddingTop: '10px' }}>
+        <div className="dr-ds-meta" style={{ borderTop: 'none', paddingTop: '10px', alignItems: 'center' }}>
           <span className="m">
             <Ic.File size={14} /> {size}
+          </span>
+          <span className="spacer"></span>
+          <span
+            className="m"
+            style={{
+              fontSize: 12,
+              color: 'var(--muted-foreground)',
+              maxWidth: 130,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+            }}
+            title={author}
+          >
+            <Ic.User size={13} style={{ flexShrink: 0 }} /> {author}
           </span>
           <span className="spacer"></span>
           <span className="dr-ds-license">

@@ -7,6 +7,7 @@ import Toolbar from '../components/dashboard/toolbar'
 import DatasetTable from '../components/dashboard/dataset-table'
 import { UserDatasetItem } from '../components/dashboard/panel-data'
 import * as Ic from '#common/ui/components/datarural/icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 import type { InertiaProps } from '#core/ui/types'
 
@@ -17,6 +18,7 @@ type PageProps = InertiaProps<{
 }>
 
 export default function Dashboard({ datasets = [], userGroups = [], totalLikesCount }: PageProps) {
+  const { t } = useTranslation()
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -73,7 +75,7 @@ export default function Dashboard({ datasets = [], userGroups = [], totalLikesCo
 
   return (
     <div className="dr-app dr-panel-wrap">
-      <Head title="Meus Datasets" />
+      <Head title={t('dataset.dashboard.title')} />
       <PanelNav
         theme={theme}
         onToggleTheme={handleToggleTheme}
@@ -87,15 +89,15 @@ export default function Dashboard({ datasets = [], userGroups = [], totalLikesCo
           <div className="dr-page-head-inner">
             <div>
               <div className="dr-page-breadcrumb">
-                <a href="/">Início</a>
+                <a href="/">{t('dataset.dashboard.breadcrumb_home')}</a>
                 <span className="sep">
                   <Ic.Chevr size={13} style={{ display: 'inline', margin: '0 4px' }} />
                 </span>
-                <span>Meus datasets</span>
+                <span>{t('dataset.dashboard.breadcrumb_my')}</span>
               </div>
-              <h1 style={{ margin: 0 }}>Meus datasets</h1>
+              <h1 style={{ margin: 0 }}>{t('dataset.dashboard.title')}</h1>
               <p className="page-sub">
-                Gerencie o que você publica, acompanhe o uso e envie novas versões.
+                {t('dataset.dashboard.sub')}
               </p>
             </div>
             <div className="dr-page-head-actions">
@@ -117,17 +119,17 @@ export default function Dashboard({ datasets = [], userGroups = [], totalLikesCo
                     marginRight: '8px',
                   }}
                 >
-                  <option value="all">Todos os grupos / Pessoal</option>
-                  <option value="none">Somente Pessoal (Sem grupo)</option>
+                  <option value="all">{t('dataset.dashboard.group_all')}</option>
+                  <option value="none">{t('dataset.dashboard.group_none')}</option>
                   {userGroups.map((g) => (
                     <option key={g.id} value={g.id}>
-                      Grupo: {g.name}
+                      {t('dataset.dashboard.group_prefix')}{g.name}
                     </option>
                   ))}
                 </select>
               )}
               <button className="dr-btn dr-btn-primary dr-btn-lg" onClick={handlePublish}>
-                <Ic.Plus size={18} /> Publicar dataset
+                <Ic.Plus size={18} /> {t('dataset.dashboard.publish_btn')}
               </button>
             </div>
           </div>

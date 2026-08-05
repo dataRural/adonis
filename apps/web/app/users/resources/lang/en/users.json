@@ -40,19 +40,102 @@
       "add": "Add"
     }
   },
+  "admin": {
+    "title": "Admin Panel",
+    "sub": "Management of users, permissions, knowledge areas, and audit logs.",
+    "breadcrumb_home": "Home",
+    "breadcrumb_admin": "Administration",
+    "tabs": {
+      "users": "User Management",
+      "areas": "Knowledge Areas",
+      "audits": "Audit Logs"
+    },
+    "audits": {
+      "title": "Audit Logs",
+      "search_placeholder": "Search by event, user, table or ID…",
+      "search_button": "Search",
+      "event_label": "Filter by event",
+      "event_all": "All events",
+      "event_create": "Creation",
+      "event_update": "Update",
+      "event_delete": "Deletion",
+      "details_modal": "Audit Details",
+      "old_values": "Old Values",
+      "new_values": "New Values",
+      "view_details": "View Details"
+    }
+  },
+  "settings_layout": {
+    "breadcrumb_home": "Home",
+    "breadcrumb_settings": "Settings",
+    "title": "My Account",
+    "sub": "Manage your personal data, access password, and preferences."
+  },
   "password": {
     "breadcrumbs": {
       "settings": "Settings"
     },
-    "title": "Update Password",
-    "description": "Make sure your account is using a long, random password to stay secure"
+    "title": "Change Password",
+    "description": "Ensure your account is using a long, random password to stay secure."
   },
   "profile": {
     "breadcrumbs": {
       "settings": "Settings"
     },
     "title": "Profile Information",
-    "description": "Update your name and email address"
+    "description": "Update your personal information and profile picture.",
+    "avatar_hint": "JPG, GIF or PNG. 1MB max.",
+    "username": "Username",
+    "username_placeholder": "E.g.: john_doe",
+    "username_hint": "Your public profile will be available at datarural.ufrrj.br/u/{username}",
+    "bio": "Bio",
+    "bio_placeholder": "Write a short bio for your public profile...",
+    "institution": "Institution / Unit",
+    "institution_placeholder": "E.g.: Institute of Exact Sciences — UFRRJ",
+    "location": "Location",
+    "location_placeholder": "E.g.: Seropédica, Rio de Janeiro"
+  },
+  "public_profile": {
+    "tab_overview": "Overview",
+    "tab_datasets": "Datasets",
+    "tab_groups": "Groups",
+    "tab_activity": "Activity",
+    "default_user": "DataRural User",
+    "no_bio_own": "No bio provided. Click Edit Profile to add one.",
+    "no_bio_other": "No bio provided.",
+    "edit_profile": "Edit profile",
+    "no_institution": "No institution specified",
+    "no_location": "No location specified",
+    "member_since": "Member since {date}",
+    "groups_title": "Groups ({count})",
+    "no_groups": "Not a member of any group.",
+    "role_owner": "Owner",
+    "role_admin": "Admin",
+    "role_member": "Member",
+    "featured_datasets": "Featured Datasets",
+    "no_datasets_title": "No datasets published yet",
+    "no_datasets_sub": "This user has not published any datasets in the ecosystem yet.",
+    "publish_first": "Publish my first dataset",
+    "public": "Public",
+    "private": "Private",
+    "no_dataset_desc": "No description registered for this dataset.",
+    "recent_activity": "Recent Activity",
+    "no_recent_activity": "No recent activity recorded in the ecosystem.",
+    "published_new_version": "Published new version",
+    "of_dataset": "of dataset",
+    "files_count": "{count} file(s)",
+    "search_placeholder": "Search datasets...",
+    "new_dataset": "New Dataset",
+    "no_search_results": "No datasets found matching your search.",
+    "label_area": "Area:",
+    "label_format": "Format:",
+    "label_size": "Size:",
+    "label_likes": "Likes:",
+    "label_downloads": "Downloads:",
+    "groups_heading": "Research Groups and Laboratories",
+    "no_public_groups": "The user does not belong to any public group at the moment.",
+    "activity_history": "Activity History",
+    "published_dataset": "Published dataset:"
   },
   "tokens": {
     "breadcrumbs": {
@@ -121,7 +204,7 @@
   },
   "delete": {
     "title": "Delete User",
-    "description": "Are you sure you want to delete <strong1>{{email}}</strong1>? This action will permanently remove the user with the role of <strong2>{{role}}</strong2> from the system. This cannot be undone.",
+    "description": "Are you sure you want to delete <strong1>{email}</strong1>? This action will permanently remove the user with the role of <strong2>{role}</strong2> from the system. This cannot be undone.",
     "confirm_placeholder": "Enter email to confirm deletion.",
     "confirm_button": "Delete",
     "alert": {
@@ -134,7 +217,7 @@
   },
   "delete_token": {
     "title": "Delete Token",
-    "description": "Are you sure you want to delete <strong1>{{token_name}}</strong1>? This action will permanently remove the token from the system. This cannot be undone.",
+    "description": "Are you sure you want to delete <strong1>{token_name}</strong1>? This action will permanently remove the token from the system. This cannot be undone.",
     "confirm_placeholder": "Enter the token name to confirm deletion.",
     "confirm_button": "Delete",
     "alert": {
@@ -147,7 +230,7 @@
   },
   "impersonate": {
     "title": "Impersonate User",
-    "description": "Are you sure you want to impersonate <strong1>{{email}}</strong1>? This action will allow you to act as this user (Role: <strong2>{{role}}</strong2>) in the system.",
+    "description": "Are you sure you want to impersonate <strong1>{email}</strong1>? This action will allow you to act as this user (Role: <strong2>{role}</strong2>) in the system.",
     "confirm_button": "Impersonate",
     "alert": {
       "title": "Note",

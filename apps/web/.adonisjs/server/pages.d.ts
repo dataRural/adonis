@@ -33,8 +33,14 @@ declare module '@adonisjs/inertia/types' {
     'users/profile': ExtractProps<(typeof import('../../app/users/ui/pages/profile.tsx'))['default']>
     'users/public_profile': ExtractProps<(typeof import('../../app/users/ui/pages/public_profile.tsx'))['default']>
     'users/tokens': ExtractProps<(typeof import('../../app/users/ui/pages/tokens.tsx'))['default']>
+    'audit_resolvers/ip_address_resolver': ExtractProps<(typeof import('../../app/audit_resolvers/ip_address_resolver.ts'))['default']>
+    'audit_resolvers/url_resolver': ExtractProps<(typeof import('../../app/audit_resolvers/url_resolver.ts'))['default']>
+    'audit_resolvers/user_agent_resolver': ExtractProps<(typeof import('../../app/audit_resolvers/user_agent_resolver.ts'))['default']>
+    'audit_resolvers/user_resolver': ExtractProps<(typeof import('../../app/audit_resolvers/user_resolver.ts'))['default']>
+    'common/database/migrations/1715000000000_create_audits_table': ExtractProps<(typeof import('../../app/common/database/migrations/1715000000000_create_audits_table.ts'))['default']>
     'dataset/database/migrations/1761021001004_create_dataset_version_files_table': ExtractProps<(typeof import('../../app/dataset/database/migrations/1761021001004_create_dataset_version_files_table.ts'))['default']>
     'dataset/database/migrations/1761021001005_backfill_version_files': ExtractProps<(typeof import('../../app/dataset/database/migrations/1761021001005_backfill_version_files.ts'))['default']>
     'dataset/models/dataset_version_file': ExtractProps<(typeof import('../../app/dataset/models/dataset_version_file.ts'))['default']>
+    'users/controllers/audits_controller': ExtractProps<(typeof import('../../app/users/controllers/audits_controller.ts'))['default']>
   }
 }

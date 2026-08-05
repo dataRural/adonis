@@ -5,6 +5,7 @@ import PanelFooter from '#common/ui/components/datarural/footer-simple'
 import GroupCard from '../components/group-card'
 import CreateGroupDialog from '../components/create-group-dialog'
 import * as Ic from '#common/ui/components/datarural/icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 import type { InertiaProps } from '#core/ui/types'
 import type { GroupCardItem } from '../components/group-card'
@@ -14,6 +15,7 @@ type PageProps = InertiaProps<{
 }>
 
 export default function GroupsIndex({ groups = [] }: PageProps) {
+  const { t } = useTranslation()
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -35,7 +37,7 @@ export default function GroupsIndex({ groups = [] }: PageProps) {
 
   return (
     <div className="dr-app dr-panel-wrap">
-      <Head title="Meus Grupos" />
+      <Head title={t('groups.index.title')} />
       <PanelNav
         theme={theme}
         onToggleTheme={() => setTheme((p) => (p === 'dark' ? 'light' : 'dark'))}
@@ -48,20 +50,20 @@ export default function GroupsIndex({ groups = [] }: PageProps) {
           <div className="dr-page-head-inner">
             <div>
               <div className="dr-page-breadcrumb">
-                <a href="/">Início</a>
+                <a href="/">{t('groups.index.breadcrumb_home')}</a>
                 <span className="sep">
                   <Ic.Chevr size={13} style={{ display: 'inline', margin: '0 4px' }} />
                 </span>
-                <span>Meus grupos</span>
+                <span>{t('groups.index.breadcrumb_my')}</span>
               </div>
-              <h1 style={{ margin: 0 }}>Meus grupos</h1>
+              <h1 style={{ margin: 0 }}>{t('groups.index.title')}</h1>
               <p className="page-sub">
-                Gerencie os grupos de que você participa e compartilhe datasets com sua equipe.
+                {t('groups.index.sub')}
               </p>
             </div>
             <div className="dr-page-head-actions">
               <button className="dr-btn dr-btn-primary dr-btn-lg" onClick={() => setShowCreate(true)}>
-                <Ic.Plus size={18} /> Criar grupo
+                <Ic.Plus size={18} /> {t('groups.index.create_btn')}
               </button>
             </div>
           </div>
@@ -87,7 +89,7 @@ export default function GroupsIndex({ groups = [] }: PageProps) {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar grupo…"
+              placeholder={t('groups.index.search_placeholder')}
               style={{
                 width: '100%',
                 padding: '10px 14px 10px 38px',
@@ -126,16 +128,16 @@ export default function GroupsIndex({ groups = [] }: PageProps) {
           >
             <Ic.Users size={48} style={{ margin: '0 auto 16px', opacity: 0.3 }} />
             <p style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 8px' }}>
-              {query.trim() ? 'Nenhum grupo encontrado' : 'Você ainda não participa de nenhum grupo'}
+              {query.trim() ? t('groups.index.empty_search') : t('groups.index.empty_no_groups')}
             </p>
             <p style={{ fontSize: '14px', margin: '0 0 20px' }}>
               {query.trim()
-                ? 'Tente outro termo de busca.'
-                : 'Crie seu primeiro grupo para compartilhar datasets com sua equipe.'}
+                ? t('groups.index.empty_search_sub')
+                : t('groups.index.empty_no_groups_sub')}
             </p>
             {!query.trim() && (
               <button className="dr-btn dr-btn-primary" onClick={() => setShowCreate(true)}>
-                <Ic.Plus size={16} /> Criar grupo
+                <Ic.Plus size={16} /> {t('groups.index.create_btn')}
               </button>
             )}
           </div>

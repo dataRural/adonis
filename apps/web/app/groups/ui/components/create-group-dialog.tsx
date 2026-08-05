@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
 import * as Ic from '#common/ui/components/datarural/icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface CreateGroupDialogProps {
   open: boolean
@@ -8,6 +9,7 @@ interface CreateGroupDialogProps {
 }
 
 export default function CreateGroupDialog({ open, onClose }: CreateGroupDialogProps) {
+  const { t } = useTranslation()
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
@@ -65,7 +67,7 @@ export default function CreateGroupDialog({ open, onClose }: CreateGroupDialogPr
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 700 }}>
             <Ic.Users size={20} style={{ display: 'inline', marginRight: 8, verticalAlign: 'text-bottom' }} />
-            Criar grupo
+            {t('groups.dialogs.create_group.title')}
           </h3>
           <button className="dr-btn dr-btn-ghost" onClick={onClose} style={{ padding: 4 }}>
             <Ic.X size={18} />
@@ -75,13 +77,13 @@ export default function CreateGroupDialog({ open, onClose }: CreateGroupDialogPr
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: 16 }}>
             <label style={{ fontSize: '13px', fontWeight: 600, display: 'block', marginBottom: 6 }}>
-              Nome do grupo *
+              {t('groups.dialogs.create_group.name_label')}
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Ex: Laboratório de Climatologia"
+              placeholder={t('groups.dialogs.create_group.name_placeholder')}
               style={{
                 width: '100%',
                 padding: '10px 14px',
@@ -97,12 +99,12 @@ export default function CreateGroupDialog({ open, onClose }: CreateGroupDialogPr
 
           <div style={{ marginBottom: 20 }}>
             <label style={{ fontSize: '13px', fontWeight: 600, display: 'block', marginBottom: 6 }}>
-              Descrição
+              {t('groups.dialogs.create_group.desc_label')}
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Breve descrição do propósito do grupo (opcional)"
+              placeholder={t('groups.dialogs.create_group.desc_placeholder')}
               rows={3}
               style={{
                 width: '100%',
@@ -120,7 +122,7 @@ export default function CreateGroupDialog({ open, onClose }: CreateGroupDialogPr
 
           <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
             <button type="button" className="dr-btn dr-btn-outline" onClick={onClose}>
-              Cancelar
+              {t('groups.dialogs.create_group.cancel')}
             </button>
             <button
               type="submit"
@@ -128,7 +130,7 @@ export default function CreateGroupDialog({ open, onClose }: CreateGroupDialogPr
               disabled={!name.trim() || loading}
               style={!name.trim() || loading ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
             >
-              <Ic.Plus size={16} /> Criar grupo
+              <Ic.Plus size={16} /> {t('groups.dialogs.create_group.submit')}
             </button>
           </div>
         </form>

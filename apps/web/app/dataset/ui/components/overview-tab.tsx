@@ -2,8 +2,10 @@ import { useState } from 'react'
 import * as Ic from '#common/ui/components/datarural/icons'
 import ColumnStats from './column-stats'
 import { QUALITY, DatasetDetail } from './detail-data'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 export default function OverviewTab({ ds, columns }: { ds: DatasetDetail; columns?: any[] }) {
+  const { t } = useTranslation()
   const [hot, setHot] = useState<string | null>(null)
   const finalDs = ds
 
@@ -13,7 +15,7 @@ export default function OverviewTab({ ds, columns }: { ds: DatasetDetail; column
       <div className="dr-panel">
         <div className="dr-panel-head">
           <h3>
-            <Ic.Book size={17} className="ic" style={{ marginRight: 6 }} /> Sobre este conjunto de dados
+            <Ic.Book size={17} className="ic" style={{ marginRight: 6 }} /> {t('dataset.detail.about')}
           </h3>
         </div>
         <div className="dr-panel-body">
@@ -21,7 +23,7 @@ export default function OverviewTab({ ds, columns }: { ds: DatasetDetail; column
             {finalDs.description ? (
               <div dangerouslySetInnerHTML={{ __html: finalDs.description }} />
             ) : (
-              <p style={{ color: 'var(--muted-foreground)' }}>Nenhuma descrição disponível para este conjunto de dados.</p>
+              <p style={{ color: 'var(--muted-foreground)' }}>{t('dataset.detail.no_desc')}</p>
             )}
           </div>
         </div>
@@ -31,10 +33,10 @@ export default function OverviewTab({ ds, columns }: { ds: DatasetDetail; column
       <div className="dr-panel">
         <div className="dr-panel-head">
           <h3>
-            <Ic.Verified size={17} className="ic" style={{ marginRight: 6 }} /> Índice de usabilidade
+            <Ic.Verified size={17} className="ic" style={{ marginRight: 6 }} /> {t('dataset.detail.usability_index')}
           </h3>
           <div className="right">
-            <span className="dr-ds-license">como é calculado</span>
+            <span className="dr-ds-license">{t('dataset.detail.how_calculated')}</span>
           </div>
         </div>
         <div className="dr-panel-body">
@@ -42,12 +44,10 @@ export default function OverviewTab({ ds, columns }: { ds: DatasetDetail; column
             <div className="dr-quality-top">
               <div className="dr-quality-score">
                 <span className="v">{finalDs.usability}</span>
-                <span className="l">de 10</span>
+                <span className="l">{t('dataset.detail.score_out_of')}</span>
               </div>
               <p className="lead" style={{ margin: 0 }}>
-                Pontuação alta: o conjunto tem <b>documentação completa</b>,{' '}
-                <b>proveniência rastreável</b> e <b> licença aberta</b>. Avaliamos completude,
-                credibilidade e compatibilidade de uso.
+                {t('dataset.detail.quality_lead')}
               </p>
             </div>
             <div className="dr-quality-list">
@@ -78,10 +78,10 @@ export default function OverviewTab({ ds, columns }: { ds: DatasetDetail; column
       <div className="dr-panel">
         <div className="dr-panel-head">
           <h3>
-            <Ic.Columns size={17} className="ic" style={{ marginRight: 6 }} /> Dicionário de colunas
+            <Ic.Columns size={17} className="ic" style={{ marginRight: 6 }} /> {t('dataset.detail.column_dict')}
           </h3>
           <div className="right">
-            <span className="dr-ds-license">{(columns || []).length} colunas</span>
+            <span className="dr-ds-license">{t('dataset.detail.cols_count', { count: (columns || []).length })}</span>
           </div>
         </div>
         <ColumnStats hot={hot} onHot={setHot} columns={columns} />

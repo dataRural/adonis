@@ -18,24 +18,6 @@ export type ScannedRoutes = {
     'social.create': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
     'social.callback': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
     'locale.switch': { paramsTuple: [ParamValue]; params: {'locale': ParamValue} }
-    'admin.index': { paramsTuple?: []; params?: {} }
-    'admin.store': { paramsTuple?: []; params?: {} }
-    'admin.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'admin.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'admin.audits': { paramsTuple?: []; params?: {} }
-    'users.invite.handle': { paramsTuple?: []; params?: {} }
-    'users.impersonate.handle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'users.search': { paramsTuple?: []; params?: {} }
-    'user.profile': { paramsTuple?: []; params?: {} }
-    'users.public_profile': { paramsTuple: [ParamValue]; params: {'username': ParamValue} }
-    'settings.index': { paramsTuple?: []; params?: {} }
-    'profile.update': { paramsTuple?: []; params?: {} }
-    'profile.show': { paramsTuple?: []; params?: {} }
-    'tokens.index': { paramsTuple?: []; params?: {} }
-    'tokens.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'tokens.store': { paramsTuple?: []; params?: {} }
-    'password.update': { paramsTuple?: []; params?: {} }
-    'password.show': { paramsTuple?: []; params?: {} }
     'areas.list': { paramsTuple?: []; params?: {} }
     'admin_areas.index': { paramsTuple?: []; params?: {} }
     'admin_areas.store': { paramsTuple?: []; params?: {} }
@@ -61,6 +43,24 @@ export type ScannedRoutes = {
     'datasets.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.show': { paramsTuple?: []; params?: {} }
     'dashboard.publish': { paramsTuple?: []; params?: {} }
+    'admin.index': { paramsTuple?: []; params?: {} }
+    'admin.store': { paramsTuple?: []; params?: {} }
+    'admin.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin.audits': { paramsTuple?: []; params?: {} }
+    'users.invite.handle': { paramsTuple?: []; params?: {} }
+    'users.impersonate.handle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'users.search': { paramsTuple?: []; params?: {} }
+    'user.profile': { paramsTuple?: []; params?: {} }
+    'users.public_profile': { paramsTuple: [ParamValue]; params: {'username': ParamValue} }
+    'settings.index': { paramsTuple?: []; params?: {} }
+    'profile.update': { paramsTuple?: []; params?: {} }
+    'profile.show': { paramsTuple?: []; params?: {} }
+    'tokens.index': { paramsTuple?: []; params?: {} }
+    'tokens.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'tokens.store': { paramsTuple?: []; params?: {} }
+    'password.update': { paramsTuple?: []; params?: {} }
+    'password.show': { paramsTuple?: []; params?: {} }
     'groups.index': { paramsTuple?: []; params?: {} }
     'groups.store': { paramsTuple?: []; params?: {} }
     'groups.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -81,15 +81,6 @@ export type ScannedRoutes = {
     'auth.reset_password.show': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'social.create': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
     'social.callback': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
-    'admin.index': { paramsTuple?: []; params?: {} }
-    'admin.audits': { paramsTuple?: []; params?: {} }
-    'users.search': { paramsTuple?: []; params?: {} }
-    'user.profile': { paramsTuple?: []; params?: {} }
-    'users.public_profile': { paramsTuple: [ParamValue]; params: {'username': ParamValue} }
-    'settings.index': { paramsTuple?: []; params?: {} }
-    'profile.show': { paramsTuple?: []; params?: {} }
-    'tokens.index': { paramsTuple?: []; params?: {} }
-    'password.show': { paramsTuple?: []; params?: {} }
     'areas.list': { paramsTuple?: []; params?: {} }
     'admin_areas.index': { paramsTuple?: []; params?: {} }
     'datasets.viewer': { paramsTuple?: []; params?: {} }
@@ -104,6 +95,15 @@ export type ScannedRoutes = {
     'datasets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.show': { paramsTuple?: []; params?: {} }
     'dashboard.publish': { paramsTuple?: []; params?: {} }
+    'admin.index': { paramsTuple?: []; params?: {} }
+    'admin.audits': { paramsTuple?: []; params?: {} }
+    'users.search': { paramsTuple?: []; params?: {} }
+    'user.profile': { paramsTuple?: []; params?: {} }
+    'users.public_profile': { paramsTuple: [ParamValue]; params: {'username': ParamValue} }
+    'settings.index': { paramsTuple?: []; params?: {} }
+    'profile.show': { paramsTuple?: []; params?: {} }
+    'tokens.index': { paramsTuple?: []; params?: {} }
+    'password.show': { paramsTuple?: []; params?: {} }
     'groups.index': { paramsTuple?: []; params?: {} }
     'groups.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
@@ -116,15 +116,6 @@ export type ScannedRoutes = {
     'auth.reset_password.show': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'social.create': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
     'social.callback': { paramsTuple: [ParamValue]; params: {'provider': ParamValue} }
-    'admin.index': { paramsTuple?: []; params?: {} }
-    'admin.audits': { paramsTuple?: []; params?: {} }
-    'users.search': { paramsTuple?: []; params?: {} }
-    'user.profile': { paramsTuple?: []; params?: {} }
-    'users.public_profile': { paramsTuple: [ParamValue]; params: {'username': ParamValue} }
-    'settings.index': { paramsTuple?: []; params?: {} }
-    'profile.show': { paramsTuple?: []; params?: {} }
-    'tokens.index': { paramsTuple?: []; params?: {} }
-    'password.show': { paramsTuple?: []; params?: {} }
     'areas.list': { paramsTuple?: []; params?: {} }
     'admin_areas.index': { paramsTuple?: []; params?: {} }
     'datasets.viewer': { paramsTuple?: []; params?: {} }
@@ -139,6 +130,15 @@ export type ScannedRoutes = {
     'datasets.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'dashboard.show': { paramsTuple?: []; params?: {} }
     'dashboard.publish': { paramsTuple?: []; params?: {} }
+    'admin.index': { paramsTuple?: []; params?: {} }
+    'admin.audits': { paramsTuple?: []; params?: {} }
+    'users.search': { paramsTuple?: []; params?: {} }
+    'user.profile': { paramsTuple?: []; params?: {} }
+    'users.public_profile': { paramsTuple: [ParamValue]; params: {'username': ParamValue} }
+    'settings.index': { paramsTuple?: []; params?: {} }
+    'profile.show': { paramsTuple?: []; params?: {} }
+    'tokens.index': { paramsTuple?: []; params?: {} }
+    'password.show': { paramsTuple?: []; params?: {} }
     'groups.index': { paramsTuple?: []; params?: {} }
     'groups.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
@@ -149,11 +149,6 @@ export type ScannedRoutes = {
     'auth.forgot_password.handle': { paramsTuple?: []; params?: {} }
     'auth.reset_password.handle': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
     'locale.switch': { paramsTuple: [ParamValue]; params: {'locale': ParamValue} }
-    'admin.store': { paramsTuple?: []; params?: {} }
-    'users.invite.handle': { paramsTuple?: []; params?: {} }
-    'users.impersonate.handle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'profile.update': { paramsTuple?: []; params?: {} }
-    'tokens.store': { paramsTuple?: []; params?: {} }
     'admin_areas.store': { paramsTuple?: []; params?: {} }
     'datasets.privacy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'datasets.like.toggle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -163,26 +158,31 @@ export type ScannedRoutes = {
     'datasets.version.delete': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'versionId': ParamValue} }
     'datasets.store': { paramsTuple?: []; params?: {} }
     'datasets.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin.store': { paramsTuple?: []; params?: {} }
+    'users.invite.handle': { paramsTuple?: []; params?: {} }
+    'users.impersonate.handle': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'profile.update': { paramsTuple?: []; params?: {} }
+    'tokens.store': { paramsTuple?: []; params?: {} }
     'groups.store': { paramsTuple?: []; params?: {} }
     'groups.members.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'groups.datasets.store': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PUT: {
+    'admin_areas.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'password.update': { paramsTuple?: []; params?: {} }
-    'admin_areas.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'groups.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'groups.members.update': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'memberId': ParamValue} }
   }
   PATCH: {
-    'admin.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin_areas.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'groups.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   DELETE: {
+    'admin_areas.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'tokens.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'admin_areas.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'groups.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'groups.members.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'memberId': ParamValue} }
     'groups.datasets.destroy': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'datasetId': ParamValue} }

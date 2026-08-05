@@ -6,6 +6,7 @@ import StepArquivo from '../components/dashboard/step-arquivo'
 import SubmissionErrorAlert, { SubmissionErrorItem } from '../components/dashboard/submission-error-alert'
 import * as Ic from '#common/ui/components/datarural/icons'
 import { CSV_COLUMNS } from '../components/dashboard/panel-data'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 import type { InertiaProps } from '#core/ui/types'
 
@@ -27,6 +28,7 @@ type PageProps = InertiaProps<{
 }>
 
 export default function NewVersionPage({ dataset, versions }: PageProps) {
+  const { t } = useTranslation()
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -58,9 +60,8 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
     localStorage.setItem('dr-theme', theme)
   }, [theme])
 
-  const setPatch = (patch: any) => {
-    setSubmissionErrors([])
-    setData((d) => ({ ...d, ...patch }))
+  const setPatch = (patch: Partial<typeof data>) => {
+    setData((prev) => ({ ...prev, ...patch }))
   }
 
   const handleToggleTheme = () => {
@@ -68,82 +69,60 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
   }
 
   const handleExit = () => {
-    router.visit(`/datasets/${dataset.id}`)
-  }
-
-  const validateForm = (): SubmissionErrorItem[] => {
-    const errs: SubmissionErrorItem[] = []
-
-    if (!data.uploaded || !data.file) {
-      errs.push({
-        id: 'file',
-        stepIndex: 0,
-        stepName: 'Passo 1: Upload do Arquivo',
-        message: 'Você precisa selecionar e fazer o upload do novo arquivo CSV.',
-      })
+    if (confirm(t('dataset.new_version.cancel') + '?')) {
+      router.visit(`/datasets/${dataset.id}`)
     }
-
-    if (!data.version.trim()) {
-      errs.push({
-        id: 'version',
-        stepIndex: 1,
-        stepName: 'Passo 2: Metadados da Versão',
-        message: 'O identificador da versão (ex: V2) é obrigatório.',
-      })
-    }
-
-    return errs
   }
 
   const handleSubmit = () => {
-    const clientErrs = validateForm()
-    if (clientErrs.length > 0) {
-      setSubmissionErrors(clientErrs)
+    const errs: SubmissionErrorItem[] = []
+    if (!data.uploaded) {
+      errs.push({
+        id: 'no_file',
+        stepIndex: 0,
+        stepName: t('dataset.new_version.step1_indicator'),
+        field: 'file',
+        message: 'Por favor, envie o arquivo CSV da nova versão.',
+      })
+    }
+    if (!data.version.trim()) {
+      errs.push({
+        id: 'no_version',
+        stepIndex: 1,
+        stepName: t('dataset.new_version.step2_indicator'),
+        field: 'version',
+        message: 'Informe o identificador da versão (ex: v1.1.0).',
+      })
+    }
+
+    if (errs.length > 0) {
+      setSubmissionErrors(errs)
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
 
-    setSubmitting(true)
     setSubmissionErrors([])
+    setSubmitting(true)
 
     const formData = new FormData()
-    if ((data as any).filesList && (data as any).filesList.length > 0) {
-      (data as any).filesList.forEach((fItem: any) => {
-        if (fItem.file) {
-          formData.append('files[]', fItem.file)
-        }
-      })
-    } else if (data.file) {
+    if (data.file) {
       formData.append('file', data.file)
     }
     formData.append('version', data.version.trim())
     if (data.description.trim()) {
-      formData.append('description', data.description.trim())
-    }
-    if ((data as any).usabilityScore !== undefined && (data as any).usabilityScore !== null) {
-      formData.append('usabilityScore', String((data as any).usabilityScore))
+      formData.append('changelog', data.description.trim())
     }
 
-    router.post(`/datasets/${dataset.id}/version`, formData, {
-      onSuccess: () => {
-        router.visit(`/datasets/${dataset.id}`)
-      },
-      onError: (errs) => {
-        console.error('Version upload errors:', errs)
+    router.post(`/datasets/${dataset.id}/versions`, formData, {
+      onError: (errsObj) => {
         setSubmitting(false)
-
-        const mapped: SubmissionErrorItem[] = []
-        if (typeof errs === 'object' && errs !== null) {
-          Object.entries(errs).forEach(([key, val], idx) => {
-            const msg = Array.isArray(val) ? val.join(', ') : String(val)
-            mapped.push({
-              id: `server_${key}_${idx}`,
-              stepIndex: key === 'file' ? 0 : 1,
-              stepName: key === 'file' ? 'Passo 1' : 'Passo 2',
-              message: `${key}: ${msg}`,
-            })
-          })
-        }
+        const mapped: SubmissionErrorItem[] = Object.entries(errsObj).map(([field, msg], i) => ({
+          id: `backend_${field}_${i}`,
+          stepIndex: 1,
+          stepName: t('dataset.new_version.step2_indicator'),
+          field,
+          message: Array.isArray(msg) ? msg.join(', ') : String(msg),
+        }))
 
         if (mapped.length === 0) {
           mapped.push({
@@ -163,7 +142,7 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
 
   return (
     <div className="dr-app dr-panel-wrap">
-      <Head title={`Nova versão — ${dataset.name}`} />
+      <Head title={`${t('dataset.new_version.title')} — ${dataset.name}`} />
       <PanelNav
         theme={theme}
         onToggleTheme={handleToggleTheme}
@@ -177,7 +156,7 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
           <div className="dr-page-head-inner">
             <div>
               <div className="dr-page-breadcrumb">
-                <a href="/">Início</a>
+                <a href="/">{t('dataset.new_version.breadcrumb_home')}</a>
                 <span className="sep">
                   <Ic.Chevr size={13} style={{ display: 'inline', margin: '0 4px' }} />
                 </span>
@@ -185,16 +164,16 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
                 <span className="sep">
                   <Ic.Chevr size={13} style={{ display: 'inline', margin: '0 4px' }} />
                 </span>
-                <span>Nova versão</span>
+                <span>{t('dataset.new_version.breadcrumb_new_version')}</span>
               </div>
-              <h1 style={{ margin: 0 }}>Nova versão</h1>
+              <h1 style={{ margin: 0 }}>{t('dataset.new_version.title')}</h1>
               <p className="page-sub">
-                Envie um novo arquivo CSV para criar a versão {data.version || dataset.suggestedVersion} do dataset <strong>{dataset.name}</strong>.
+                {t('dataset.new_version.page_sub', { version: data.version || dataset.suggestedVersion })} <strong>{dataset.name}</strong>.
               </p>
             </div>
             <div className="dr-page-head-actions">
               <button className="dr-btn dr-btn-outline dr-btn-lg" onClick={handleExit}>
-                <Ic.X size={18} /> Cancelar
+                <Ic.X size={18} /> {t('dataset.new_version.cancel')}
               </button>
             </div>
           </div>
@@ -237,7 +216,7 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
                 }}>
                   {data.uploaded ? <Ic.Check size={14} /> : '1'}
                 </span>
-                Enviar arquivo
+                {t('dataset.new_version.step1_indicator')}
               </button>
               <button
                 onClick={() => canGoToStep2 && setStep(1)}
@@ -265,7 +244,7 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
                 }}>
                   2
                 </span>
-                Detalhes e publicar
+                {t('dataset.new_version.step2_indicator')}
               </button>
             </div>
 
@@ -274,15 +253,15 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
               {step === 0 && (
                 <>
                   <div className="dr-wpanel-head">
-                    <h2 style={{ margin: 0 }}>Envie o novo arquivo CSV</h2>
-                    <p style={{ margin: '7px 0 0' }}>Faça o upload do conjunto de dados atualizado. Detectamos colunas, tipos e qualidade automaticamente.</p>
+                    <h2 style={{ margin: 0 }}>{t('dataset.new_version.step1_title')}</h2>
+                    <p style={{ margin: '7px 0 0' }}>{t('dataset.new_version.step1_desc')}</p>
                   </div>
                   <div className="dr-wpanel-body">
                     <StepArquivo data={data} set={setPatch} />
                   </div>
                   <div className="dr-wpanel-foot">
                     <button className="dr-btn dr-btn-ghost" onClick={handleExit}>
-                      Cancelar
+                      {t('dataset.new_version.cancel')}
                     </button>
                     <div className="dr-foot-right">
                       <button
@@ -291,7 +270,7 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
                         onClick={() => setStep(1)}
                         style={!canGoToStep2 ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
                       >
-                        Continuar <Ic.Arrow size={16} style={{ display: 'inline', marginLeft: 4 }} />
+                        {t('dataset.new_version.continue')} <Ic.Arrow size={16} style={{ display: 'inline', marginLeft: 4 }} />
                       </button>
                     </div>
                   </div>
@@ -301,8 +280,8 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
               {step === 1 && (
                 <>
                   <div className="dr-wpanel-head">
-                    <h2 style={{ margin: 0 }}>Detalhes da versão</h2>
-                    <p style={{ margin: '7px 0 0' }}>Defina o nome da versão e adicione notas sobre as alterações.</p>
+                    <h2 style={{ margin: 0 }}>{t('dataset.new_version.step2_title')}</h2>
+                    <p style={{ margin: '7px 0 0' }}>{t('dataset.new_version.step2_desc')}</p>
                   </div>
                   <div className="dr-wpanel-body">
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -313,7 +292,7 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
                           htmlFor="versionName"
                           style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 8, color: 'var(--foreground)' }}
                         >
-                          Nome da versão
+                          {t('dataset.new_version.version_name_label')}
                         </label>
                         <input
                           id="versionName"
@@ -325,7 +304,7 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
                           style={{ width: '100%', maxWidth: 240 }}
                         />
                         <p style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 6 }}>
-                          Versão atual: <strong>{dataset.currentVersion}</strong> → Nova: <strong>{data.version || dataset.suggestedVersion}</strong>
+                          {t('dataset.new_version.version_change', { current: dataset.currentVersion, next: data.version || dataset.suggestedVersion })}
                         </p>
                       </div>
 
@@ -335,14 +314,14 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
                           htmlFor="versionDesc"
                           style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 8, color: 'var(--foreground)' }}
                         >
-                          Notas da versão <span style={{ fontWeight: 400, color: 'var(--muted-foreground)' }}>(opcional)</span>
+                          {t('dataset.new_version.version_notes_label')}
                         </label>
                         <textarea
                           id="versionDesc"
                           className="dr-input"
                           value={data.description}
                           onChange={(e) => setPatch({ description: e.target.value })}
-                          placeholder="Descreva as alterações feitas nesta versão..."
+                          placeholder={t('dataset.new_version.version_notes_placeholder')}
                           rows={4}
                           style={{ width: '100%', resize: 'vertical' }}
                         />
@@ -361,7 +340,7 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: 14, fontWeight: 600 }}>{data.fileName}</div>
                           <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 2 }}>
-                            {data.fileSize} • {data.colCount} colunas • {data.rowCount} linhas
+                            {t('dataset.new_version.cols_rows', { size: data.fileSize, cols: data.colCount, rows: data.rowCount })}
                           </div>
                         </div>
                       </div>
@@ -370,7 +349,7 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
                       {versions.length > 0 && (
                         <div>
                           <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 8, color: 'var(--foreground)' }}>
-                            Versões existentes
+                            {t('dataset.new_version.existing_versions')}
                           </label>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                             {versions.map((v) => (
@@ -390,7 +369,7 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
                                 <span style={{ fontWeight: 600 }}>{v.name}</span>
                                 {v.createdAt && (
                                   <span style={{ color: 'var(--muted-foreground)', marginLeft: 'auto' }}>
-                                    {new Date(v.createdAt).toLocaleDateString('pt-BR')}
+                                    {new Date(v.createdAt).toLocaleDateString()}
                                   </span>
                                 )}
                               </div>
@@ -402,7 +381,7 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
                   </div>
                   <div className="dr-wpanel-foot">
                     <button className="dr-btn dr-btn-outline" onClick={() => setStep(0)}>
-                      <Ic.Arrow size={16} style={{ transform: 'rotate(180deg)', display: 'inline', marginRight: 4 }} /> Voltar
+                      <Ic.Arrow size={16} style={{ transform: 'rotate(180deg)', display: 'inline', marginRight: 4 }} /> {t('dataset.new_version.back')}
                     </button>
                     <div className="dr-foot-right">
                       <button
@@ -412,10 +391,10 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
                         style={!canSubmit ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
                       >
                         {submitting ? (
-                          <>Enviando...</>
+                          <>{t('dataset.new_version.publishing')}</>
                         ) : (
                           <>
-                            <Ic.Send size={18} style={{ display: 'inline', marginRight: 6 }} /> Publicar versão {data.version}
+                            <Ic.Send size={18} style={{ display: 'inline', marginRight: 6 }} /> {t('dataset.new_version.publish_btn', { version: data.version })}
                           </>
                         )}
                       </button>

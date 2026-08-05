@@ -4,6 +4,7 @@ import PanelNav from '#common/ui/components/datarural/navbar-auth'
 import PanelFooter from '#common/ui/components/datarural/footer-simple'
 import * as Ic from '#common/ui/components/datarural/icons'
 import type { InertiaProps } from '#core/ui/types'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface DatasetItem {
   id: number
@@ -61,6 +62,7 @@ export default function PublicProfilePage({
   groups,
   stats,
 }: PageProps) {
+  const { t, language } = useTranslation()
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('dr-theme') || 'light'
@@ -80,7 +82,7 @@ export default function PublicProfilePage({
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))
   }
 
-  const name = userProfile.fullName || 'Usuário DataRural'
+  const name = userProfile.fullName || t('users.public_profile.default_user')
   const emailPrefix = userProfile.email ? userProfile.email.split('@')[0] : 'usuario'
   const initials = name
     .split(' ')
@@ -90,7 +92,7 @@ export default function PublicProfilePage({
     .slice(0, 2)
     .toUpperCase()
 
-  const formattedJoinDate = new Date(userProfile.createdAt).toLocaleDateString('pt-BR', {
+  const formattedJoinDate = new Date(userProfile.createdAt).toLocaleDateString((language || 'pt').startsWith('pt') ? 'pt-BR' : 'en-US', {
     month: 'long',
     year: 'numeric',
   })
@@ -136,7 +138,7 @@ export default function PublicProfilePage({
                 transition: 'all 0.15s ease',
               }}
             >
-              <Ic.Grid size={17} /> Visão Geral
+              <Ic.Grid size={17} /> {t('users.public_profile.tab_overview')}
             </button>
 
             <button
@@ -155,7 +157,7 @@ export default function PublicProfilePage({
                 transition: 'all 0.15s ease',
               }}
             >
-              <Ic.Database size={17} /> Datasets
+              <Ic.Database size={17} /> {t('users.public_profile.tab_datasets')}
               <span
                 style={{
                   background: 'color-mix(in srgb, var(--brand-green) 12%, transparent)',
@@ -186,7 +188,7 @@ export default function PublicProfilePage({
                 transition: 'all 0.15s ease',
               }}
             >
-              <Ic.Users size={17} /> Grupos
+              <Ic.Users size={17} /> {t('users.public_profile.tab_groups')}
               <span
                 style={{
                   background: 'color-mix(in srgb, var(--brand-green) 12%, transparent)',
@@ -217,7 +219,7 @@ export default function PublicProfilePage({
                 transition: 'all 0.15s ease',
               }}
             >
-              <Ic.History size={17} /> Atividades
+              <Ic.History size={17} /> {t('users.public_profile.tab_activity')}
             </button>
           </div>
         </div>
@@ -273,7 +275,7 @@ export default function PublicProfilePage({
             </div>
 
             <p style={{ fontSize: 14, color: userProfile.bio ? 'var(--foreground)' : 'var(--muted-foreground)', lineHeight: 1.5, marginBottom: 20, fontStyle: userProfile.bio ? 'normal' : 'italic' }}>
-              {userProfile.bio || (isOwnProfile ? 'Sem biografia informada. Clique em Editar perfil para adicionar.' : 'Nenhuma biografia informada.')}
+              {userProfile.bio || (isOwnProfile ? t('users.public_profile.no_bio_own') : t('users.public_profile.no_bio_other'))}
             </p>
 
             {isOwnProfile && (
@@ -291,7 +293,7 @@ export default function PublicProfilePage({
                   fontSize: 14,
                 }}
               >
-                <Ic.Edit size={16} /> Editar perfil
+                <Ic.Edit size={16} /> {t('users.public_profile.edit_profile')}
               </Link>
             )}
 
@@ -299,13 +301,13 @@ export default function PublicProfilePage({
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <Ic.Building size={16} style={{ flexShrink: 0 }} />
                 <span style={{ fontStyle: userProfile.institution ? 'normal' : 'italic', opacity: userProfile.institution ? 1 : 0.7 }}>
-                  {userProfile.institution || 'Nenhuma instituição informada'}
+                  {userProfile.institution || t('users.public_profile.no_institution')}
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <Ic.Pin size={16} style={{ flexShrink: 0 }} />
                 <span style={{ fontStyle: userProfile.location ? 'normal' : 'italic', opacity: userProfile.location ? 1 : 0.7 }}>
-                  {userProfile.location || 'Nenhuma localização informada'}
+                  {userProfile.location || t('users.public_profile.no_location')}
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -316,7 +318,7 @@ export default function PublicProfilePage({
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <Ic.Calendar size={16} style={{ flexShrink: 0 }} />
-                <span>Membro desde {formattedJoinDate}</span>
+                <span>{t('users.public_profile.member_since', { date: formattedJoinDate })}</span>
               </div>
             </div>
 
@@ -326,11 +328,11 @@ export default function PublicProfilePage({
               <div>
                 <hr style={{ margin: '24px 0', borderColor: 'var(--border)' }} />
                 <h3 style={{ fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--muted-foreground)', margin: '0 0 12px' }}>
-                  Grupos ({groups.length})
+                  {t('users.public_profile.groups_title', { count: groups.length })}
                 </h3>
                 {groups.length === 0 ? (
                   <div style={{ fontSize: 13, color: 'var(--muted-foreground)' }}>
-                    Nenhum grupo participante.
+                    {t('users.public_profile.no_groups')}
                   </div>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -374,7 +376,7 @@ export default function PublicProfilePage({
                             {grp.name}
                           </div>
                           <div style={{ fontSize: 11, color: 'var(--muted-foreground)' }}>
-                            {grp.role === 'owner' ? 'Dono' : grp.role === 'admin' ? 'Admin' : 'Membro'}
+                            {grp.role === 'owner' ? t('users.public_profile.role_owner') : grp.role === 'admin' ? t('users.public_profile.role_admin') : t('users.public_profile.role_member')}
                           </div>
                         </div>
                       </Link>
@@ -391,19 +393,19 @@ export default function PublicProfilePage({
               <div>
                 {/* Pinned Datasets Section */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                  <h2 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>Datasets em Destaque</h2>
+                  <h2 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>{t('users.public_profile.featured_datasets')}</h2>
                 </div>
 
                 {datasets.length === 0 ? (
                   <div className="dr-panel" style={{ padding: 40, textAlign: 'center', marginBottom: 32 }}>
                     <Ic.Database size={40} style={{ color: 'var(--muted-foreground)', marginBottom: 12 }} />
-                    <h3 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 6px' }}>Nenhum dataset publicado ainda</h3>
+                    <h3 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 6px' }}>{t('users.public_profile.no_datasets_title')}</h3>
                     <p style={{ color: 'var(--muted-foreground)', fontSize: 14, margin: '0 0 16px' }}>
-                      Este usuário ainda não publicou datasets no ecossistema.
+                      {t('users.public_profile.no_datasets_sub')}
                     </p>
                     {isOwnProfile && (
                       <Link href="/dashboard/publish" className="dr-btn dr-btn-primary">
-                        <Ic.Plus size={16} /> Publicar meu primeiro dataset
+                        <Ic.Plus size={16} /> {t('users.public_profile.publish_first')}
                       </Link>
                     )}
                   </div>
@@ -459,11 +461,11 @@ export default function PublicProfilePage({
                                   flexShrink: 0,
                                 }}
                               >
-                                {ds.isPublic ? 'Público' : 'Privado'}
+                                {ds.isPublic ? t('users.public_profile.public') : t('users.public_profile.private')}
                               </span>
                             </div>
                             <p style={{ fontSize: 13, color: 'var(--muted-foreground)', margin: 0, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                              {ds.description || 'Sem descrição cadastrada para este conjunto de dados.'}
+                              {ds.description || t('users.public_profile.no_dataset_desc')}
                             </p>
                           </div>
 
@@ -488,12 +490,12 @@ export default function PublicProfilePage({
 
                 {/* Recent Activity Stream */}
                 <div>
-                  <h3 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 16px' }}>Atividade Recente</h3>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 16px' }}>{t('users.public_profile.recent_activity')}</h3>
                   {datasets.length === 0 ? (
                     <div className="dr-panel" style={{ padding: '24px 20px', textAlign: 'center', margin: 0, marginTop: 0 }}>
                       <Ic.Clock size={28} style={{ color: 'var(--muted-foreground)', marginBottom: 8 }} />
                       <p style={{ color: 'var(--muted-foreground)', fontSize: 13, margin: 0 }}>
-                        Nenhuma atividade recente registrada no ecossistema.
+                        {t('users.public_profile.no_recent_activity')}
                       </p>
                     </div>
                   ) : (
@@ -505,17 +507,17 @@ export default function PublicProfilePage({
                           </div>
                           <div style={{ flex: 1 }}>
                             <div style={{ fontSize: 14, fontWeight: 600 }}>
-                              Publicou nova versão <span style={{ color: 'var(--brand-green)' }}>{ds.version}</span> do dataset{' '}
+                              {t('users.public_profile.published_new_version')} <span style={{ color: 'var(--brand-green)' }}>{ds.version}</span> {t('users.public_profile.of_dataset')}{' '}
                               <Link href={`/datasets/${ds.id}`} style={{ color: 'var(--foreground)', textDecoration: 'none', fontWeight: 700 }}>
                                 {ds.title}
                               </Link>
                             </div>
                             <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 2 }}>
-                              {ds.area} • {ds.size} • {ds.fileCount} arquivo(s)
+                              {ds.area} • {ds.size} • {t('users.public_profile.files_count', { count: ds.fileCount })}
                             </div>
                           </div>
                           <div style={{ fontSize: 12, color: 'var(--muted-foreground)' }}>
-                            {new Date(ds.updatedAt).toLocaleDateString('pt-BR')}
+                            {new Date(ds.updatedAt).toLocaleDateString((language || 'pt').startsWith('pt') ? 'pt-BR' : 'en-US')}
                           </div>
                         </div>
                       ))}
@@ -532,7 +534,7 @@ export default function PublicProfilePage({
                     <Ic.Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--muted-foreground)' }} />
                     <input
                       type="text"
-                      placeholder="Pesquisar datasets..."
+                      placeholder={t('users.public_profile.search_placeholder')}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="dr-input"
@@ -541,7 +543,7 @@ export default function PublicProfilePage({
                   </div>
                   {isOwnProfile && (
                     <Link href="/dashboard/publish" className="dr-btn dr-btn-primary">
-                      <Ic.Plus size={16} /> Novo Dataset
+                      <Ic.Plus size={16} /> {t('users.public_profile.new_dataset')}
                     </Link>
                   )}
                 </div>
@@ -549,7 +551,7 @@ export default function PublicProfilePage({
                 {filteredDatasets.length === 0 ? (
                   <div className="dr-panel" style={{ padding: 40, textAlign: 'center' }}>
                     <Ic.Database size={36} style={{ color: 'var(--muted-foreground)', marginBottom: 8 }} />
-                    <p style={{ color: 'var(--muted-foreground)', margin: 0 }}>Nenhum dataset encontrado para a busca especificada.</p>
+                    <p style={{ color: 'var(--muted-foreground)', margin: 0 }}>{t('users.public_profile.no_search_results')}</p>
                   </div>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -567,11 +569,11 @@ export default function PublicProfilePage({
                           {ds.description}
                         </p>
                         <div style={{ display: 'flex', gap: 16, fontSize: 12, color: 'var(--muted-foreground)' }}>
-                          <span>Área: <strong>{ds.area}</strong></span>
-                          <span>Formato: <strong>{ds.format}</strong></span>
-                          <span>Tamanho: <strong>{ds.size}</strong></span>
-                          <span>Curtidas: <strong>{ds.likesCount}</strong></span>
-                          <span>Downloads: <strong>{ds.downloadsCount}</strong></span>
+                          <span>{t('users.public_profile.label_area')} <strong>{ds.area}</strong></span>
+                          <span>{t('users.public_profile.label_format')} <strong>{ds.format}</strong></span>
+                          <span>{t('users.public_profile.label_size')} <strong>{ds.size}</strong></span>
+                          <span>{t('users.public_profile.label_likes')} <strong>{ds.likesCount}</strong></span>
+                          <span>{t('users.public_profile.label_downloads')} <strong>{ds.downloadsCount}</strong></span>
                         </div>
                       </div>
                     ))}
@@ -582,11 +584,11 @@ export default function PublicProfilePage({
 
             {activeTab === 'groups' && (
               <div>
-                <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px' }}>Grupos de Pesquisa e Laboratórios</h2>
+                <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px' }}>{t('users.public_profile.groups_heading')}</h2>
                 {groups.length === 0 ? (
                   <div className="dr-panel" style={{ padding: 40, textAlign: 'center' }}>
                     <Ic.Users size={36} style={{ color: 'var(--muted-foreground)', marginBottom: 8 }} />
-                    <p style={{ color: 'var(--muted-foreground)', margin: 0 }}>O usuário não participa de nenhum grupo público no momento.</p>
+                    <p style={{ color: 'var(--muted-foreground)', margin: 0 }}>{t('users.public_profile.no_public_groups')}</p>
                   </div>
                 ) : (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
@@ -601,7 +603,7 @@ export default function PublicProfilePage({
                               {grp.name}
                             </Link>
                             <div style={{ fontSize: 12, color: 'var(--brand-green)', fontWeight: 600 }}>
-                              {grp.role === 'owner' ? 'Proprietário' : 'Membro'}
+                              {grp.role === 'owner' ? t('users.public_profile.role_owner') : t('users.public_profile.role_member')}
                             </div>
                           </div>
                         </div>
@@ -617,20 +619,20 @@ export default function PublicProfilePage({
 
             {activeTab === 'activity' && (
               <div>
-                <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px' }}>Histórico de Atividade</h2>
+                <h2 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 16px' }}>{t('users.public_profile.activity_history')}</h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                   {datasets.map((ds) => (
                     <div key={ds.id} className="dr-panel" style={{ margin: 0, padding: 20, display: 'flex', gap: 16 }}>
                       <Ic.History size={20} style={{ color: 'var(--brand-green)', marginTop: 2 }} />
                       <div>
                         <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>
-                          Publicou dataset: <Link href={`/datasets/${ds.id}`} style={{ color: 'var(--brand-green)', textDecoration: 'none' }}>{ds.title}</Link>
+                          {t('users.public_profile.published_dataset')} <Link href={`/datasets/${ds.id}`} style={{ color: 'var(--brand-green)', textDecoration: 'none' }}>{ds.title}</Link>
                         </div>
                         <div style={{ fontSize: 13, color: 'var(--muted-foreground)' }}>
-                          Área: {ds.area} • Versão {ds.version} • {ds.fileCount} arquivo(s)
+                          {t('users.public_profile.label_area')} {ds.area} • Versão {ds.version} • {t('users.public_profile.files_count', { count: ds.fileCount })}
                         </div>
                         <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 8 }}>
-                          {new Date(ds.updatedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                          {new Date(ds.updatedAt).toLocaleDateString((language || 'pt').startsWith('pt') ? 'pt-BR' : 'en-US', { day: '2-digit', month: 'long', year: 'numeric' })}
                         </div>
                       </div>
                     </div>
