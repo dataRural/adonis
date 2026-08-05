@@ -209,7 +209,7 @@ export default class DatasetsController {
     await auth.check()
     const currentUserId = auth.user?.id ?? null
 
-    let query = Dataset.query().preload('versions').preload('license').preload('likes').preload('favorites').orderBy('updatedAt', 'desc')
+    let query = Dataset.query().preload('versions').preload('license').preload('likes').preload('favorites').preload('user').orderBy('updatedAt', 'desc')
 
     if (currentUserId) {
       const userGroupIds = (
@@ -260,11 +260,14 @@ export default class DatasetsController {
         const likesCount = d.likes ? d.likes.length : 0
         const isLiked = currentUserId ? d.likes.some((l) => Number(l.userId) === Number(currentUserId)) : false
         const isSaved = currentUserId ? d.favorites && d.favorites.some((f) => Number(f.userId) === Number(currentUserId)) : false
+        const authorName = d.user ? (d.user.fullName || d.user.username) : 'Administrador'
 
         return {
           id: d.id,
           title: d.name,
           unit: d.unit,
+          author: authorName,
+          authorName,
           desc: d.description || 'Nenhuma descrição fornecida.',
           tags: d.tags || [],
           cat: d.area,
@@ -1852,6 +1855,7 @@ export default class DatasetsController {
           .preload('license')
           .preload('likes')
           .preload('favorites')
+          .preload('user')
       })
       .orderBy('createdAt', 'desc')
 
@@ -1894,11 +1898,14 @@ export default class DatasetsController {
       const tint = (d.area && AREA_COLORS[d.area]) ? AREA_COLORS[d.area] : 'var(--brand-blue)'
       const likesCount = d.likes ? d.likes.length : 0
       const isLiked = d.likes ? d.likes.some((l) => Number(l.userId) === Number(user.id)) : false
+      const authorName = d.user ? (d.user.fullName || d.user.username) : 'Administrador'
 
       return {
         id: d.id,
         title: d.name,
         unit: d.unit,
+        author: authorName,
+        authorName,
         desc: d.description || 'Nenhuma descrição fornecida.',
         tags: d.tags || [],
         cat: d.area,

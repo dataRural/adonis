@@ -8,6 +8,9 @@ export interface DatasetItem {
   id: number
   title?: string
   name?: string
+  author?: string
+  authorName?: string
+  user?: { fullName?: string; username?: string }
   desc?: string
   description?: string
   unit?: string
@@ -35,6 +38,7 @@ export default function DatasetCard({ d }: DatasetCardProps) {
   const title = d.title || d.name || t('dataset.card.no_title')
   const desc = d.desc || d.description || t('dataset.card.no_desc')
   const unit = d.unit || t('dataset.card.default_unit')
+  const author = d.author || d.authorName || d.user?.fullName || d.user?.username || 'Administrador'
   const tags = d.tags && d.tags.length > 0 ? d.tags : [t('dataset.card.general_tag')]
   const dl = d.likesCount !== undefined ? d.likesCount : (d.dl !== undefined ? d.dl : 0)
   const isLiked = !!d.isLiked
@@ -92,7 +96,7 @@ export default function DatasetCard({ d }: DatasetCardProps) {
         <div className="dr-ds-meta">
           <button
             type="button"
-            className={`dr-card-like-btn ${isLiked ? 'liked' : ''}`}
+            className={`dr-card-like-btn ${isLiked ? 'on' : ''}`}
             onClick={handleLike}
             title={t('dataset.card.like_title')}
           >
@@ -100,7 +104,7 @@ export default function DatasetCard({ d }: DatasetCardProps) {
           </button>
           <button
             type="button"
-            className={`dr-card-like-btn ${isSaved ? 'liked' : ''}`}
+            className={`dr-card-like-btn ${isSaved ? 'on' : ''}`}
             onClick={handleFavorite}
             title={isSaved ? t('dataset.card.unsave_title') : t('dataset.card.save_title')}
             style={{ marginLeft: 6 }}
@@ -115,9 +119,27 @@ export default function DatasetCard({ d }: DatasetCardProps) {
             <Ic.Verified size={14} /> {usability}
           </span>
         </div>
-        <div className="dr-ds-meta" style={{ borderTop: 'none', paddingTop: '10px' }}>
+        <div className="dr-ds-meta" style={{ borderTop: 'none', paddingTop: '10px', alignItems: 'center' }}>
           <span className="m">
             <Ic.File size={14} /> {size}
+          </span>
+          <span className="spacer"></span>
+          <span
+            className="m"
+            style={{
+              fontSize: 12,
+              color: 'var(--muted-foreground)',
+              maxWidth: 130,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+            }}
+            title={author}
+          >
+            <Ic.User size={13} style={{ flexShrink: 0 }} /> {author}
           </span>
           <span className="spacer"></span>
           <span className="dr-ds-license">

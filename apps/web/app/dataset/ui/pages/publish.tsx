@@ -254,7 +254,7 @@ export default function PublishWizard({ editDataset, userGroups = [] }: PageProp
           <SubmissionErrorAlert errors={submissionErrors} onJumpToStep={goto} />
         )}
 
-        <div className="dr-wizard-layout">
+        <div className="dr-wizard-grid">
           <WizardStepper
             step={step}
             onJump={goto}
