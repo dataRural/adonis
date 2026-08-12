@@ -197,6 +197,9 @@ export default function PublishWizard({ editDataset, userGroups = [] }: PageProp
     if (data.tags && data.tags.length > 0) {
       data.tags.forEach((tag) => formData.append('tags[]', tag))
     }
+    if (data.usabilityScore !== undefined && data.usabilityScore !== null) {
+      formData.append('usabilityScore', String(data.usabilityScore))
+    }
     
     if ((data as any).filesList && (data as any).filesList.length > 0) {
       (data as any).filesList.forEach((fItem: any) => {

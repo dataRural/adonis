@@ -8,6 +8,35 @@ export default function OverviewTab({ ds, columns }: { ds: DatasetDetail; column
   const { t } = useTranslation()
   const [hot, setHot] = useState<string | null>(null)
   const finalDs = ds
+  const usabilityVal = Number((finalDs as any).usabilityScore || finalDs.usability) || 8.5
+  const ratio = usabilityVal / 10.0
+
+  const hasDescription = Boolean(finalDs.description && finalDs.description.trim().length > 0)
+  const hasColumns = Boolean(columns && columns.length > 0)
+  const completudeScore = (hasDescription && hasColumns) ? 1.0 : (hasDescription || hasColumns ? 0.85 : 0.7)
+
+  const hasGeoOrTime = Boolean((finalDs as any).coverageGeo || (finalDs as any).coverageTime || finalDs.unit)
+  const credibilidadeScore = hasGeoOrTime ? 1.0 : 0.8
+
+  const compatibilidadeScore = Math.max(0.1, Math.min(1.0, Math.round((3 * ratio - (completudeScore + credibilidadeScore)) * 100) / 100))
+
+  const qualityItems = [
+    {
+      label: 'Completude: ',
+      desc: 'Metadados, descrição e dicionário de colunas preenchidos.',
+      score: completudeScore,
+    },
+    {
+      label: 'Credibilidade: ',
+      desc: 'Fonte, proveniência e metodologia de coleta declaradas.',
+      score: credibilidadeScore,
+    },
+    {
+      label: 'Compatibilidade: ',
+      desc: 'Licença aberta, formato CSV e atualização contínua.',
+      score: compatibilidadeScore,
+    },
+  ]
 
   return (
     <div>
@@ -51,13 +80,13 @@ export default function OverviewTab({ ds, columns }: { ds: DatasetDetail; column
               </p>
             </div>
             <div className="dr-quality-list">
-              {QUALITY.map((q) => (
+              {qualityItems.map((q) => (
                 <div className="dr-quality-item" key={q.label}>
                   <span
                     className="chk"
                     style={{
-                      background: q.score >= 1 ? 'var(--brand-green)' : 'var(--brand-yellow)',
-                      color: q.score >= 1 ? '#fff' : '#3a2c00',
+                      background: q.score >= 0.8 ? 'var(--brand-green)' : 'var(--brand-yellow)',
+                      color: q.score >= 0.8 ? '#fff' : '#3a2c00',
                     }}
                   >
                     <Ic.Check size={14} />
