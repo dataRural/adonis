@@ -637,7 +637,7 @@ html, body {
 .dr-ds-head-metarow .vsep { width: 1px; height: 14px; background: var(--border); }
 
 /* actions */
-.dr-ds-head-actions { display: flex; flex-direction: column; align-items: stretch; gap: 10px; flex-shrink: 0; width: 248px; }
+.dr-ds-head-actions { display: flex; flex-direction: column; align-items: stretch; gap: 10px; flex-shrink: 0; width: 340px; }
 .dr-ds-action-row { display: flex; gap: 8px; }
 .dr-ds-action-row .dr-btn { flex: 1; }
 .dr-btn-count {
@@ -1342,7 +1342,8 @@ table.dr-tbl thead th.col-hot .dr-colhead { background: color-mix(in srgb, var(-
 
 /* wizard */
 .dr-wizard { padding: 0 0 70px; }
-.dr-wizard-grid {
+.dr-wizard-grid,
+.dr-wizard-layout {
   display: grid; grid-template-columns: 248px minmax(0, 1fr);
   gap: 36px; align-items: start; padding-top: 32px;
 }
@@ -1706,7 +1707,8 @@ table.dr-tbl thead th.col-hot .dr-colhead { background: color-mix(in srgb, var(-
   .dr-ds-rail { position: static; flex-direction: row; flex-wrap: wrap; }
   .dr-ds-rail > * { flex: 1; min-width: 260px; }
   .dr-nb-grid { grid-template-columns: 1fr; }
-  .dr-wizard-grid { grid-template-columns: 1fr; gap: 24px; }
+  .dr-wizard-grid,
+  .dr-wizard-layout { grid-template-columns: 1fr; gap: 24px; }
   .dr-stepper { position: static; }
   .dr-stepper-inner { display: flex; gap: 10px; overflow-x: auto; }
   .dr-stepper-title, .dr-stepper-help { display: none; }

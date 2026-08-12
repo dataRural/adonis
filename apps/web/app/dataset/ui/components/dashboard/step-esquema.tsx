@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import * as Ic from '#common/ui/components/datarural/icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface Step3Props {
   data: any
@@ -7,6 +8,7 @@ interface Step3Props {
 }
 
 export default function StepEsquema({ data, set }: Step3Props) {
+  const { t } = useTranslation()
   const [activeFileIdx, setActiveFileIdx] = useState(0)
 
   const filesList = data.filesList && data.filesList.length > 0
@@ -48,7 +50,7 @@ export default function StepEsquema({ data, set }: Step3Props) {
       {filesList.length > 1 && (
         <div style={{ marginBottom: 20 }}>
           <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 8, color: 'var(--muted-foreground)' }}>
-            Selecione o arquivo CSV para editar o esquema:
+            {t('dataset.step_schema.select_csv')}
           </label>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {filesList.map((f: any, idx: number) => (
@@ -70,7 +72,7 @@ export default function StepEsquema({ data, set }: Step3Props) {
                     borderRadius: 4,
                     background: safeActiveIdx === idx ? 'rgba(255,255,255,0.25)' : 'var(--muted)',
                   }}>
-                    Principal
+                    {t('dataset.step_schema.primary')}
                   </span>
                 )}
               </button>
@@ -83,17 +85,17 @@ export default function StepEsquema({ data, set }: Step3Props) {
         <span className="ic">
           <Ic.Columns size={16} />
         </span>{' '}
-        Descreva as colunas: <strong>{currentFile?.fileName || 'Dataset'}</strong>
+        {t('dataset.step_schema.describe_cols')} <strong>{currentFile?.fileName || 'Dataset'}</strong>
         <span className="tail">
-          {currentSchema.length} colunas · descrições elevam a usabilidade
+          {t('dataset.step_schema.schema_tail', { count: currentSchema.length })}
         </span>
       </div>
       <div className="dr-schema-tbl">
         <div className="dr-schema-hd">
-          <span>Coluna</span>
-          <span>Tipo</span>
-          <span>Descrição</span>
-          <span>Unidade</span>
+          <span>{t('dataset.step_schema.th_col')}</span>
+          <span>{t('dataset.step_schema.th_type')}</span>
+          <span>{t('dataset.step_schema.th_desc')}</span>
+          <span>{t('dataset.step_schema.th_unit')}</span>
         </div>
         {currentSchema.map((c: any, i: number) => (
           <div className="dr-schema-rw" key={c.name + '_' + i}>
@@ -106,16 +108,16 @@ export default function StepEsquema({ data, set }: Step3Props) {
               value={c.type}
               onChange={(e) => update(i, 'type', e.target.value)}
             >
-              <option value="num">Número</option>
-              <option value="text">Texto</option>
-              <option value="date">Data</option>
-              <option value="geo">Geo</option>
+              <option value="num">{t('dataset.step_schema.type_num')}</option>
+              <option value="text">{t('dataset.step_schema.type_text')}</option>
+              <option value="date">{t('dataset.step_schema.type_date')}</option>
+              <option value="geo">{t('dataset.step_schema.type_geo')}</option>
             </select>
             <input
               className="dr-sc-input"
               value={c.desc || ''}
               onChange={(e) => update(i, 'desc', e.target.value)}
-              placeholder="O que esta coluna representa?"
+              placeholder={t('dataset.step_schema.desc_placeholder')}
             />
             <input
               className="dr-sc-input"

@@ -68,15 +68,15 @@ export default function ListUsersPage({ users, q, selectedRoles }: PageProps) {
           <div className="dr-page-head-inner">
             <div>
               <div className="dr-page-breadcrumb">
-                <a href="/">Início</a>
+                <a href="/">{t('users.admin.breadcrumb_home')}</a>
                 <span className="sep">
                   <Ic.Chevr size={13} style={{ display: 'inline', margin: '0 4px' }} />
                 </span>
-                <span>Administração</span>
+                <span>{t('users.admin.breadcrumb_admin')}</span>
               </div>
-              <h1 style={{ margin: 0 }}>Painel Administrativo</h1>
+              <h1 style={{ margin: 0 }}>{t('users.admin.title')}</h1>
               <p className="page-sub">
-                Gerencie usuários, permissões, áreas de conhecimento e logs de auditoria da plataforma DataRural.
+                {t('users.admin.sub')}
               </p>
             </div>
             <div className="dr-page-head-actions">
@@ -117,7 +117,7 @@ export default function ListUsersPage({ users, q, selectedRoles }: PageProps) {
               gap: 8,
             }}
           >
-            <Ic.Users size={16} /> Gestão de Usuários
+            <Ic.Users size={16} /> {t('users.admin.tabs.users')}
           </button>
           <button
             onClick={() => setAdminTab('areas')}
@@ -135,7 +135,7 @@ export default function ListUsersPage({ users, q, selectedRoles }: PageProps) {
               gap: 8,
             }}
           >
-            <Ic.Grid size={16} /> Áreas do Conhecimento
+            <Ic.Grid size={16} /> {t('users.admin.tabs.areas')}
           </button>
           <button
             onClick={() => setAdminTab('audits')}
@@ -153,7 +153,7 @@ export default function ListUsersPage({ users, q, selectedRoles }: PageProps) {
               gap: 8,
             }}
           >
-            <Ic.Activity size={16} /> Logs de Auditoria
+            <Ic.Activity size={16} /> {t('users.admin.tabs.audits')}
           </button>
         </div>
 

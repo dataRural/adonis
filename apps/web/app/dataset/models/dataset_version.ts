@@ -23,6 +23,9 @@ export default class DatasetVersion extends compose(BaseModel, Auditable) {
   declare name: string
 
   @column()
+  declare notes: string | null
+
+  @column()
   declare isDeleted: boolean
 
   @attachment()

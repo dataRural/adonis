@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react'
 import * as Ic from '#common/ui/components/datarural/icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 export interface GroupCardItem {
   id: number
@@ -12,19 +13,21 @@ export interface GroupCardItem {
   createdAt: string
 }
 
-const ROLE_LABELS: Record<string, { label: string; color: string }> = {
-  owner: { label: 'Dono', color: 'var(--brand-blue)' },
-  admin: { label: 'Admin', color: 'var(--brand-purple)' },
-  editor: { label: 'Editor', color: 'var(--brand-green)' },
-  viewer: { label: 'Visualizador', color: 'var(--brand-sky)' },
-}
-
 interface GroupCardProps {
   group: GroupCardItem
 }
 
 export default function GroupCard({ group }: GroupCardProps) {
-  const roleMeta = ROLE_LABELS[group.role] || ROLE_LABELS.viewer
+  const { t } = useTranslation()
+
+  const roleLabelsMap: Record<string, { label: string; color: string }> = {
+    owner: { label: t('groups.card.owner'), color: 'var(--brand-blue)' },
+    admin: { label: t('groups.card.admin'), color: 'var(--brand-purple)' },
+    editor: { label: t('groups.card.editor'), color: 'var(--brand-green)' },
+    viewer: { label: t('groups.card.viewer'), color: 'var(--brand-sky)' },
+  }
+
+  const roleMeta = roleLabelsMap[group.role] || roleLabelsMap.viewer
 
   return (
     <Link
@@ -64,7 +67,7 @@ export default function GroupCard({ group }: GroupCardProps) {
                 {group.name}
               </h3>
               <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>
-                Criado por {group.ownerName} · {group.createdAt}
+                {t('groups.card.created_by')} {group.ownerName} · {group.createdAt}
               </span>
             </div>
           </div>
@@ -106,10 +109,10 @@ export default function GroupCard({ group }: GroupCardProps) {
         }}
       >
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-          <Ic.Users size={14} /> {group.memberCount} {group.memberCount === 1 ? 'membro' : 'membros'}
+          <Ic.Users size={14} /> {group.memberCount} {group.memberCount === 1 ? t('groups.card.member_one') : t('groups.card.member_other')}
         </span>
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-          <Ic.Database size={14} /> {group.datasetCount} {group.datasetCount === 1 ? 'dataset' : 'datasets'}
+          <Ic.Database size={14} /> {group.datasetCount} {group.datasetCount === 1 ? t('groups.card.dataset_one') : t('groups.card.dataset_other')}
         </span>
       </div>
     </Link>

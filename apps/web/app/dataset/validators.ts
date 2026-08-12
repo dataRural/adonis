@@ -29,6 +29,8 @@ export const addDatasetVersionValidator = vine.compile(
   vine.object({
     version: vine.string().trim().minLength(1).maxLength(32).optional(),
     description: vine.string().trim().maxLength(2000).optional(),
+    notes: vine.string().trim().maxLength(2000).optional(),
+    changelog: vine.string().trim().maxLength(2000).optional(),
     usabilityScore: vine.number().min(0).max(10).optional(),
     file: csvFileSchema.optional(),
     files: vine.array(csvFileSchema).optional(),

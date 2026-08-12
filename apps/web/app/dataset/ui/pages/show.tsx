@@ -70,6 +70,7 @@ export default function DatasetShowPage({ dataset, previewColumns, previewRows, 
               {tab === 'overview' && <OverviewTab ds={ds} columns={previewColumns} />}
               {tab === 'viewer' && (
                 <ViewerTab
+                  ds={ds}
                   datasetId={ds.id}
                   selectedVersionId={(ds as any).selectedVersionId}
                   selectedFileId={(ds as any).selectedFileId}

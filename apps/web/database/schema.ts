@@ -146,7 +146,7 @@ export class DatasetVersionFileSchema extends BaseModel {
 }
 
 export class DatasetVersionSchema extends BaseModel {
-  static $columns = ['createdAt', 'datasetId', 'id', 'isDeleted', 'name', 'path', 'updatedAt'] as const
+  static $columns = ['createdAt', 'datasetId', 'id', 'isDeleted', 'name', 'notes', 'path', 'updatedAt'] as const
   $columns = DatasetVersionSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -158,6 +158,8 @@ export class DatasetVersionSchema extends BaseModel {
   declare isDeleted: boolean
   @column()
   declare name: string
+  @column()
+  declare notes: string | null
   @column()
   declare path: any
   @column.dateTime({ autoCreate: true, autoUpdate: true })

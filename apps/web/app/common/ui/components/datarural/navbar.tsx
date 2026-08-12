@@ -1,8 +1,9 @@
-import { Link } from '@adonisjs/inertia/react'
+import { Link } from '@inertiajs/react'
 import { BrandMark } from './brand'
 import * as Ic from './icons'
 import useUser from '#auth/ui/hooks/use_user'
-import { NavUser } from './navbar-auth'
+import { NavUser, NavLanguage } from './navbar-auth'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface NavbarProps {
   theme: string
@@ -11,6 +12,8 @@ interface NavbarProps {
 }
 
 export default function Navbar({ theme, onToggleTheme, activePage }: NavbarProps) {
+  const { t } = useTranslation()
+
   return (
     <header className="dr-nav">
       <div className="dr-container dr-nav-inner">
@@ -28,7 +31,7 @@ export default function Navbar({ theme, onToggleTheme, activePage }: NavbarProps
             className={`dr-nav-link ${activePage === 'datasets' ? 'active' : ''}`}
             href="/datasets"
           >
-            Datasets
+            {t('common.nav.datasets')}
           </Link>
           {useUser() && (
             <>
@@ -36,54 +39,47 @@ export default function Navbar({ theme, onToggleTheme, activePage }: NavbarProps
                 className={`dr-nav-link ${activePage === 'dashboard' ? 'active' : ''}`}
                 href="/dashboard"
               >
-                Meus datasets
+                {t('common.nav.my_datasets')}
               </Link>
               <Link
                 className={`dr-nav-link ${activePage === 'favorites' ? 'active' : ''}`}
                 href="/favorites"
               >
-                Favoritos
+                {t('common.nav.favorites')}
               </Link>
               <Link
                 className={`dr-nav-link ${activePage === 'groups' ? 'active' : ''}`}
                 href="/groups"
               >
-                Grupos
+                {t('common.nav.groups')}
               </Link>
               {useUser() && (useUser()!.roleId === 2 || (useUser() as any)!.roleId === 2) && (
                 <Link
                   className={`dr-nav-link ${activePage === 'users' || activePage === 'admin' ? 'active' : ''}`}
                   href="/admin"
                 >
-                  Gestão
+                  {t('common.nav.management')}
                 </Link>
               )}
             </>
           )}
         </nav>
         <div className="dr-nav-right">
-          <button
-            className="dr-btn dr-btn-icon"
-            onClick={onToggleTheme}
-            title={theme === 'dark' ? 'Tema claro' : 'Tema escuro'}
-            aria-label="Alternar tema"
-          >
-            {theme === 'dark' ? <Ic.Sun size={18} /> : <Ic.Moon size={18} />}
-          </button>
+          <NavLanguage />
           {useUser() ? (
             <>
               <Link className="dr-btn dr-btn-primary" style={{ color: 'white', display: 'inline-flex', alignItems: 'center', gap: '6px' }} href="/dashboard/publish">
-                <Ic.Plus size={17} /> Publicar dataset
+                <Ic.Plus size={17} /> {t('common.nav.publish_dataset')}
               </Link>
-              <NavUser user={null} />
+              <NavUser user={null} theme={theme} onToggleTheme={onToggleTheme} />
             </>
           ) : (
             <>
               <Link className="dr-btn dr-btn-ghost" href="/login">
-                Entrar
+                {t('common.nav.sign_in')}
               </Link>
               <Link className="dr-btn dr-btn-primary" style={{ color: "white" }} href="/sign-up">
-                Criar conta
+                {t('common.nav.sign_up')}
               </Link>
             </>
           )}

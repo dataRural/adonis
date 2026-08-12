@@ -1,4 +1,5 @@
 import * as Ic from '#common/ui/components/datarural/icons'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface ColumnStatsProps {
   hot: string | null
@@ -7,6 +8,7 @@ interface ColumnStatsProps {
 }
 
 export default function ColumnStats({ hot, onHot, columns }: ColumnStatsProps) {
+  const { t } = useTranslation()
   const finalColumns = columns && columns.length > 0 ? columns : []
 
   return (
@@ -43,10 +45,10 @@ export default function ColumnStats({ hot, onHot, columns }: ColumnStatsProps) {
                 <br />
                 <span className="ty">
                   {c.kind === 'number'
-                    ? 'numérico'
+                    ? t('dataset.column_stats.kind_numeric')
                     : c.kind === 'datetime'
-                      ? 'data/hora'
-                      : 'categoria'}
+                      ? t('dataset.column_stats.kind_datetime')
+                      : t('dataset.column_stats.kind_category')}
                   {c.unit ? ' · ' + c.unit : ''}
                 </span>
               </span>
@@ -66,13 +68,13 @@ export default function ColumnStats({ hot, onHot, columns }: ColumnStatsProps) {
                   }}
                 >
                   <span>
-                    mín <b style={{ color: 'var(--foreground)' }}>{min}</b>
+                    {t('dataset.column_stats.min')} <b style={{ color: 'var(--foreground)' }}>{min}</b>
                   </span>
                   <span>
-                    média <b style={{ color: 'var(--foreground)' }}>{mean}</b>
+                    {t('dataset.column_stats.mean')} <b style={{ color: 'var(--foreground)' }}>{mean}</b>
                   </span>
                   <span>
-                    máx <b style={{ color: 'var(--foreground)' }}>{max}</b>
+                    {t('dataset.column_stats.max')} <b style={{ color: 'var(--foreground)' }}>{max}</b>
                   </span>
                   <span>
                     σ <b style={{ color: 'var(--foreground)' }}>{std}</b>
@@ -88,7 +90,7 @@ export default function ColumnStats({ hot, onHot, columns }: ColumnStatsProps) {
                     color: 'var(--muted-foreground)',
                   }}
                 >
-                  intervalo <b style={{ color: 'var(--foreground)' }}>{range}</b>
+                  {t('dataset.column_stats.range')} <b style={{ color: 'var(--foreground)' }}>{range}</b>
                 </div>
               )}
             </div>
@@ -99,8 +101,8 @@ export default function ColumnStats({ hot, onHot, columns }: ColumnStatsProps) {
                 ))}
               </div>
               <div className="meta">
-                <span className="ok">{valid}% válidos</span>
-                <span>{distinct} únicos</span>
+                <span className="ok">{t('dataset.column_stats.valid_pct', { valid })}</span>
+                <span>{t('dataset.column_stats.unique_count', { count: distinct })}</span>
               </div>
             </div>
           </div>

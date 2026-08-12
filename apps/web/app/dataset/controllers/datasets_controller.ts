@@ -19,6 +19,7 @@ import GroupMemberRole from '#app/groups/enums/group_member_role'
 import User from '#users/models/user'
 import UserTransformer from '#users/transformers/user_transformer'
 import { DateTime } from 'luxon'
+// @ts-ignore
 import JSZip from 'jszip'
 
 function sanitizePathSegment(value: string) {
@@ -208,7 +209,7 @@ export default class DatasetsController {
     await auth.check()
     const currentUserId = auth.user?.id ?? null
 
-    let query = Dataset.query().preload('versions').preload('license').preload('likes').preload('favorites').orderBy('updatedAt', 'desc')
+    let query = Dataset.query().preload('versions').preload('license').preload('likes').preload('favorites').preload('user').orderBy('updatedAt', 'desc')
 
     if (currentUserId) {
       const userGroupIds = (
@@ -259,11 +260,14 @@ export default class DatasetsController {
         const likesCount = d.likes ? d.likes.length : 0
         const isLiked = currentUserId ? d.likes.some((l) => Number(l.userId) === Number(currentUserId)) : false
         const isSaved = currentUserId ? d.favorites && d.favorites.some((f) => Number(f.userId) === Number(currentUserId)) : false
+        const authorName = d.user ? (d.user.fullName || d.user.username) : 'Administrador'
 
         return {
           id: d.id,
           title: d.name,
           unit: d.unit,
+          author: authorName,
+          authorName,
           desc: d.description || 'Nenhuma descrição fornecida.',
           tags: d.tags || [],
           cat: d.area,
@@ -510,6 +514,7 @@ export default class DatasetsController {
           {
             datasetId: dataset.id,
             name: versionName,
+            notes: payload.notes || payload.changelog || payload.description || null,
             path: primaryAttachment,
           },
           { client: trx }
@@ -849,8 +854,8 @@ export default class DatasetsController {
     }
   }
 
-  public async store({ auth, request, response, session }: HttpContext) {
-    const datasetId = request.input('id')
+  public async store({ auth, request, response, session, params }: HttpContext) {
+    const datasetId = request.input('id') || params?.id
 
     if (datasetId) {
       const dataset = await Dataset.query()
@@ -1387,6 +1392,7 @@ export default class DatasetsController {
       return {
         id: v.id,
         name: v.name,
+        notes: v.notes || null,
         filename: versionFiles[0]?.name || `${dataset.name}.csv`,
         size: versionSizeStr,
         files: versionFiles,
@@ -1851,6 +1857,7 @@ export default class DatasetsController {
           .preload('license')
           .preload('likes')
           .preload('favorites')
+          .preload('user')
       })
       .orderBy('createdAt', 'desc')
 
@@ -1893,11 +1900,14 @@ export default class DatasetsController {
       const tint = (d.area && AREA_COLORS[d.area]) ? AREA_COLORS[d.area] : 'var(--brand-blue)'
       const likesCount = d.likes ? d.likes.length : 0
       const isLiked = d.likes ? d.likes.some((l) => Number(l.userId) === Number(user.id)) : false
+      const authorName = d.user ? (d.user.fullName || d.user.username) : 'Administrador'
 
       return {
         id: d.id,
         title: d.name,
         unit: d.unit,
+        author: authorName,
+        authorName,
         desc: d.description || 'Nenhuma descrição fornecida.',
         tags: d.tags || [],
         cat: d.area,

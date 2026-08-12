@@ -106,10 +106,20 @@ export interface ApiDefinition {
         download: typeof routes['datasets.version.file.download']
       }
     }
+    versions: {
+      new: typeof routes['datasets.versions.new']
+      store: typeof routes['datasets.versions.store']
+    }
     explore: typeof routes['datasets.explore']
     store: typeof routes['datasets.store']
+    create: typeof routes['datasets.create'] & {
+      store: typeof routes['datasets.create.store']
+    }
     show: typeof routes['datasets.show']
     destroy: typeof routes['datasets.destroy']
+    update: typeof routes['datasets.update'] & {
+      put: typeof routes['datasets.update.put']
+    }
   }
   licenses: {
     index: typeof routes['licenses.index']

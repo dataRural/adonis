@@ -2,6 +2,7 @@ export type DatasetItem = {
   id: number
   title: string
   name?: string
+  author?: string
   unit: string
   desc: string
   description?: string

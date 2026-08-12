@@ -1,0 +1,16 @@
+{
+  "errors": {
+    "not_found": {
+      "title": "Oops! Page Not Found!",
+      "description": "It seems like the page you're looking for does not exist or might have been removed.",
+      "go_back": "Go Back",
+      "back_home": "Back to Home"
+    },
+    "server_error": {
+      "title": "Oops! Something went wrong",
+      "description": "We apologize for the inconvenience. Please try again later.",
+      "go_back": "Go Back",
+      "back_home": "Back to Home"
+    }
+  }
+}

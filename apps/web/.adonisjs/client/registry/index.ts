@@ -270,11 +270,23 @@ const routes = {
     tokens: [{"old":"/datasets/:id/version/new","type":0,"val":"datasets","end":""},{"old":"/datasets/:id/version/new","type":1,"val":"id","end":""},{"old":"/datasets/:id/version/new","type":0,"val":"version","end":""},{"old":"/datasets/:id/version/new","type":0,"val":"new","end":""}],
     types: placeholder as Registry['datasets.version.new']['types'],
   },
+  'datasets.versions.new': {
+    methods: ["GET","HEAD"],
+    pattern: '/datasets/:id/versions/new',
+    tokens: [{"old":"/datasets/:id/versions/new","type":0,"val":"datasets","end":""},{"old":"/datasets/:id/versions/new","type":1,"val":"id","end":""},{"old":"/datasets/:id/versions/new","type":0,"val":"versions","end":""},{"old":"/datasets/:id/versions/new","type":0,"val":"new","end":""}],
+    types: placeholder as Registry['datasets.versions.new']['types'],
+  },
   'datasets.version.store': {
     methods: ["POST"],
     pattern: '/datasets/:id/version',
     tokens: [{"old":"/datasets/:id/version","type":0,"val":"datasets","end":""},{"old":"/datasets/:id/version","type":1,"val":"id","end":""},{"old":"/datasets/:id/version","type":0,"val":"version","end":""}],
     types: placeholder as Registry['datasets.version.store']['types'],
+  },
+  'datasets.versions.store': {
+    methods: ["POST"],
+    pattern: '/datasets/:id/versions',
+    tokens: [{"old":"/datasets/:id/versions","type":0,"val":"datasets","end":""},{"old":"/datasets/:id/versions","type":1,"val":"id","end":""},{"old":"/datasets/:id/versions","type":0,"val":"versions","end":""}],
+    types: placeholder as Registry['datasets.versions.store']['types'],
   },
   'datasets.version.restore': {
     methods: ["POST"],
@@ -324,6 +336,18 @@ const routes = {
     tokens: [{"old":"/datasets","type":0,"val":"datasets","end":""}],
     types: placeholder as Registry['datasets.store']['types'],
   },
+  'datasets.create': {
+    methods: ["GET","HEAD"],
+    pattern: '/datasets/create',
+    tokens: [{"old":"/datasets/create","type":0,"val":"datasets","end":""},{"old":"/datasets/create","type":0,"val":"create","end":""}],
+    types: placeholder as Registry['datasets.create']['types'],
+  },
+  'datasets.create.store': {
+    methods: ["POST"],
+    pattern: '/datasets/create',
+    tokens: [{"old":"/datasets/create","type":0,"val":"datasets","end":""},{"old":"/datasets/create","type":0,"val":"create","end":""}],
+    types: placeholder as Registry['datasets.create.store']['types'],
+  },
   'datasets.show': {
     methods: ["GET","HEAD"],
     pattern: '/datasets/:id',
@@ -335,6 +359,18 @@ const routes = {
     pattern: '/datasets/:id/delete',
     tokens: [{"old":"/datasets/:id/delete","type":0,"val":"datasets","end":""},{"old":"/datasets/:id/delete","type":1,"val":"id","end":""},{"old":"/datasets/:id/delete","type":0,"val":"delete","end":""}],
     types: placeholder as Registry['datasets.destroy']['types'],
+  },
+  'datasets.update': {
+    methods: ["POST"],
+    pattern: '/datasets/:id',
+    tokens: [{"old":"/datasets/:id","type":0,"val":"datasets","end":""},{"old":"/datasets/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['datasets.update']['types'],
+  },
+  'datasets.update.put': {
+    methods: ["PUT"],
+    pattern: '/datasets/:id',
+    tokens: [{"old":"/datasets/:id","type":0,"val":"datasets","end":""},{"old":"/datasets/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['datasets.update.put']['types'],
   },
   'dashboard.show': {
     methods: ["GET","HEAD"],

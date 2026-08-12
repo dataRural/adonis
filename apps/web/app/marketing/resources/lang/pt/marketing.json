@@ -1,0 +1,39 @@
+{
+  "hero": {
+    "eyebrow": "Repositório institucional de dados abertos",
+    "title_prefix": "Encontre, explore e reutilize os ",
+    "title_hl": "dados da Rural",
+    "lead": "Uma plataforma para publicar, versionar e consumir conjuntos de dados acadêmicos e administrativos da UFRRJ — com metadados ricos, licenças explícitas e estatísticas de uso.",
+    "search_placeholder": "Buscar datasets — ex.: produção agrícola, clima, solos…",
+    "search_button": "Buscar"
+  },
+  "publish_cta": {
+    "title": "Você produz dados na Rural? Publique-os aqui.",
+    "subtitle": "Transforme planilhas dispersas em um repositório vivo, documentado e reutilizável pela comunidade acadêmica.",
+    "step1": "Envie seu arquivo CSV",
+    "step2": "Descreva metadados e licença",
+    "step3": "Publique e acompanhe o uso",
+    "btn_publish": "Publicar dataset",
+    "btn_my_datasets": "Meus datasets"
+  },
+  "datasets_section": {
+    "title": "Datasets",
+    "tab_recent": "Recentes",
+    "tab_featured": "Em destaque",
+    "view_grid": "Grade",
+    "view_list": "Lista"
+  },
+  "categories": {
+    "title": "Explore por área de conhecimento",
+    "subtitle": "Dados organizados pelos institutos e unidades da Universidade.",
+    "all_areas": "Todas as áreas",
+    "see_more": "Ver mais áreas",
+    "see_less": "Ver menos áreas"
+  },
+  "stats": {
+    "public_datasets": "Datasets públicos",
+    "knowledge_areas": "Áreas do conhecimento",
+    "research_groups": "Grupos de pesquisa",
+    "researchers": "Pesquisadores"
+  }
+}

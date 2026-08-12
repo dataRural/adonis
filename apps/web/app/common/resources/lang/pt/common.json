@@ -10,6 +10,47 @@
       "logout": "Sair"
     }
   },
+  "nav": {
+    "datasets": "Datasets",
+    "my_datasets": "Meus datasets",
+    "favorites": "Favoritos",
+    "groups": "Grupos",
+    "management": "Gestão",
+    "publish_dataset": "Publicar dataset",
+    "sign_in": "Entrar",
+    "sign_up": "Criar conta",
+    "theme_light": "Tema claro",
+    "theme_dark": "Tema escuro",
+    "toggle_theme": "Alternar tema",
+    "user_menu": {
+      "default_user": "Usuário UFRRJ",
+      "my_profile": "Meu perfil",
+      "my_datasets": "Meus datasets",
+      "my_groups": "Meus grupos",
+      "favorites": "Favoritos",
+      "account_settings": "Configurações da conta",
+      "logout": "Sair"
+    }
+  },
+  "footer": {
+    "about_1": "Plataforma institucional de datasets da Universidade Federal Rural do Rio de Janeiro.",
+    "about_2": "Dados abertos para ensino, pesquisa e extensão.",
+    "platform": "Plataforma",
+    "explore_datasets": "Explorar datasets",
+    "publish_data": "Publicar dados",
+    "collections": "Coleções",
+    "resources": "Recursos",
+    "documentation": "Documentação",
+    "about_licenses": "Sobre licenças",
+    "data_api": "API de dados",
+    "data_policy": "Política de dados",
+    "institutional": "Institucional",
+    "ufrrj": "UFRRJ",
+    "deanships": "Pró-Reitorias",
+    "institutes": "Institutos",
+    "contact": "Contato",
+    "copyright": "© 2026 Universidade Federal Rural do Rio de Janeiro · DataRural"
+  },
   "table": {
     "filters": {
       "clear_filters": "Limpar os filtros",
@@ -28,5 +69,9 @@
       "go_last_page": "Ir para a última página",
       "page_of": "Página {current} de {total}"
     }
+  },
+  "confirm_dialog": {
+    "cancel": "Cancelar",
+    "continue": "Continuar"
   }
 }

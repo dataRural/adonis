@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { usePage } from '@inertiajs/react'
 import * as Ic from '#common/ui/components/datarural/icons'
 import { getCookie } from '#common/ui/utils/cookie_helper'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 export interface AreaAdminItem {
   id: number
@@ -43,6 +44,7 @@ const COLOR_SWATCHES = [
 ]
 
 export default function AreasAdminTable() {
+  const { t } = useTranslation()
   const page = usePage()
   const [areas, setAreas] = useState<AreaAdminItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -192,35 +194,35 @@ export default function AreasAdminTable() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div>
-          <h2 style={{ fontSize: '18px', fontWeight: 700, margin: 0 }}>Áreas de Conhecimento Cadastradas</h2>
+          <h2 style={{ fontSize: '18px', fontWeight: 700, margin: 0 }}>{t('dataset.areas_admin.title')}</h2>
           <p style={{ fontSize: '13.5px', color: 'var(--muted-foreground)', margin: '4px 0 0' }}>
-            Gerencie as categorias de dados disponíveis para os pesquisadores ao publicar e filtrar datasets.
+            {t('dataset.areas_admin.subtitle')}
           </p>
         </div>
         <button className="dr-btn dr-btn-primary" onClick={handleOpenCreate}>
-          <Ic.Plus size={16} /> Nova Área
+          <Ic.Plus size={16} /> {t('dataset.areas_admin.new_area')}
         </button>
       </div>
 
       {loading ? (
         <div style={{ padding: '40px', textAlign: 'center', color: 'var(--muted-foreground)' }}>
-          Carregando áreas…
+          {t('dataset.areas_admin.loading')}
         </div>
       ) : areas.length === 0 ? (
         <div style={{ padding: '40px', textAlign: 'center', color: 'var(--muted-foreground)', background: 'var(--muted)', borderRadius: 'var(--radius)' }}>
-          Nenhuma área cadastrada. Clique em "Nova Área" para criar a primeira.
+          {t('dataset.areas_admin.empty')}
         </div>
       ) : (
         <div style={{ overflowX: 'auto', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left' }}>
             <thead>
               <tr style={{ background: 'var(--muted)', borderBottom: '1px solid var(--border)', fontWeight: 600 }}>
-                <th style={{ padding: '12px 16px' }}>Ícone / Cor</th>
-                <th style={{ padding: '12px 16px' }}>Nome da Área</th>
-                <th style={{ padding: '12px 16px' }}>Código (Slug)</th>
-                <th style={{ padding: '12px 16px' }}>Descrição</th>
-                <th style={{ padding: '12px 16px', textAlign: 'center' }}>Datasets</th>
-                <th style={{ padding: '12px 16px', textAlign: 'right' }}>Ações</th>
+                <th style={{ padding: '12px 16px' }}>{t('dataset.areas_admin.th_icon')}</th>
+                <th style={{ padding: '12px 16px' }}>{t('dataset.areas_admin.th_name')}</th>
+                <th style={{ padding: '12px 16px' }}>{t('dataset.areas_admin.th_code')}</th>
+                <th style={{ padding: '12px 16px' }}>{t('dataset.areas_admin.th_desc')}</th>
+                <th style={{ padding: '12px 16px', textAlign: 'center' }}>{t('dataset.areas_admin.th_datasets')}</th>
+                <th style={{ padding: '12px 16px', textAlign: 'right' }}>{t('dataset.areas_admin.th_actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -275,7 +277,7 @@ export default function AreasAdminTable() {
                           style={{ padding: '4px 10px', fontSize: '13px' }}
                           onClick={() => handleOpenEdit(area)}
                         >
-                          <Ic.Edit size={14} /> Editar
+                          <Ic.Edit size={14} /> {t('dataset.areas_admin.edit')}
                         </button>
                         <button
                           className="dr-btn dr-btn-ghost"
@@ -285,7 +287,7 @@ export default function AreasAdminTable() {
                             setDeleteModalOpen(true)
                           }}
                         >
-                          <Ic.Trash size={14} /> Excluir
+                          <Ic.Trash size={14} /> {t('dataset.areas_admin.delete')}
                         </button>
                       </div>
                     </td>
@@ -325,7 +327,7 @@ export default function AreasAdminTable() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700 }}>
-                {editingArea ? 'Editar Área do Conhecimento' : 'Nova Área do Conhecimento'}
+                {editingArea ? t('dataset.areas_admin.modal_edit') : t('dataset.areas_admin.modal_new')}
               </h3>
               <button onClick={() => setModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted-foreground)' }}>
                 <Ic.X size={20} />
@@ -340,31 +342,31 @@ export default function AreasAdminTable() {
 
             <form onSubmit={handleSave}>
               <div className="dr-field" style={{ marginBottom: 14 }}>
-                <label className="dr-field-label">Nome da área *</label>
+                <label className="dr-field-label">{t('dataset.areas_admin.name_label')}</label>
                 <input
                   type="text"
                   className="dr-input"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Ex.: Biotecnologia, Engenharia Agrícola…"
+                  placeholder={t('dataset.areas_admin.name_placeholder')}
                   required
                 />
               </div>
 
               <div className="dr-field" style={{ marginBottom: 14 }}>
-                <label className="dr-field-label">Código identificador (Slug)</label>
+                <label className="dr-field-label">{t('dataset.areas_admin.code_label')}</label>
                 <input
                   type="text"
                   className="dr-input"
                   value={formData.code}
                   onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                  placeholder="Ex.: biotec (deixe em branco para gerar automático)"
+                  placeholder={t('dataset.areas_admin.code_placeholder')}
                   disabled={!!editingArea}
                 />
               </div>
 
               <div className="dr-field" style={{ marginBottom: 14 }}>
-                <label className="dr-field-label">Ícone</label>
+                <label className="dr-field-label">{t('dataset.areas_admin.icon_label')}</label>
                 <select
                   className="dr-select"
                   value={formData.icon}
@@ -379,7 +381,7 @@ export default function AreasAdminTable() {
               </div>
 
               <div className="dr-field" style={{ marginBottom: 14 }}>
-                <label className="dr-field-label">Cor / Tema da Área</label>
+                <label className="dr-field-label">{t('dataset.areas_admin.color_label')}</label>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginTop: 6, marginBottom: 10 }}>
                   {COLOR_SWATCHES.map((swatch) => {
                     const isSelected = formData.color === swatch.value
@@ -408,7 +410,7 @@ export default function AreasAdminTable() {
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>Ou cor customizada (HEX):</span>
+                  <span style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>{t('dataset.areas_admin.custom_hex')}</span>
                   <input
                     type="color"
                     value={formData.color.startsWith('#') ? formData.color : formData.customHex}
@@ -420,22 +422,22 @@ export default function AreasAdminTable() {
               </div>
 
               <div className="dr-field" style={{ marginBottom: 20 }}>
-                <label className="dr-field-label">Descrição (Opcional)</label>
+                <label className="dr-field-label">{t('dataset.areas_admin.desc_label')}</label>
                 <textarea
                   className="dr-textarea"
                   rows={3}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Breve resumo sobre o conteúdo desta área de conhecimento…"
+                  placeholder={t('dataset.areas_admin.desc_placeholder')}
                 />
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
                 <button type="button" className="dr-btn dr-btn-ghost" onClick={() => setModalOpen(false)}>
-                  Cancelar
+                  {t('dataset.areas_admin.cancel')}
                 </button>
                 <button type="submit" className="dr-btn dr-btn-primary" disabled={saving}>
-                  {saving ? 'Salvando…' : editingArea ? 'Salvar alterações' : 'Criar área'}
+                  {saving ? t('dataset.areas_admin.saving') : editingArea ? t('dataset.areas_admin.save_changes') : t('dataset.areas_admin.create_area')}
                 </button>
               </div>
             </form>
@@ -469,14 +471,14 @@ export default function AreasAdminTable() {
               border: '1px solid var(--border)',
             }}
           >
-            <h3 style={{ margin: '0 0 12px', fontSize: '18px', fontWeight: 700 }}>Excluir Área do Conhecimento</h3>
+            <h3 style={{ margin: '0 0 12px', fontSize: '18px', fontWeight: 700 }}>{t('dataset.areas_admin.delete_title')}</h3>
             <p style={{ fontSize: '14px', color: 'var(--muted-foreground)', margin: '0 0 20px' }}>
-              Tem certeza que deseja excluir a área <strong>{deletingArea.name}</strong> ({deletingArea.code})?
+              {t('dataset.areas_admin.delete_confirm', { name: deletingArea.name, code: deletingArea.code })}
             </p>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
               <button type="button" className="dr-btn dr-btn-ghost" onClick={() => setDeleteModalOpen(false)}>
-                Cancelar
+                {t('dataset.areas_admin.cancel')}
               </button>
               <button
                 type="button"
@@ -485,7 +487,7 @@ export default function AreasAdminTable() {
                 onClick={handleDelete}
                 disabled={saving}
               >
-                {saving ? 'Excluindo…' : 'Sim, excluir'}
+                {saving ? t('dataset.areas_admin.deleting') : t('dataset.areas_admin.yes_delete')}
               </button>
             </div>
           </div>

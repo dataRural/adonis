@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from 'react'
 import * as Ic from '#common/ui/components/datarural/icons'
 import { UNITS, AREAS } from './panel-data'
+import { useTranslation } from '#common/ui/hooks/use_translation'
 
 interface Step2Props {
   data: any
@@ -8,6 +9,7 @@ interface Step2Props {
 }
 
 export default function StepMetadados({ data, set }: Step2Props) {
+  const { t } = useTranslation()
   const tagInputRef = useRef<HTMLInputElement>(null)
   const [areaOptions, setAreaOptions] = useState<{ id: string; name: string }[]>(AREAS)
 
@@ -22,36 +24,35 @@ export default function StepMetadados({ data, set }: Step2Props) {
       .catch(() => { })
   }, [])
 
-  const addTag = (t: string) => {
-    t = t.trim()
-    if (t && !data.tags.includes(t)) {
-      set({ tags: [...data.tags, t] })
+  const addTag = (tTag: string) => {
+    tTag = tTag.trim()
+    if (tTag && !data.tags.includes(tTag)) {
+      set({ tags: [...data.tags, tTag] })
     }
   }
 
-  const removeTag = (t: string) => {
-    set({ tags: data.tags.filter((x: string) => x !== t) })
+  const removeTag = (tTag: string) => {
+    set({ tags: data.tags.filter((x: string) => x !== tTag) })
   }
-
 
   return (
     <div className="dr-fgrid">
       <div className="dr-field dr-field-full">
         <label className="dr-field-label">
-          Título do dataset <span className="req">*</span>
+          {t('dataset.step_metadata.title_label')} <span className="req">*</span>
         </label>
         <input
           className="dr-input"
           value={data.title}
           onChange={(e) => set({ title: e.target.value })}
-          placeholder="Ex.: Dados Meteorológicos (2010-2024)"
+          placeholder={t('dataset.step_metadata.title_placeholder')}
         />
-        <span className="dr-field-hint">Seja específico: inclua local e período cobertos.</span>
+        <span className="dr-field-hint">{t('dataset.step_metadata.title_hint')}</span>
       </div>
 
       <div className="dr-field dr-field-full">
         <label className="dr-field-label">
-          Descrição <span className="req">*</span>
+          {t('dataset.step_metadata.desc_label')} <span className="req">*</span>
           <span className="opt">{data.desc.length}/600</span>
         </label>
         <textarea
@@ -59,13 +60,13 @@ export default function StepMetadados({ data, set }: Step2Props) {
           maxLength={600}
           value={data.desc}
           onChange={(e) => set({ desc: e.target.value })}
-          placeholder="Descreva o que o conjunto contém, como foi coletado, a frequência das medições e usos recomendados."
+          placeholder={t('dataset.step_metadata.desc_placeholder')}
         />
       </div>
 
       <div className="dr-field">
         <label className="dr-field-label">
-          Unidade / Instituto <span className="req">*</span>
+          {t('dataset.step_metadata.unit_label')} <span className="req">*</span>
         </label>
         <select
           className="dr-select"
@@ -82,7 +83,7 @@ export default function StepMetadados({ data, set }: Step2Props) {
 
       <div className="dr-field">
         <label className="dr-field-label">
-          Área de conhecimento <span className="req">*</span>
+          {t('dataset.step_metadata.area_label')} <span className="req">*</span>
         </label>
         <select
           className="dr-select"
@@ -98,43 +99,43 @@ export default function StepMetadados({ data, set }: Step2Props) {
       </div>
 
       <div className="dr-field">
-        <label className="dr-field-label">Período de cobertura</label>
+        <label className="dr-field-label">{t('dataset.step_metadata.period_label')}</label>
         <input
           className="dr-input"
           value={data.period}
           onChange={(e) => set({ period: e.target.value })}
-          placeholder="2010 – 2024"
+          placeholder={t('dataset.step_metadata.period_placeholder')}
         />
       </div>
 
       <div className="dr-field">
-        <label className="dr-field-label">Região / Local</label>
+        <label className="dr-field-label">{t('dataset.step_metadata.region_label')}</label>
         <input
           className="dr-input"
           value={data.region}
           onChange={(e) => set({ region: e.target.value })}
-          placeholder="No va Iguaçu, RJ"
+          placeholder={t('dataset.step_metadata.region_placeholder')}
         />
       </div>
 
       <div className="dr-field dr-field-full">
         <label className="dr-field-label">
-          Tags
+          {t('dataset.step_metadata.tags_label')}
         </label>
         <div
           className="dr-tag-box"
           onClick={() => tagInputRef.current && tagInputRef.current.focus()}
         >
-          {data.tags.map((t: string) => (
-            <span key={t} className="dr-tag-pill">
-              {t}
+          {data.tags.map((tTag: string) => (
+            <span key={tTag} className="dr-tag-pill">
+              {tTag}
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation()
-                  removeTag(t)
+                  removeTag(tTag)
                 }}
-                aria-label={'remover ' + t}
+                aria-label={'remover ' + tTag}
               >
                 <Ic.X size={13} />
               </button>
@@ -142,7 +143,7 @@ export default function StepMetadados({ data, set }: Step2Props) {
           ))}
           <input
             ref={tagInputRef}
-            placeholder={data.tags.length ? '' : 'Digite e pressione Enter…'}
+            placeholder={data.tags.length ? '' : t('dataset.step_metadata.tags_placeholder')}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault()
