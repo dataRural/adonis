@@ -853,8 +853,8 @@ export default class DatasetsController {
     }
   }
 
-  public async store({ auth, request, response, session }: HttpContext) {
-    const datasetId = request.input('id')
+  public async store({ auth, request, response, session, params }: HttpContext) {
+    const datasetId = request.input('id') || params?.id
 
     if (datasetId) {
       const dataset = await Dataset.query()

@@ -62,18 +62,53 @@ function DataTable({ hot, onHot, columns, rows }: DataTableProps & { columns: an
         <table className="dr-tbl">
           <thead>
             <tr>
-              <th style={{ width: 40, textAlign: 'center', color: 'var(--muted-foreground)' }}>#</th>
+              <th>
+                <div className="dr-colhead idxh">
+                  <div className="dr-colhead-top">
+                    <span className="nm" style={{ color: 'var(--muted-foreground)' }}>
+                      #
+                    </span>
+                  </div>
+                </div>
+              </th>
               {columns.map((c, idx) => {
-                const isHot = hot === c.key
+                const key = c.key || c.name || `col_${idx}`
+                const label = c.label || c.name || c.key || `Col ${idx + 1}`
+                const kind = c.kind || c.type
+                const typeText =
+                  kind === 'number'
+                    ? t('dataset.viewer.numeric')
+                    : kind === 'datetime'
+                    ? t('dataset.viewer.datetime')
+                    : (kind || t('dataset.viewer.category'))
+                const isHot = hot === key
                 const isSort = sortCol === idx
+
                 return (
-                  <th key={c.key} className={isHot ? 'hot' : ''}>
-                    <div className="dr-th-inner">
-                      <span className="dr-th-name" onClick={() => clickSort(idx)}>
-                        {c.label || c.key}
-                        <Ic.Sort size={12} style={{ opacity: isSort ? 1 : 0.4, marginLeft: 4 }} />
-                      </span>
-                      <span className="dr-th-type">{c.type || 'string'}</span>
+                  <th key={key} className={isHot ? 'col-hot' : ''}>
+                    <div
+                      className={'dr-colhead' + (isSort ? ' sorted' : '')}
+                      onClick={() => clickSort(idx)}
+                      onMouseEnter={() => onHot(key)}
+                      onMouseLeave={() => onHot(null)}
+                    >
+                      <div className="dr-colhead-top">
+                        <span className="nm">{label}</span>
+                        {c.unit && <span className="un">{c.unit}</span>}
+                        <span className="srt">
+                          {isSort ? (
+                            sortDir === 'asc' ? (
+                              <Ic.Up size={13} />
+                            ) : (
+                              <Ic.Up size={13} style={{ transform: 'rotate(180deg)' }} />
+                            )
+                          ) : (
+                            <Ic.Sort size={13} />
+                          )}
+                        </span>
+                      </div>
+                      <div className="dr-colhead-ty">{typeText}</div>
+                      <MiniHist hist={c.hist || [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]} />
                     </div>
                   </th>
                 )
@@ -81,16 +116,18 @@ function DataTable({ hot, onHot, columns, rows }: DataTableProps & { columns: an
             </tr>
           </thead>
           <tbody>
-            {slice.map((item, rowIdx) => (
-              <tr key={rowIdx}>
-                <td style={{ textAlign: 'center', color: 'var(--muted-foreground)', fontSize: 12 }}>
-                  {page * PAGE + rowIdx + 1}
-                </td>
-                {columns.map((c, colIdx) => {
-                  const val = item.r[colIdx]
-                  const isHot = hot === c.key
+            {slice.map(({ r, i }) => (
+              <tr key={i}>
+                <td className="idx">{i + 1}</td>
+                {r.map((val, ci) => {
+                  const colKey = columns[ci]?.key || columns[ci]?.name || `col_${ci}`
                   return (
-                    <td key={c.key} className={isHot ? 'hot' : ''}>
+                    <td
+                      key={ci}
+                      className={
+                        (ci === 0 ? 'dt' : 'num') + (hot === colKey ? ' col-hot' : '')
+                      }
+                    >
                       {val !== undefined && val !== null ? String(val) : '—'}
                     </td>
                   )
@@ -100,67 +137,93 @@ function DataTable({ hot, onHot, columns, rows }: DataTableProps & { columns: an
           </tbody>
         </table>
       </div>
-
-      {pages > 1 && (
-        <div className="dr-tbl-foot" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderTop: '1px solid var(--border)' }}>
-          <span style={{ fontSize: 13, color: 'var(--muted-foreground)' }}>
-            {t('dataset.viewer.page_info', { current: page + 1, total: pages })}
+      <div className="dr-viewer-foot">
+        <span>
+          {t('dataset.viewer.showing')}{' '}
+          <b style={{ color: 'var(--foreground)' }}>
+            {page * PAGE + 1}–{Math.min((page + 1) * PAGE, sorted.length)}
+          </b>{' '}
+          {t('dataset.viewer.of')} <b style={{ color: 'var(--foreground)' }}>{sorted.length}</b> {t('dataset.viewer.rows_label')}{' '}
+          <span style={{ opacity: 0.7 }}>· {t('dataset.viewer.sample')}</span>
+        </span>
+        <span className="spacer"></span>
+        <div className="dr-pager">
+          <button onClick={() => setPage(0)} disabled={page === 0} title={t('dataset.viewer.first')}>
+            <Ic.Chevr size={15} style={{ transform: 'rotate(180deg)' }} />
+          </button>
+          <button
+            onClick={() => setPage(Math.max(0, page - 1))}
+            disabled={page === 0}
+            title={t('dataset.viewer.previous')}
+          >
+            <Ic.Chevd size={15} style={{ transform: 'rotate(90deg)' }} />
+          </button>
+          <span className="pg">
+            {page + 1} / {pages}
           </span>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <button
-              className="dr-btn dr-btn-outline dr-btn-sm"
-              disabled={page === 0}
-              onClick={() => setPage((p) => p - 1)}
-              style={page === 0 ? { opacity: 0.4, cursor: 'not-allowed' } : undefined}
-            >
-              {t('dataset.viewer.previous_page')}
-            </button>
-            <button
-              className="dr-btn dr-btn-outline dr-btn-sm"
-              disabled={page >= pages - 1}
-              onClick={() => setPage((p) => p + 1)}
-              style={page >= pages - 1 ? { opacity: 0.4, cursor: 'not-allowed' } : undefined}
-            >
-              {t('dataset.viewer.next_page')}
-            </button>
-          </div>
+          <button
+            onClick={() => setPage(Math.min(pages - 1, page + 1))}
+            disabled={page === pages - 1}
+            title={t('dataset.viewer.next')}
+          >
+            <Ic.Chevd size={15} style={{ transform: 'rotate(-90deg)' }} />
+          </button>
+          <button onClick={() => setPage(pages - 1)} disabled={page === pages - 1} title={t('dataset.viewer.last')}>
+            <Ic.Chevr size={15} />
+          </button>
         </div>
-      )}
+      </div>
     </div>
   )
 }
 
 export default function ViewerTab({
   ds,
+  datasetId,
+  selectedVersionId: propsSelectedVersionId,
+  selectedFileId: propsSelectedFileId,
   columns = [],
   rows = [],
+  filename,
+  sizeStr,
+  filesList = [],
   files = [],
 }: {
-  ds: any
+  ds?: any
+  datasetId?: number
+  selectedVersionId?: number
+  selectedFileId?: number | null
   columns?: any[]
   rows?: any[][]
+  filename?: string
+  sizeStr?: string
+  filesList?: any[]
   files?: any[]
 }) {
   const { t } = useTranslation()
   const [mode, setMode] = useState<'table' | 'columns'>('table')
   const [hot, setHot] = useState<string | null>(null)
-  const [selectedFileId, setSelectedFileId] = useState<number | null>(null)
+  const [selectedFileId, setSelectedFileId] = useState<number | null>(propsSelectedFileId ?? null)
 
-  const availableFiles = files && files.length > 0 ? files : []
-  const currentFile = availableFiles.find((f) => f.id === selectedFileId) || availableFiles[0]
+  const availableFiles = filesList.length > 0 ? filesList : files
+  const currentFile = availableFiles.find((f) => f.id === selectedFileId || f.id === propsSelectedFileId) || availableFiles[0]
 
   const finalColumns = currentFile && currentFile.schema ? currentFile.schema : columns
   const finalRows = currentFile && currentFile.sampleRows ? currentFile.sampleRows : rows
-  const finalFilename = currentFile ? currentFile.name : ds.fileName || `${ds.title}.csv`
-  const finalSize = currentFile ? currentFile.size : ds.size || '0 B'
+  const finalFilename = filename || (currentFile ? currentFile.name : (ds?.fileName || `${ds?.title || 'dados'}.csv`))
+  const finalSize = sizeStr || (currentFile ? currentFile.size : (ds?.size || '0 B'))
+  const targetDatasetId = datasetId || ds?.id
+  const targetVersionId = propsSelectedVersionId || ds?.selectedVersionId
 
   const handleSelectFile = (fileIdVal: string) => {
     const numericId = Number(fileIdVal)
     setSelectedFileId(numericId)
-    router.visit(`/datasets/${ds.id}?versionId=${ds.selectedVersionId || ''}&fileId=${numericId}`, {
-      preserveState: true,
-      preserveScroll: true,
-    })
+    if (targetDatasetId) {
+      router.visit(`/datasets/${targetDatasetId}?` + (targetVersionId ? `versionId=${targetVersionId}&` : '') + `fileId=${numericId}`, {
+        preserveState: true,
+        preserveScroll: true,
+      })
+    }
   }
 
   return (

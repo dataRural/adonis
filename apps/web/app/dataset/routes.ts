@@ -54,9 +54,19 @@ router
   .as('datasets.version.new');
 
 router
+  .get('/datasets/:id/versions/new', [DatasetsController, 'newVersion'])
+  .middleware(middleware.auth())
+  .as('datasets.versions.new');
+
+router
   .post('/datasets/:id/version', [DatasetsController, 'addVersion'])
   .middleware(middleware.auth())
   .as('datasets.version.store');
+
+router
+  .post('/datasets/:id/versions', [DatasetsController, 'addVersion'])
+  .middleware(middleware.auth())
+  .as('datasets.versions.store');
 
 router
   .post('/datasets/:id/version/:versionId/restore', [DatasetsController, 'restoreVersion'])
@@ -94,6 +104,16 @@ router
   .as('datasets.store')
 
 router
+  .get('/datasets/create', [DatasetsController, 'publish'])
+  .middleware(middleware.auth())
+  .as('datasets.create')
+
+router
+  .post('/datasets/create', [DatasetsController, 'store'])
+  .middleware(middleware.auth())
+  .as('datasets.create.store')
+
+router
   .get('/datasets/:id', [DatasetsController, 'show'])
   .as('datasets.show')
 
@@ -101,6 +121,16 @@ router
   .post('/datasets/:id/delete', [DatasetsController, 'destroy'])
   .middleware(middleware.auth())
   .as('datasets.destroy')
+
+router
+  .post('/datasets/:id', [DatasetsController, 'store'])
+  .middleware(middleware.auth())
+  .as('datasets.update')
+
+router
+  .put('/datasets/:id', [DatasetsController, 'store'])
+  .middleware(middleware.auth())
+  .as('datasets.update.put')
 
 router
   .get('/dashboard', [DatasetsController, 'dashboard'])

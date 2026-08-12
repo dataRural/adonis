@@ -175,306 +175,6 @@ export interface Registry {
       errorResponse: unknown
     }
   }
-  'areas.list': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/areas'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['list']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['list']>>>
-    }
-  }
-  'admin_areas.index': {
-    methods: ["GET","HEAD"]
-    pattern: '/admin/areas'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['index']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['index']>>>
-    }
-  }
-  'admin_areas.store': {
-    methods: ["POST"]
-    pattern: '/admin/areas'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['store']>>>
-    }
-  }
-  'admin_areas.update': {
-    methods: ["PUT","PATCH"]
-    pattern: '/admin/areas/:id'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['update']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['update']>>>
-    }
-  }
-  'admin_areas.destroy': {
-    methods: ["DELETE"]
-    pattern: '/admin/areas/:id'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['destroy']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['destroy']>>>
-    }
-  }
-  'datasets.viewer': {
-    methods: ["GET","HEAD"]
-    pattern: '/datasets/view'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['viewer']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['viewer']>>>
-    }
-  }
-  'licenses.index': {
-    methods: ["GET","HEAD"]
-    pattern: '/licenses'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/licenses_controller').default['index']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/licenses_controller').default['index']>>>
-    }
-  }
-  'datasets.privacy': {
-    methods: ["POST"]
-    pattern: '/datasets/:id/privacy'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['togglePrivacy']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['togglePrivacy']>>>
-    }
-  }
-  'datasets.like.toggle': {
-    methods: ["POST"]
-    pattern: '/datasets/:id/like'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['toggleLike']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['toggleLike']>>>
-    }
-  }
-  'datasets.favorite.toggle': {
-    methods: ["POST"]
-    pattern: '/datasets/:id/favorite'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['toggleFavorite']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['toggleFavorite']>>>
-    }
-  }
-  'favorites.index': {
-    methods: ["GET","HEAD"]
-    pattern: '/favorites'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['favorites']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['favorites']>>>
-    }
-  }
-  'datasets.version.new': {
-    methods: ["GET","HEAD"]
-    pattern: '/datasets/:id/version/new'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['newVersion']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['newVersion']>>>
-    }
-  }
-  'datasets.version.store': {
-    methods: ["POST"]
-    pattern: '/datasets/:id/version'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#app/dataset/validators').addDatasetVersionValidator)>>
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#app/dataset/validators').addDatasetVersionValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['addVersion']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['addVersion']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'datasets.version.restore': {
-    methods: ["POST"]
-    pattern: '/datasets/:id/version/:versionId/restore'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue, ParamValue]
-      params: { id: ParamValue; versionId: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['restoreVersion']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['restoreVersion']>>>
-    }
-  }
-  'datasets.version.delete': {
-    methods: ["POST"]
-    pattern: '/datasets/:id/version/:versionId/delete'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue, ParamValue]
-      params: { id: ParamValue; versionId: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['deleteVersion']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['deleteVersion']>>>
-    }
-  }
-  'datasets.version.download': {
-    methods: ["GET","HEAD"]
-    pattern: '/datasets/:datasetId/version/:versionId/download'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue, ParamValue]
-      params: { datasetId: ParamValue; versionId: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['downloadVersion']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['downloadVersion']>>>
-    }
-  }
-  'datasets.version.download_all': {
-    methods: ["GET","HEAD"]
-    pattern: '/datasets/:datasetId/version/:versionId/download-all'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue, ParamValue]
-      params: { datasetId: ParamValue; versionId: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['downloadAll']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['downloadAll']>>>
-    }
-  }
-  'datasets.version.readme.download': {
-    methods: ["GET","HEAD"]
-    pattern: '/datasets/:datasetId/version/:versionId/readme/download'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue, ParamValue]
-      params: { datasetId: ParamValue; versionId: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['downloadReadme']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['downloadReadme']>>>
-    }
-  }
-  'datasets.version.file.download': {
-    methods: ["GET","HEAD"]
-    pattern: '/datasets/:datasetId/version/:versionId/file/:fileId/download'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue, ParamValue, ParamValue]
-      params: { datasetId: ParamValue; versionId: ParamValue; fileId: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['downloadFile']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['downloadFile']>>>
-    }
-  }
-  'datasets.explore': {
-    methods: ["GET","HEAD"]
-    pattern: '/datasets'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['explore']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['explore']>>>
-    }
-  }
-  'datasets.store': {
-    methods: ["POST"]
-    pattern: '/datasets'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#app/dataset/validators').updateDatasetValidator)>|InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
-      paramsTuple: []
-      params: {}
-      query: ExtractQuery<InferInput<(typeof import('#app/dataset/validators').updateDatasetValidator)>|InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['store']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
-  'datasets.show': {
-    methods: ["GET","HEAD"]
-    pattern: '/datasets/:id'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['show']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['show']>>>
-    }
-  }
-  'datasets.destroy': {
-    methods: ["POST"]
-    pattern: '/datasets/:id/delete'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['destroy']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['destroy']>>>
-    }
-  }
-  'dashboard.show': {
-    methods: ["GET","HEAD"]
-    pattern: '/dashboard'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['dashboard']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['dashboard']>>>
-    }
-  }
-  'dashboard.publish': {
-    methods: ["GET","HEAD"]
-    pattern: '/dashboard/publish'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['publish']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['publish']>>>
-    }
-  }
   'admin.index': {
     methods: ["GET","HEAD"]
     pattern: '/admin'
@@ -689,6 +389,378 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#users/controllers/password_controller').default['show']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#users/controllers/password_controller').default['show']>>>
+    }
+  }
+  'areas.list': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/areas'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['list']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['list']>>>
+    }
+  }
+  'admin_areas.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/areas'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['index']>>>
+    }
+  }
+  'admin_areas.store': {
+    methods: ["POST"]
+    pattern: '/admin/areas'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['store']>>>
+    }
+  }
+  'admin_areas.update': {
+    methods: ["PUT","PATCH"]
+    pattern: '/admin/areas/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['update']>>>
+    }
+  }
+  'admin_areas.destroy': {
+    methods: ["DELETE"]
+    pattern: '/admin/areas/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/areas_controller').default['destroy']>>>
+    }
+  }
+  'datasets.viewer': {
+    methods: ["GET","HEAD"]
+    pattern: '/datasets/view'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['viewer']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['viewer']>>>
+    }
+  }
+  'licenses.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/licenses'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/licenses_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/licenses_controller').default['index']>>>
+    }
+  }
+  'datasets.privacy': {
+    methods: ["POST"]
+    pattern: '/datasets/:id/privacy'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['togglePrivacy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['togglePrivacy']>>>
+    }
+  }
+  'datasets.like.toggle': {
+    methods: ["POST"]
+    pattern: '/datasets/:id/like'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['toggleLike']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['toggleLike']>>>
+    }
+  }
+  'datasets.favorite.toggle': {
+    methods: ["POST"]
+    pattern: '/datasets/:id/favorite'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['toggleFavorite']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['toggleFavorite']>>>
+    }
+  }
+  'favorites.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/favorites'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['favorites']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['favorites']>>>
+    }
+  }
+  'datasets.version.new': {
+    methods: ["GET","HEAD"]
+    pattern: '/datasets/:id/version/new'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['newVersion']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['newVersion']>>>
+    }
+  }
+  'datasets.versions.new': {
+    methods: ["GET","HEAD"]
+    pattern: '/datasets/:id/versions/new'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['newVersion']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['newVersion']>>>
+    }
+  }
+  'datasets.version.store': {
+    methods: ["POST"]
+    pattern: '/datasets/:id/version'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#app/dataset/validators').addDatasetVersionValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#app/dataset/validators').addDatasetVersionValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['addVersion']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['addVersion']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'datasets.versions.store': {
+    methods: ["POST"]
+    pattern: '/datasets/:id/versions'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#app/dataset/validators').addDatasetVersionValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#app/dataset/validators').addDatasetVersionValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['addVersion']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['addVersion']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'datasets.version.restore': {
+    methods: ["POST"]
+    pattern: '/datasets/:id/version/:versionId/restore'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { id: ParamValue; versionId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['restoreVersion']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['restoreVersion']>>>
+    }
+  }
+  'datasets.version.delete': {
+    methods: ["POST"]
+    pattern: '/datasets/:id/version/:versionId/delete'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { id: ParamValue; versionId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['deleteVersion']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['deleteVersion']>>>
+    }
+  }
+  'datasets.version.download': {
+    methods: ["GET","HEAD"]
+    pattern: '/datasets/:datasetId/version/:versionId/download'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { datasetId: ParamValue; versionId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['downloadVersion']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['downloadVersion']>>>
+    }
+  }
+  'datasets.version.download_all': {
+    methods: ["GET","HEAD"]
+    pattern: '/datasets/:datasetId/version/:versionId/download-all'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { datasetId: ParamValue; versionId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['downloadAll']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['downloadAll']>>>
+    }
+  }
+  'datasets.version.readme.download': {
+    methods: ["GET","HEAD"]
+    pattern: '/datasets/:datasetId/version/:versionId/readme/download'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue]
+      params: { datasetId: ParamValue; versionId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['downloadReadme']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['downloadReadme']>>>
+    }
+  }
+  'datasets.version.file.download': {
+    methods: ["GET","HEAD"]
+    pattern: '/datasets/:datasetId/version/:versionId/file/:fileId/download'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue, ParamValue, ParamValue]
+      params: { datasetId: ParamValue; versionId: ParamValue; fileId: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['downloadFile']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['downloadFile']>>>
+    }
+  }
+  'datasets.explore': {
+    methods: ["GET","HEAD"]
+    pattern: '/datasets'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['explore']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['explore']>>>
+    }
+  }
+  'datasets.store': {
+    methods: ["POST"]
+    pattern: '/datasets'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#app/dataset/validators').updateDatasetValidator)>|InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#app/dataset/validators').updateDatasetValidator)>|InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'datasets.create': {
+    methods: ["GET","HEAD"]
+    pattern: '/datasets/create'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['publish']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['publish']>>>
+    }
+  }
+  'datasets.create.store': {
+    methods: ["POST"]
+    pattern: '/datasets/create'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#app/dataset/validators').updateDatasetValidator)>|InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#app/dataset/validators').updateDatasetValidator)>|InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'datasets.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/datasets/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['show']>>>
+    }
+  }
+  'datasets.destroy': {
+    methods: ["POST"]
+    pattern: '/datasets/:id/delete'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['destroy']>>>
+    }
+  }
+  'datasets.update': {
+    methods: ["POST"]
+    pattern: '/datasets/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#app/dataset/validators').updateDatasetValidator)>|InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#app/dataset/validators').updateDatasetValidator)>|InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'datasets.update.put': {
+    methods: ["PUT"]
+    pattern: '/datasets/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#app/dataset/validators').updateDatasetValidator)>|InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#app/dataset/validators').updateDatasetValidator)>|InferInput<(typeof import('#app/dataset/validators').createDatasetValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'dashboard.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['dashboard']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['dashboard']>>>
+    }
+  }
+  'dashboard.publish': {
+    methods: ["GET","HEAD"]
+    pattern: '/dashboard/publish'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['publish']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#app/dataset/controllers/datasets_controller').default['publish']>>>
     }
   }
   'groups.index': {

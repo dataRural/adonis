@@ -38,53 +38,6 @@ export interface ApiDefinition {
   locale: {
     switch: typeof routes['locale.switch']
   }
-  areas: {
-    list: typeof routes['areas.list']
-  }
-  adminAreas: {
-    index: typeof routes['admin_areas.index']
-    store: typeof routes['admin_areas.store']
-    update: typeof routes['admin_areas.update']
-    destroy: typeof routes['admin_areas.destroy']
-  }
-  datasets: {
-    viewer: typeof routes['datasets.viewer']
-    privacy: typeof routes['datasets.privacy']
-    like: {
-      toggle: typeof routes['datasets.like.toggle']
-    }
-    favorite: {
-      toggle: typeof routes['datasets.favorite.toggle']
-    }
-    version: {
-      new: typeof routes['datasets.version.new']
-      store: typeof routes['datasets.version.store']
-      restore: typeof routes['datasets.version.restore']
-      delete: typeof routes['datasets.version.delete']
-      download: typeof routes['datasets.version.download']
-      downloadAll: typeof routes['datasets.version.download_all']
-      readme: {
-        download: typeof routes['datasets.version.readme.download']
-      }
-      file: {
-        download: typeof routes['datasets.version.file.download']
-      }
-    }
-    explore: typeof routes['datasets.explore']
-    store: typeof routes['datasets.store']
-    show: typeof routes['datasets.show']
-    destroy: typeof routes['datasets.destroy']
-  }
-  licenses: {
-    index: typeof routes['licenses.index']
-  }
-  favorites: {
-    index: typeof routes['favorites.index']
-  }
-  dashboard: {
-    show: typeof routes['dashboard.show']
-    publish: typeof routes['dashboard.publish']
-  }
   admin: {
     index: typeof routes['admin.index']
     store: typeof routes['admin.store']
@@ -120,6 +73,63 @@ export interface ApiDefinition {
   password: {
     update: typeof routes['password.update']
     show: typeof routes['password.show']
+  }
+  areas: {
+    list: typeof routes['areas.list']
+  }
+  adminAreas: {
+    index: typeof routes['admin_areas.index']
+    store: typeof routes['admin_areas.store']
+    update: typeof routes['admin_areas.update']
+    destroy: typeof routes['admin_areas.destroy']
+  }
+  datasets: {
+    viewer: typeof routes['datasets.viewer']
+    privacy: typeof routes['datasets.privacy']
+    like: {
+      toggle: typeof routes['datasets.like.toggle']
+    }
+    favorite: {
+      toggle: typeof routes['datasets.favorite.toggle']
+    }
+    version: {
+      new: typeof routes['datasets.version.new']
+      store: typeof routes['datasets.version.store']
+      restore: typeof routes['datasets.version.restore']
+      delete: typeof routes['datasets.version.delete']
+      download: typeof routes['datasets.version.download']
+      downloadAll: typeof routes['datasets.version.download_all']
+      readme: {
+        download: typeof routes['datasets.version.readme.download']
+      }
+      file: {
+        download: typeof routes['datasets.version.file.download']
+      }
+    }
+    versions: {
+      new: typeof routes['datasets.versions.new']
+      store: typeof routes['datasets.versions.store']
+    }
+    explore: typeof routes['datasets.explore']
+    store: typeof routes['datasets.store']
+    create: typeof routes['datasets.create'] & {
+      store: typeof routes['datasets.create.store']
+    }
+    show: typeof routes['datasets.show']
+    destroy: typeof routes['datasets.destroy']
+    update: typeof routes['datasets.update'] & {
+      put: typeof routes['datasets.update.put']
+    }
+  }
+  licenses: {
+    index: typeof routes['licenses.index']
+  }
+  favorites: {
+    index: typeof routes['favorites.index']
+  }
+  dashboard: {
+    show: typeof routes['dashboard.show']
+    publish: typeof routes['dashboard.publish']
   }
   groups: {
     index: typeof routes['groups.index']
