@@ -14,9 +14,9 @@ export default function VersionsTab({ ds, versions }: { ds: DatasetDetail; versi
       ? finalVersions.map((v) => ({
           v: v.name,
           date: t('dataset.detail.published_on', { date: v.createdAt }),
-          note: v.isLatest
+          note: v.notes || (v.isLatest
             ? t('dataset.detail.initial_version_note')
-            : t('dataset.detail.previous_version_note'),
+            : t('dataset.detail.previous_version_note')),
           current: v.isLatest,
           selected: v.isSelected,
           id: v.id,

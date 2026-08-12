@@ -514,6 +514,7 @@ export default class DatasetsController {
           {
             datasetId: dataset.id,
             name: versionName,
+            notes: payload.notes || payload.changelog || payload.description || null,
             path: primaryAttachment,
           },
           { client: trx }
@@ -1391,6 +1392,7 @@ export default class DatasetsController {
       return {
         id: v.id,
         name: v.name,
+        notes: v.notes || null,
         filename: versionFiles[0]?.name || `${dataset.name}.csv`,
         size: versionSizeStr,
         files: versionFiles,

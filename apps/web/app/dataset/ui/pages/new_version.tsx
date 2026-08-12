@@ -109,8 +109,12 @@ export default function NewVersionPage({ dataset, versions }: PageProps) {
       formData.append('file', data.file)
     }
     formData.append('version', data.version.trim())
-    if (data.description.trim()) {
-      formData.append('changelog', data.description.trim())
+    if (data.description && data.description.trim()) {
+      formData.append('notes', data.description.trim())
+      formData.append('description', data.description.trim())
+    }
+    if (data.usabilityScore !== undefined && data.usabilityScore !== null) {
+      formData.append('usabilityScore', String(data.usabilityScore))
     }
 
     router.post(`/datasets/${dataset.id}/versions`, formData, {

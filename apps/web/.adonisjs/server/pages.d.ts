@@ -33,5 +33,6 @@ declare module '@adonisjs/inertia/types' {
     'users/profile': ExtractProps<(typeof import('../../app/users/ui/pages/profile.tsx'))['default']>
     'users/public_profile': ExtractProps<(typeof import('../../app/users/ui/pages/public_profile.tsx'))['default']>
     'users/tokens': ExtractProps<(typeof import('../../app/users/ui/pages/tokens.tsx'))['default']>
+    'dataset/database/migrations/1761021001007_add_notes_to_dataset_versions': ExtractProps<(typeof import('../../app/dataset/database/migrations/1761021001007_add_notes_to_dataset_versions.ts'))['default']>
   }
 }
