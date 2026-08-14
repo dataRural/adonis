@@ -106,7 +106,10 @@
         "viewer": "Viewer — views group datasets only"
       },
       "submit": "Add",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "searching": "Searching…",
+      "empty_search": "No users found.",
+      "change_user": "Change user"
     }
   }
 }

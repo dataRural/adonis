@@ -106,7 +106,10 @@
         "viewer": "Visualizador — apenas visualiza datasets do grupo"
       },
       "submit": "Adicionar",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "searching": "Buscando…",
+      "empty_search": "Nenhum usuário encontrado.",
+      "change_user": "Trocar usuário"
     }
   }
 }

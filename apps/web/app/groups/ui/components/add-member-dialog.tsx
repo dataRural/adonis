@@ -203,7 +203,7 @@ export default function AddMemberDialog({ groupId, open, onClose }: AddMemberDia
                   onClick={handleClearSelected}
                   className="dr-btn dr-btn-ghost"
                   style={{ padding: 4, borderRadius: '50%' }}
-                  title="Trocar usuário"
+                  title={t('groups.dialogs.add_member.change_user')}
                 >
                   <Ic.X size={16} />
                 </button>
@@ -228,7 +228,7 @@ export default function AddMemberDialog({ groupId, open, onClose }: AddMemberDia
                   onFocus={() => {
                     if (results.length > 0) setShowDropdown(true)
                   }}
-                  placeholder="Ex: @rafael, Helena ou rafael@ufrrj.br"
+                  placeholder={t('groups.dialogs.add_member.email_placeholder')}
                   style={{
                     width: '100%',
                     padding: '10px 14px 10px 36px',
@@ -251,7 +251,7 @@ export default function AddMemberDialog({ groupId, open, onClose }: AddMemberDia
                       color: 'var(--muted-foreground)',
                     }}
                   >
-                    Buscando…
+                    {t('groups.dialogs.add_member.searching')}
                   </span>
                 )}
               </div>
@@ -330,7 +330,7 @@ export default function AddMemberDialog({ groupId, open, onClose }: AddMemberDia
                   ))
                 ) : (
                   <div style={{ padding: '14px', fontSize: 13, color: 'var(--muted-foreground)', textAlign: 'center' }}>
-                    Nenhum usuário encontrado.
+                    {t('groups.dialogs.add_member.empty_search')}
                   </div>
                 )}
               </div>
@@ -340,10 +340,10 @@ export default function AddMemberDialog({ groupId, open, onClose }: AddMemberDia
           {/* Role selection */}
           <div style={{ marginBottom: 20 }}>
             <label style={{ fontSize: '13px', fontWeight: 600, display: 'block', marginBottom: 8 }}>
-              Papel no grupo
+              {t('groups.dialogs.add_member.role_label')}
             </label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {ROLE_OPTIONS.map((opt) => (
+              {roleOptions.map((opt) => (
                 <label
                   key={opt.value}
                   style={{
@@ -377,7 +377,7 @@ export default function AddMemberDialog({ groupId, open, onClose }: AddMemberDia
 
           <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
             <button type="button" className="dr-btn dr-btn-outline" onClick={onClose}>
-              Cancelar
+              {t('groups.dialogs.add_member.cancel')}
             </button>
             <button
               type="submit"
@@ -385,7 +385,7 @@ export default function AddMemberDialog({ groupId, open, onClose }: AddMemberDia
               disabled={(!selectedUser && !query.trim()) || submitting}
               style={(!selectedUser && !query.trim()) || submitting ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
             >
-              <Ic.Plus size={16} /> Adicionar
+              <Ic.Plus size={16} /> {t('groups.dialogs.add_member.submit')}
             </button>
           </div>
         </form>
