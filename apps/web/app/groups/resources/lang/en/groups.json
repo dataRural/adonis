@@ -76,15 +76,15 @@
     }
   },
   "card": {
-    "members_count": "{count} members",
-    "datasets_count": "{count} datasets",
+    "members_count": "member",
+    "datasets_count": "dataset",
     "owner": "Owner",
     "admin": "Administrator",
     "editor": "Editor",
     "viewer": "Viewer"
   },
   "dialogs": {
-    "create": {
+    "create_group": {
       "title": "Create New Group",
       "sub": "Organize your team and share datasets collaboratively.",
       "name_label": "Group name",

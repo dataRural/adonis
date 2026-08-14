@@ -53,9 +53,6 @@ export default function Toolbar({
           placeholder={t('dataset.dashboard.search_placeholder')}
         />
       </div>
-      <button className="dr-btn dr-btn-outline" onClick={() => alert(t('dataset.dashboard.sort_btn'))}>
-        <Ic.Sort size={16} /> {t('dataset.dashboard.sort_btn')}
-      </button>
     </div>
   )
 }

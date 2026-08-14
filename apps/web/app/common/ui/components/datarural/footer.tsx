@@ -35,23 +35,16 @@ export default function Footer() {
             <h4>{t('common.footer.platform')}</h4>
             <Link href="/datasets">{t('common.footer.explore_datasets')}</Link>
             <Link href="/dashboard/publish">{t('common.footer.publish_data')}</Link>
-            <a href="#">{t('common.footer.collections')}</a>
           </div>
           <div className="dr-footer-col">
             <h4>{t('common.footer.resources')}</h4>
-            <a href="#">{t('common.footer.documentation')}</a>
-            <a href="#">{t('common.footer.about_licenses')}</a>
-            <a href="#">{t('common.footer.data_api')}</a>
-            <a href="#">{t('common.footer.data_policy')}</a>
+            <a href="https://datarural.github.io/docs/">{t('common.footer.documentation')}</a>
           </div>
           <div className="dr-footer-col">
             <h4>{t('common.footer.institutional')}</h4>
             <a href="https://portal.ufrrj.br" target="_blank" rel="noopener noreferrer">
               {t('common.footer.ufrrj')}
             </a>
-            <a href="#">{t('common.footer.deanships')}</a>
-            <a href="#">{t('common.footer.institutes')}</a>
-            <a href="#">{t('common.footer.contact')}</a>
           </div>
         </div>
         <div className="dr-footer-bar">

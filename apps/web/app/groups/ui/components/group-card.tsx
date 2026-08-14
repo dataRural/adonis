@@ -109,10 +109,10 @@ export default function GroupCard({ group }: GroupCardProps) {
         }}
       >
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-          <Ic.Users size={14} /> {group.memberCount} {group.memberCount === 1 ? t('groups.card.member_one') : t('groups.card.member_other')}
+          <Ic.Users size={14} /> {group.memberCount} {group.memberCount === 1 ? t('groups.card.members_count') : t('groups.card.members_count') + 's'}
         </span>
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-          <Ic.Database size={14} /> {group.datasetCount} {group.datasetCount === 1 ? t('groups.card.dataset_one') : t('groups.card.dataset_other')}
+          <Ic.Database size={14} /> {group.datasetCount} {group.datasetCount === 1 ? t('groups.card.datasets_count') : t('groups.card.datasets_count') + 's'}
         </span>
       </div>
     </Link>

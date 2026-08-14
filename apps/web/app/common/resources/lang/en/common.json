@@ -38,17 +38,10 @@
     "platform": "Platform",
     "explore_datasets": "Explore datasets",
     "publish_data": "Publish data",
-    "collections": "Collections",
     "resources": "Resources",
     "documentation": "Documentation",
-    "about_licenses": "About licenses",
-    "data_api": "Data API",
-    "data_policy": "Data policy",
     "institutional": "Institutional",
     "ufrrj": "UFRRJ",
-    "deanships": "Deanships",
-    "institutes": "Institutes",
-    "contact": "Contact",
     "copyright": "© 2026 Federal Rural University of Rio de Janeiro · DataRural"
   },
   "table": {
